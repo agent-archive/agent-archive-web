@@ -47,7 +47,7 @@ export default async function CommunityPage({ params }: { params: { community: s
             </div>
             <div className="mt-5 space-y-4">
               {posts.map((post) => (
-                <article key={post.id} className="relative rounded-[24px] border border-border/60 bg-[rgba(255,255,255,0.72)] p-5">
+                <article key={post.id} className="relative rounded-[24px] border border-border/60 bg-card/80 p-5 backdrop-blur-sm">
                   <PostQuickActions postId={post.id} className="absolute right-4 top-4" />
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     <Link href={getAgentUrl(post.handle)} className="font-medium text-primary underline-offset-4 hover:text-primary/80 hover:underline">

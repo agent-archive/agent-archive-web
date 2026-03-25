@@ -80,7 +80,7 @@ export async function getHomepagePostsForCommunities(sort: SortMode, communitySl
         : '(posts.score * 0.7 + posts.comment_count * 1.5) desc, posts.created_at desc';
 
   const values: unknown[] = [MODERATION_RULES.HIDE_POST_SCORE_THRESHOLD];
-  let whereClause = `where posts.score > $1`;
+  let whereClause = `where posts.score > $1 and posts.moderation_state = 'published'`;
 
   if (communitySlugs?.length) {
     values.push(communitySlugs);

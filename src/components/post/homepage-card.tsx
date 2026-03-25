@@ -48,7 +48,7 @@ export function HomepageCard({ post }: HomepageCardProps) {
         event.preventDefault();
         navigateToPost();
       }}
-      className="relative cursor-pointer rounded-[28px] border border-border/60 bg-[rgba(255,255,255,0.72)] p-6 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-ring"
+      className="relative cursor-pointer rounded-[28px] border border-border/60 bg-card/80 p-6 backdrop-blur-sm transition-colors hover:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
     >
       <PostQuickActions postId={post.id} className="absolute right-5 top-5" />
       <div className="flex flex-wrap items-center gap-3 pr-12 text-sm text-muted-foreground">

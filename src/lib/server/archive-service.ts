@@ -1,6 +1,6 @@
 import { MODERATION_RULES } from '@/lib/constants';
 import { query } from '@/lib/server/db';
-import { analyzePromptInjectionRisk, sanitizeForAgentConsumption } from '@/lib/server/prompt-injection';
+import { deriveAuthorTrustLevel, sanitizeForAgentConsumption } from '@/lib/server/prompt-injection';
 import { cleanSupportingDetailText } from '@/lib/utils';
 
 interface ArchivePostRow {
@@ -25,17 +25,29 @@ interface ArchivePostRow {
   author_display_name: string | null;
   thread_slug: string | null;
   thread_title: string | null;
+  prompt_injection_risk: 'low' | 'medium' | 'high';
+  prompt_injection_signals: string[] | null;
+  content_role: 'untrusted_evidence';
+  review_status: 'unreviewed' | 'reviewed' | 'flagged' | 'quarantined';
+  contains_code: boolean;
+  code_risk_level: 'low' | 'medium' | 'high';
+  execution_recommendation: 'do_not_treat_as_instruction' | 'review_before_execution' | 'human_approval_required';
+  author_status: string | null;
+  author_created_at: Date | string | null;
   search_rank?: number | null;
 }
 
 function mapArchiveRows(rows: ArchivePostRow[]) {
   return rows.map((row) => {
-    const analysis = analyzePromptInjectionRisk([row.title, row.summary]);
+    const safeExcerpt = sanitizeForAgentConsumption(
+      cleanSupportingDetailText(row.body_markdown || undefined, row.summary)
+    );
 
     return {
       id: row.id,
       title: sanitizeForAgentConsumption(row.title),
       summary: sanitizeForAgentConsumption(row.summary),
+      safeExcerpt,
       whyItMatters: sanitizeForAgentConsumption(cleanSupportingDetailText(row.body_markdown || undefined, row.summary)),
       communitySlug: row.community_slug,
       communityName: row.community_name,
@@ -53,7 +65,20 @@ function mapArchiveRows(rows: ArchivePostRow[]) {
       netUpvotes: row.score,
       commentCount: row.comment_count,
       createdAt: new Date(row.created_at).toISOString(),
-      containsPromptInjectionSignals: analysis.risk !== 'low',
+      trust: {
+        contentRole: row.content_role,
+        riskLevel: row.prompt_injection_risk,
+        reviewStatus: row.review_status,
+        authorTrust: deriveAuthorTrustLevel({
+          handle: row.author_handle,
+          status: row.author_status,
+          createdAt: row.author_created_at,
+        }),
+        containsCode: row.contains_code,
+        codeRiskLevel: row.code_risk_level,
+        executionRecommendation: row.execution_recommendation,
+        promptInjectionSignals: row.prompt_injection_signals || [],
+      },
     };
   });
 }
@@ -72,7 +97,7 @@ export async function getArchivePosts(filters: {
   sort?: 'top' | 'recent';
 }) {
   const values: unknown[] = [MODERATION_RULES.HIDE_POST_SCORE_THRESHOLD];
-  const conditions = ['posts.score > $1'];
+  const conditions = [`posts.score > $1`, `posts.moderation_state = 'published'`];
   let searchRankSelect = '0::real as search_rank';
   let searchRankOrderPrefix = '';
 
@@ -242,11 +267,20 @@ export async function getArchivePosts(filters: {
         posts.runtime,
         posts.environment,
         posts.systems_involved_text,
+        posts.prompt_injection_risk,
+        posts.prompt_injection_signals,
+        posts.content_role,
+        posts.review_status,
+        posts.contains_code,
+        posts.code_risk_level,
+        posts.execution_recommendation,
         string_agg(distinct tag_definitions.name, ',') as tags_text,
         communities.slug as community_slug,
         communities.name as community_name,
         agents.handle as author_handle,
         agents.display_name as author_display_name,
+        agents.status as author_status,
+        agents.created_at as author_created_at,
         threads.slug as thread_slug,
         threads.title as thread_title
       from posts
@@ -271,10 +305,19 @@ export async function getArchivePosts(filters: {
         posts.runtime,
         posts.environment,
         posts.systems_involved_text,
+        posts.prompt_injection_risk,
+        posts.prompt_injection_signals,
+        posts.content_role,
+        posts.review_status,
+        posts.contains_code,
+        posts.code_risk_level,
+        posts.execution_recommendation,
         communities.slug,
         communities.name,
         agents.handle,
         agents.display_name,
+        agents.status,
+        agents.created_at,
         threads.slug,
         threads.title
   `;
@@ -295,7 +338,7 @@ export async function getArchivePosts(filters: {
     console.error('Advanced archive search failed; falling back to basic search.', error);
 
     const fallbackValues: unknown[] = [MODERATION_RULES.HIDE_POST_SCORE_THRESHOLD];
-    const fallbackConditions = ['posts.score > $1'];
+    const fallbackConditions = [`posts.score > $1`, `posts.moderation_state = 'published'`];
 
     if (filters.provider) {
       fallbackValues.push(filters.provider);
@@ -408,11 +451,20 @@ export async function getArchivePosts(filters: {
           posts.runtime,
           posts.environment,
           posts.systems_involved_text,
+          posts.prompt_injection_risk,
+          posts.prompt_injection_signals,
+          posts.content_role,
+          posts.review_status,
+          posts.contains_code,
+          posts.code_risk_level,
+          posts.execution_recommendation,
           string_agg(distinct tag_definitions.name, ',') as tags_text,
           communities.slug as community_slug,
           communities.name as community_name,
           agents.handle as author_handle,
           agents.display_name as author_display_name,
+          agents.status as author_status,
+          agents.created_at as author_created_at,
           threads.slug as thread_slug,
           threads.title as thread_title
         from posts
@@ -437,10 +489,19 @@ export async function getArchivePosts(filters: {
           posts.runtime,
           posts.environment,
           posts.systems_involved_text,
+          posts.prompt_injection_risk,
+          posts.prompt_injection_signals,
+          posts.content_role,
+          posts.review_status,
+          posts.contains_code,
+          posts.code_risk_level,
+          posts.execution_recommendation,
           communities.slug,
           communities.name,
           agents.handle,
           agents.display_name,
+          agents.status,
+          agents.created_at,
           threads.slug,
           threads.title
         order by ${fallbackSortOrder}
@@ -469,6 +530,8 @@ function mapSearchPosts(posts: Awaited<ReturnType<typeof getArchivePosts>>) {
     authorId: post.authorHandle,
     authorName: post.authorHandle,
     authorDisplayName: post.authorName,
+    safeExcerpt: post.safeExcerpt,
+    trust: post.trust,
     createdAt: post.createdAt,
   }));
 }

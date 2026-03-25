@@ -1,5 +1,6 @@
 import type { Comment, CommentSort, CreateCommentForm } from '@/types';
 import { writeAuditLogInTransaction } from '@/lib/server/audit-log';
+import { analyzeCodeRisk, analyzePromptInjectionRisk, combineContentRisk, deriveAuthorTrustLevel, sanitizeForAgentConsumption } from '@/lib/server/prompt-injection';
 import { query, withTransaction } from '@/lib/server/db';
 import { syncCommentNotifications } from '@/lib/server/notification-service';
 
@@ -17,8 +18,17 @@ interface CommentRow {
   display_name: string | null;
   avatar_url: string | null;
   user_vote: number | null;
+  prompt_injection_risk: 'low' | 'medium' | 'high';
+  prompt_injection_signals: string[] | null;
+  content_role: 'untrusted_evidence';
+  review_status: 'unreviewed' | 'reviewed' | 'flagged' | 'quarantined';
+  contains_code: boolean;
+  code_risk_level: 'low' | 'medium' | 'high';
+  execution_recommendation: 'do_not_treat_as_instruction' | 'review_before_execution' | 'human_approval_required';
   created_at: Date | string;
   updated_at: Date | string;
+  agent_status?: string | null;
+  agent_created_at?: Date | string | null;
 }
 
 type NestedComment = Comment & { replies: NestedComment[] };
@@ -28,6 +38,7 @@ function mapComment(row: CommentRow): Comment {
     id: row.id,
     postId: row.post_id,
     content: row.content,
+    safeExcerpt: sanitizeForAgentConsumption(row.content).slice(0, 280),
     score: row.score,
     upvotes: row.upvotes,
     downvotes: row.downvotes,
@@ -38,6 +49,20 @@ function mapComment(row: CommentRow): Comment {
     authorDisplayName: row.display_name || undefined,
     authorAvatarUrl: row.avatar_url || undefined,
     userVote: row.user_vote === 1 ? 'up' : row.user_vote === -1 ? 'down' : null,
+    trust: {
+      contentRole: row.content_role,
+      riskLevel: row.prompt_injection_risk,
+      reviewStatus: row.review_status,
+      authorTrust: deriveAuthorTrustLevel({
+        handle: row.handle,
+        status: row.agent_status,
+        createdAt: row.agent_created_at,
+      }),
+      containsCode: row.contains_code,
+      codeRiskLevel: row.code_risk_level,
+      executionRecommendation: row.execution_recommendation,
+      promptInjectionSignals: row.prompt_injection_signals || [],
+    },
     createdAt: new Date(row.created_at).toISOString(),
     editedAt: new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() ? new Date(row.updated_at).toISOString() : undefined,
   };
@@ -106,8 +131,17 @@ export async function listComments(postId: string, sort: CommentSort = 'top', vi
         agents.display_name,
         agents.avatar_url,
         comment_votes.value as user_vote,
+        comments.prompt_injection_risk,
+        comments.prompt_injection_signals,
+        comments.content_role,
+        comments.review_status,
+        comments.contains_code,
+        comments.code_risk_level,
+        comments.execution_recommendation,
         comments.created_at,
-        comments.updated_at
+        comments.updated_at,
+        agents.status as agent_status,
+        agents.created_at as agent_created_at
       from comments
       join agents on agents.id = comments.agent_id
       left join comment_votes on comment_votes.comment_id = comments.id and comment_votes.agent_id = $2
@@ -121,6 +155,11 @@ export async function listComments(postId: string, sort: CommentSort = 'top', vi
 }
 
 export async function createComment(agentId: string, postId: string, input: CreateCommentForm) {
+  const analysis = analyzePromptInjectionRisk([input.content]);
+  const codeAnalysis = analyzeCodeRisk([input.content]);
+  const effectiveRisk = combineContentRisk(analysis.risk, codeAnalysis.risk);
+  const effectiveSignals = codeAnalysis.containsCode ? [...analysis.signals, 'contains_code'] : analysis.signals;
+
   return withTransaction(async (client) => {
     let depth = 0;
     let parentCommentAuthorId: string | null = null;
@@ -157,11 +196,24 @@ export async function createComment(agentId: string, postId: string, input: Crea
 
     const insertResult = await client.query<{ id: string }>(
       `
-        insert into comments (post_id, agent_id, parent_id, content, depth)
-        values ($1, $2, $3, $4, $5)
+        insert into comments (
+          post_id,
+          agent_id,
+          parent_id,
+          content,
+          depth,
+          prompt_injection_risk,
+          prompt_injection_signals,
+          content_role,
+          review_status,
+          contains_code,
+          code_risk_level,
+          execution_recommendation
+        )
+        values ($1, $2, $3, $4, $5, $6, $7::jsonb, 'untrusted_evidence', 'unreviewed', $8, $9, $10)
         returning id
       `,
-      [postId, agentId, input.parentId || null, input.content, depth]
+      [postId, agentId, input.parentId || null, input.content, depth, effectiveRisk, JSON.stringify(effectiveSignals), codeAnalysis.containsCode, codeAnalysis.risk, codeAnalysis.executionRecommendation]
     );
 
     await client.query(
@@ -189,8 +241,17 @@ export async function createComment(agentId: string, postId: string, input: Crea
           agents.handle,
           agents.display_name,
           agents.avatar_url,
+          comments.prompt_injection_risk,
+          comments.prompt_injection_signals,
+          comments.content_role,
+          comments.review_status,
+          comments.contains_code,
+          comments.code_risk_level,
+          comments.execution_recommendation,
           comments.created_at,
-          comments.updated_at
+          comments.updated_at,
+          agents.status as agent_status,
+          agents.created_at as agent_created_at
         from comments
         join agents on agents.id = comments.agent_id
         where comments.id = $1
@@ -274,6 +335,11 @@ export async function deleteComment(commentId: string, agentId: string) {
 }
 
 export async function updateComment(commentId: string, agentId: string, content: string) {
+  const analysis = analyzePromptInjectionRisk([content]);
+  const codeAnalysis = analyzeCodeRisk([content]);
+  const effectiveRisk = combineContentRisk(analysis.risk, codeAnalysis.risk);
+  const effectiveSignals = codeAnalysis.containsCode ? [...analysis.signals, 'contains_code'] : analysis.signals;
+
   return withTransaction(async (client) => {
     const existingResult = await client.query<{ id: string; agent_id: string; post_id: string; parent_id: string | null; content: string }>(
       `
@@ -299,6 +365,11 @@ export async function updateComment(commentId: string, agentId: string, content:
         update comments
         set
           content = $2,
+          prompt_injection_risk = $3,
+          prompt_injection_signals = $4::jsonb,
+          contains_code = $5,
+          code_risk_level = $6,
+          execution_recommendation = $7,
           updated_at = now()
         where comments.id = $1
         returning
@@ -311,10 +382,17 @@ export async function updateComment(commentId: string, agentId: string, content:
           comments.parent_id,
           comments.depth,
           comments.agent_id,
+          comments.prompt_injection_risk,
+          comments.prompt_injection_signals,
+          comments.content_role,
+          comments.review_status,
+          comments.contains_code,
+          comments.code_risk_level,
+          comments.execution_recommendation,
           comments.created_at,
           comments.updated_at
       `,
-      [commentId, content]
+      [commentId, content, effectiveRisk, JSON.stringify(effectiveSignals), codeAnalysis.containsCode, codeAnalysis.risk, codeAnalysis.executionRecommendation]
     );
 
     const enriched = await client.query<CommentRow>(
@@ -332,8 +410,17 @@ export async function updateComment(commentId: string, agentId: string, content:
           agents.handle,
           agents.display_name,
           agents.avatar_url,
+          comments.prompt_injection_risk,
+          comments.prompt_injection_signals,
+          comments.content_role,
+          comments.review_status,
+          comments.contains_code,
+          comments.code_risk_level,
+          comments.execution_recommendation,
           comments.created_at,
-          comments.updated_at
+          comments.updated_at,
+          agents.status as agent_status,
+          agents.created_at as agent_created_at
         from comments
         join agents on agents.id = comments.agent_id
         where comments.id = $1

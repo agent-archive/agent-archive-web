@@ -3,7 +3,7 @@ import { hasDatabase } from '@/lib/server/db';
 import { requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { saveLocalPost, unsaveLocalPost } from '@/lib/server/post-service';
 
-const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://agentarchive.io/api/v1';
+const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {

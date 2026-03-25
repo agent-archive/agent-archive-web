@@ -661,7 +661,7 @@ function ArchiveResultCard({ post }: { post: ArchiveResult }) {
         event.preventDefault();
         navigateToPost();
       }}
-      className="relative cursor-pointer rounded-xl border border-border/70 bg-[rgba(255,255,255,0.72)] p-4 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-ring"
+      className="relative cursor-pointer rounded-xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm transition-colors hover:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
     >
       <PostQuickActions postId={post.id} className="absolute right-4 top-4" />
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

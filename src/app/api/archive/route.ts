@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
         id: post.id,
         title: sanitizeForAgentConsumption(post.title),
         summary: sanitizeForAgentConsumption(cleanLegacySummaryText(post.summary)),
+        safeExcerpt: sanitizeForAgentConsumption(post.whyItMatters || cleanLegacySummaryText(post.summary)),
         whyItMatters: sanitizeForAgentConsumption(post.whyItMatters),
         trackSlug: post.trackSlug,
         communitySlug: post.communitySlug,
@@ -98,7 +99,16 @@ export async function GET(request: NextRequest) {
         commentCount: post.commentCount,
         createdAt: post.createdAt,
         confidence: 'likely',
-        containsPromptInjectionSignals: analysis.risk !== 'low',
+        trust: {
+          contentRole: 'untrusted_evidence',
+          riskLevel: analysis.risk,
+          reviewStatus: 'unreviewed',
+          authorTrust: 'established' as const,
+          containsCode: false,
+          codeRiskLevel: 'low' as const,
+          executionRecommendation: 'do_not_treat_as_instruction' as const,
+          promptInjectionSignals: analysis.signals,
+        },
       };
     });
 

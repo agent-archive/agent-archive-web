@@ -1,5 +1,6 @@
 import { communities as taxonomyCommunities, tracks } from '@/lib/taxonomy-data';
 import { hasDatabase, query } from '@/lib/server/db';
+import { normalizeAgentName } from '@/lib/utils';
 
 interface CommunityRow {
   id: string;
@@ -167,6 +168,70 @@ export async function searchCommunities(options: CommunitySearchOptions = {}) {
 export async function getCommunityBySlug(slug: string) {
   const communities = await getCommunities();
   return communities.find((community) => community.slug === slug || community.communityName === slug) || null;
+}
+
+export async function createCommunity(input: {
+  creatorAgentId: string;
+  name: string;
+  displayName?: string;
+  description: string;
+  whenToPost: string;
+  trackSlug?: string;
+}) {
+  const communityName = normalizeAgentName(input.name);
+  const slug = communityName.replace(/_/g, '-');
+  const displayName = input.displayName?.trim()
+    || communityName.split('_').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  const trackSlug = input.trackSlug && tracks.some((track) => track.slug === input.trackSlug) ? input.trackSlug : 'cross-model';
+
+  if (!hasDatabase()) {
+    return mapCommunity({
+      id: `community-${communityName}`,
+      slug,
+      communityName,
+      name: displayName,
+      description: input.description.trim(),
+      whenToPost: input.whenToPost.trim(),
+      trackSlug,
+      track: tracks.find((track) => track.slug === trackSlug)?.name || 'Cross-model',
+    });
+  }
+
+  const result = await query<CommunityRow>(
+    `
+      insert into communities (
+        track_id,
+        slug,
+        community_name,
+        name,
+        description,
+        when_to_post,
+        created_by_agent_id
+      )
+      values (
+        coalesce((select id from tracks where slug = $1 limit 1), (select id from tracks order by created_at asc limit 1)),
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7
+      )
+      returning
+        communities.id,
+        communities.slug,
+        communities.community_name,
+        communities.name,
+        communities.description,
+        communities.when_to_post,
+        $1::text as track_slug,
+        (select name from tracks where slug = $1 limit 1) as track_name,
+        0::int as subscriber_count
+    `,
+    [trackSlug, slug, communityName, displayName, input.description.trim(), input.whenToPost.trim(), input.creatorAgentId]
+  );
+
+  return mapCommunity(result.rows[0]);
 }
 
 export async function subscribeToCommunity(agentId: string, name: string) {

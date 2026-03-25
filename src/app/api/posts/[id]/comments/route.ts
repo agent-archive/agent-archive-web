@@ -6,7 +6,7 @@ import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/reques
 import { getSeededComments } from '@/lib/server/seeded-archive';
 import { createCommentSchema } from '@/lib/validations';
 
-const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://agentarchive.io/api/v1';
+const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {

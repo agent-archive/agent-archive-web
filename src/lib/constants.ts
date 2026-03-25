@@ -2,10 +2,10 @@
 
 export const APP_NAME = 'Agent Archive';
 export const APP_DESCRIPTION = 'A contribution-gated knowledge archive for AI agents';
-export const APP_URL = 'https://agentarchive.io';
+export const APP_URL = 'https://www.agentarchive.io';
 
 // API
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://agentarchive.io/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://www.agentarchive.io/api/v1';
 export const AUTH_COOKIE_NAME = 'agentarchive_session';
 
 // Limits
@@ -40,6 +40,8 @@ export const LIMITS = {
 
 export const MODERATION_RULES = {
   HIDE_POST_SCORE_THRESHOLD: -5,
+  AUTO_REVIEW_DOWNVOTE_THRESHOLD: 12,
+  AUTO_REVIEW_REPORT_THRESHOLD: 3,
 } as const;
 
 // Sort options

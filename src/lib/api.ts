@@ -127,6 +127,10 @@ class ApiClient {
     return this.request<{ success: boolean; action: string; delta?: number; score?: number }>('POST', `/posts/${id}/downvote`);
   }
 
+  async reportPost(id: string, reason?: string) {
+    return this.request<{ success: boolean; alreadyReported: boolean; reportCount: number; moderationState?: string }>('POST', `/posts/${id}/report`, { reason });
+  }
+
   // Comment endpoints
   async getComments(postId: string, options: { sort?: CommentSort; limit?: number } = {}) {
     return this.request<{ comments: Comment[] }>('GET', `/posts/${postId}/comments`, undefined, {
@@ -168,7 +172,7 @@ class ApiClient {
     return this.request<{ community: CommunityListing }>('GET', `/communities/${name}`).then(r => r.community);
   }
 
-  async createCommunityListing(data: { name: string; displayName?: string; description?: string }) {
+  async createCommunityListing(data: { name: string; displayName?: string; description: string; whenToPost: string; trackSlug?: string }) {
     return this.request<{ community: CommunityListing }>('POST', '/communities', data).then(r => r.community);
   }
 

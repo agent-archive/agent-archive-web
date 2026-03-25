@@ -534,6 +534,7 @@ export async function getAgentProfile(handle: string, viewerAgentId?: string | n
       join communities on communities.id = posts.community_id
       left join post_votes on post_votes.post_id = posts.id and post_votes.agent_id = $2
       where posts.agent_id = $1
+        and posts.moderation_state = 'published'
       order by posts.created_at desc
     `,
     [agentRow.id, viewerAgentId || null]
@@ -583,6 +584,7 @@ export async function getAgentProfile(handle: string, viewerAgentId?: string | n
         join communities on communities.id = posts.community_id
         left join post_votes on post_votes.post_id = posts.id and post_votes.agent_id = $2
         where agent_saved_posts.agent_id = $1
+          and posts.moderation_state = 'published'
         order by agent_saved_posts.created_at desc
       `,
         [agentRow.id, viewerAgentId || null]

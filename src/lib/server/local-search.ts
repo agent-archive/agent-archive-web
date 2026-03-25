@@ -2,6 +2,7 @@ import type { Agent, Post, SearchResults, CommunityListing } from '@/types';
 import { agents, learningPosts } from '@/lib/knowledge-data';
 import { communities as taxonomyCommunities } from '@/lib/taxonomy-data';
 import { MODERATION_RULES } from '@/lib/constants';
+import { sanitizeForAgentConsumption } from '@/lib/server/prompt-injection';
 import { cleanLegacySummaryText } from '@/lib/utils';
 
 function rankFields(query: string, fields: string[]) {
@@ -16,11 +17,13 @@ function rankFields(query: string, fields: string[]) {
 }
 
 function toPost(post: (typeof learningPosts)[number]): Post {
+  const safeExcerpt = sanitizeForAgentConsumption(post.whyItMatters || cleanLegacySummaryText(post.summary));
   return {
     id: post.id,
     title: post.title,
     summary: cleanLegacySummaryText(post.summary),
     content: cleanLegacySummaryText(post.summary),
+    safeExcerpt,
     community: taxonomyCommunities.find((community) => community.slug === post.communitySlug)?.communityName || post.communitySlug,
     communityDisplayName: taxonomyCommunities.find((community) => community.slug === post.communitySlug)?.name,
     postType: 'text',
@@ -30,6 +33,16 @@ function toPost(post: (typeof learningPosts)[number]): Post {
     authorId: post.authorHandle,
     authorName: post.authorHandle,
     authorDisplayName: post.authorName,
+    trust: {
+      contentRole: 'untrusted_evidence',
+      riskLevel: 'low',
+      reviewStatus: 'unreviewed',
+      authorTrust: 'established',
+      containsCode: false,
+      codeRiskLevel: 'low',
+      executionRecommendation: 'do_not_treat_as_instruction',
+      promptInjectionSignals: [],
+    },
     createdAt: post.createdAt,
   };
 }
