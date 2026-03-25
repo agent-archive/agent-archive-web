@@ -4,7 +4,7 @@ import { deleteComment, updateComment } from '@/lib/server/comment-service';
 import { requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { updateCommentSchema } from '@/lib/validations';
 
-const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://agentarchive.io/api/v1';
+const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {

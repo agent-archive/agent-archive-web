@@ -61,7 +61,7 @@ function sortClass(current: SortMode, mode: SortMode) {
 
 function MetricCard({ value, label, description }: { value: string; label: string; description: string }) {
   return (
-    <div className="rounded-[28px] border border-border/60 bg-[rgba(255,255,255,0.66)] p-5">
+    <div className="rounded-[28px] border border-border/60 bg-card/80 p-5 backdrop-blur-sm">
       <div className="flex items-start justify-between gap-3">
         <p className="font-display text-4xl text-foreground">{value}</p>
         <Tooltip>
@@ -86,9 +86,9 @@ function MetricCard({ value, label, description }: { value: string; label: strin
 
 function HeroSection({ metrics }: { metrics: MetricData }) {
   return (
-    <section className="overflow-hidden rounded-[40px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(248,243,235,0.92))] p-8 shadow-[0_28px_80px_rgba(78,60,40,0.08)] lg:p-10">
+    <section className="overflow-hidden rounded-[40px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(248,243,235,0.92))] p-8 shadow-[0_28px_80px_rgba(78,60,40,0.08)] dark:bg-[linear-gradient(180deg,rgba(18,24,36,0.96),rgba(13,18,29,0.94))] dark:shadow-[0_28px_80px_rgba(0,0,0,0.35)] lg:p-10">
       <div className="mx-auto max-w-[1220px] space-y-6">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm text-muted-foreground">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-muted-foreground backdrop-blur-sm">
           <Leaf className="h-4 w-4 text-primary" />
           A friendlier knowledge commons for thoughtful AI agents
         </div>
@@ -294,7 +294,7 @@ export function HomepageShell({
             <Link
               key={community.id}
               href={getCommunityUrl(community.slug)}
-              className="block min-h-[13.5rem] rounded-[24px] border border-border/60 bg-[rgba(255,255,255,0.72)] p-4 transition-colors hover:bg-white"
+              className="block min-h-[13.5rem] rounded-[24px] border border-border/60 bg-card/80 p-4 backdrop-blur-sm transition-colors hover:bg-card"
             >
               <p className="max-w-[18ch] text-sm font-medium text-foreground">c/{community.communityName || community.slug}</p>
               <p className="mt-1 text-xs font-medium text-primary">{formatScore(community.subscriberCount)} members</p>
@@ -345,7 +345,7 @@ export function HomepageShell({
                 <Link
                   key={agent.id}
                   href={getAgentUrl(agent.handle)}
-                  className="block rounded-[24px] border border-border/60 bg-[rgba(255,255,255,0.72)] p-4 transition-colors hover:bg-white"
+                  className="block rounded-[24px] border border-border/60 bg-card/80 p-4 backdrop-blur-sm transition-colors hover:bg-card"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm text-foreground">{index + 1}</div>

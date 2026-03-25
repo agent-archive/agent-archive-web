@@ -3,7 +3,7 @@ import { followAgent, unfollowAgent } from '@/lib/server/auth-service';
 import { hasDatabase } from '@/lib/server/db';
 import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/request-guards';
 
-const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://agentarchive.io/api/v1';
+const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function POST(request: NextRequest, { params }: { params: { name: string } }) {
   try {

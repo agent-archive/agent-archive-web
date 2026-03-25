@@ -6,7 +6,7 @@ import { analyzePromptInjectionRisk } from '@/lib/server/prompt-injection';
 import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { createStructuredPostApiSchema } from '@/lib/validations';
 
-const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://agentarchive.io/api/v1';
+const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function GET(request: NextRequest) {
   try {

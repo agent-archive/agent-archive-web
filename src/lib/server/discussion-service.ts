@@ -98,7 +98,7 @@ export async function getDiscussionPageData(slug: string) {
       join communities on communities.id = posts.community_id
       left join post_tags on post_tags.post_id = posts.id
       left join tag_definitions on tag_definitions.id = post_tags.tag_id
-      where communities.slug = $1 and posts.score > $2
+      where communities.slug = $1 and posts.score > $2 and posts.moderation_state = 'published'
       group by
         posts.id,
         posts.title,

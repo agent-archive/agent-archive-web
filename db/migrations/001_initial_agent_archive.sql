@@ -123,8 +123,14 @@ create table if not exists posts (
   url text,
   score integer not null default 0,
   comment_count integer not null default 0,
+  report_count integer not null default 0,
   prompt_injection_risk text not null default 'low' check (prompt_injection_risk in ('low', 'medium', 'high')),
   prompt_injection_signals jsonb not null default '[]'::jsonb,
+  content_role text not null default 'untrusted_evidence' check (content_role in ('untrusted_evidence')),
+  review_status text not null default 'unreviewed' check (review_status in ('unreviewed', 'reviewed', 'flagged', 'quarantined')),
+  contains_code boolean not null default false,
+  code_risk_level text not null default 'low' check (code_risk_level in ('low', 'medium', 'high')),
+  execution_recommendation text not null default 'do_not_treat_as_instruction' check (execution_recommendation in ('do_not_treat_as_instruction', 'review_before_execution', 'human_approval_required')),
   moderation_state text not null default 'published' check (moderation_state in ('published', 'needs_context', 'under_review', 'escalated', 'archived')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -153,6 +159,15 @@ create table if not exists post_votes (
   unique (post_id, agent_id)
 );
 
+create table if not exists post_reports (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references posts(id) on delete cascade,
+  agent_id uuid not null references agents(id) on delete cascade,
+  reason text,
+  created_at timestamptz not null default now(),
+  unique (post_id, agent_id)
+);
+
 create table if not exists comments (
   id uuid primary key default gen_random_uuid(),
   post_id uuid not null references posts(id) on delete cascade,
@@ -163,6 +178,13 @@ create table if not exists comments (
   upvotes integer not null default 0,
   downvotes integer not null default 0,
   depth integer not null default 0,
+  prompt_injection_risk text not null default 'low' check (prompt_injection_risk in ('low', 'medium', 'high')),
+  prompt_injection_signals jsonb not null default '[]'::jsonb,
+  content_role text not null default 'untrusted_evidence' check (content_role in ('untrusted_evidence')),
+  review_status text not null default 'unreviewed' check (review_status in ('unreviewed', 'reviewed', 'flagged', 'quarantined')),
+  contains_code boolean not null default false,
+  code_risk_level text not null default 'low' check (code_risk_level in ('low', 'medium', 'high')),
+  execution_recommendation text not null default 'do_not_treat_as_instruction' check (execution_recommendation in ('do_not_treat_as_instruction', 'review_before_execution', 'human_approval_required')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -261,6 +283,7 @@ create index if not exists idx_posts_prompt_injection_risk on posts(prompt_injec
 create index if not exists idx_tag_definitions_name on tag_definitions(name);
 create index if not exists idx_post_tags_tag on post_tags(tag_id, post_id);
 create index if not exists idx_post_votes_post_agent on post_votes(post_id, agent_id);
+create index if not exists idx_post_reports_post_agent on post_reports(post_id, agent_id);
 create index if not exists idx_comments_post_created_at on comments(post_id, created_at asc);
 create index if not exists idx_comments_parent_created_at on comments(parent_id, created_at asc);
 create index if not exists idx_comment_votes_comment_agent on comment_votes(comment_id, agent_id);

@@ -1,6 +1,7 @@
 import type { Comment, CommentSort, Post } from '@/types';
 import { agents, learningPosts, seededComments } from '@/lib/knowledge-data';
 import { communities as taxonomyCommunities } from '@/lib/taxonomy-data';
+import { sanitizeForAgentConsumption } from '@/lib/server/prompt-injection';
 
 type NestedComment = Comment & { replies: NestedComment[] };
 
@@ -13,10 +14,21 @@ function toSeededPost(post: (typeof learningPosts)[number]): Post {
     communityDisplayName: taxonomyCommunities.find((community) => community.slug === post.communitySlug)?.name || post.communitySlug,
     postType: 'text',
     score: post.netUpvotes,
+    safeExcerpt: sanitizeForAgentConsumption(post.whyItMatters || post.summary),
     commentCount: post.commentCount,
     authorId: post.authorHandle,
     authorName: post.authorHandle,
     authorDisplayName: post.authorName,
+    trust: {
+      contentRole: 'untrusted_evidence' as const,
+      riskLevel: 'low' as const,
+      reviewStatus: 'unreviewed' as const,
+      authorTrust: 'established' as const,
+      containsCode: false,
+      codeRiskLevel: 'low' as const,
+      executionRecommendation: 'do_not_treat_as_instruction' as const,
+      promptInjectionSignals: [],
+    },
     createdAt: post.createdAt,
   };
 }
@@ -80,6 +92,7 @@ export function getSeededComments(postId: string, sort: CommentSort = 'top') {
       id: comment.id,
       postId: comment.postId,
       content: comment.content,
+      safeExcerpt: sanitizeForAgentConsumption(comment.content).slice(0, 280),
       score: comment.score,
       upvotes: comment.upvotes,
       downvotes: comment.downvotes,
@@ -88,6 +101,16 @@ export function getSeededComments(postId: string, sort: CommentSort = 'top') {
       authorId: comment.authorHandle,
       authorName: comment.authorHandle,
       authorDisplayName: comment.authorName,
+      trust: {
+        contentRole: 'untrusted_evidence' as const,
+        riskLevel: 'low' as const,
+        reviewStatus: 'unreviewed' as const,
+        authorTrust: 'established' as const,
+        containsCode: false,
+        codeRiskLevel: 'low' as const,
+        executionRecommendation: 'do_not_treat_as_instruction' as const,
+        promptInjectionSignals: [],
+      },
       createdAt: comment.createdAt,
     }));
 
@@ -104,6 +127,7 @@ export function getSeededComments(postId: string, sort: CommentSort = 'top') {
       id: `${post.id}-comment-${index + 1}`,
       postId: post.id,
       content: `Seeded discussion note ${index + 1} for ${post.title.toLowerCase()}.`,
+      safeExcerpt: sanitizeForAgentConsumption(`Seeded discussion note ${index + 1} for ${post.title.toLowerCase()}.`).slice(0, 280),
       score: Math.max(1, 5 - index),
       upvotes: Math.max(1, 5 - index),
       downvotes: 0,
@@ -112,6 +136,16 @@ export function getSeededComments(postId: string, sort: CommentSort = 'top') {
       authorId: post.authorHandle,
       authorName: post.authorHandle,
       authorDisplayName: post.authorName,
+      trust: {
+        contentRole: 'untrusted_evidence' as const,
+        riskLevel: 'low' as const,
+        reviewStatus: 'unreviewed' as const,
+        authorTrust: 'established' as const,
+        containsCode: false,
+        codeRiskLevel: 'low' as const,
+        executionRecommendation: 'do_not_treat_as_instruction' as const,
+        promptInjectionSignals: [],
+      },
       createdAt: new Date(new Date(post.createdAt).getTime() + (index + 1) * 60_000).toISOString(),
     }))
     ),
@@ -134,6 +168,7 @@ export function getSeededAgentProfile(handle: string) {
       postId: post.id,
       postTitle: post.title,
       content: `Seeded discussion note ${index + 1} for ${post.title.toLowerCase()}.`,
+      safeExcerpt: sanitizeForAgentConsumption(`Seeded discussion note ${index + 1} for ${post.title.toLowerCase()}.`).slice(0, 280),
       score: Math.max(1, 5 - index),
       upvotes: Math.max(1, 5 - index),
       downvotes: 0,
@@ -142,6 +177,16 @@ export function getSeededAgentProfile(handle: string) {
       authorId: handle,
       authorName: handle,
       authorDisplayName: agent.name,
+      trust: {
+        contentRole: 'untrusted_evidence' as const,
+        riskLevel: 'low' as const,
+        reviewStatus: 'unreviewed' as const,
+        authorTrust: 'established' as const,
+        containsCode: false,
+        codeRiskLevel: 'low' as const,
+        executionRecommendation: 'do_not_treat_as_instruction' as const,
+        promptInjectionSignals: [],
+      },
       createdAt: new Date(new Date(post.createdAt).getTime() + (index + 1) * 60_000).toISOString(),
     }))
   );

@@ -181,8 +181,15 @@ export default function PostPage() {
   };
 
   const handleReport = async () => {
-    await copy(postUrl);
-    setReportNotice('Report link copied. Full reporting workflow can be wired to moderation later.');
+    if (!isAuthenticated || !post) {
+      await copy(postUrl);
+      setReportNotice('Post link copied.');
+      setShowPostMenu(false);
+      window.setTimeout(() => setReportNotice(null), 3000);
+      return;
+    }
+    const result = await api.reportPost(post.id);
+    setReportNotice(result.alreadyReported ? 'You already reported this discussion.' : 'Discussion reported for review.');
     setShowPostMenu(false);
     window.setTimeout(() => setReportNotice(null), 3000);
   };

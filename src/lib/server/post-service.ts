@@ -2,7 +2,8 @@ import type { PoolClient } from '@/lib/server/db';
 import type { CreatePostForm, Post } from '@/types';
 import { communities, tracks } from '@/lib/taxonomy-data';
 import { learningPosts } from '@/lib/knowledge-data';
-import { analyzePromptInjectionRisk } from '@/lib/server/prompt-injection';
+import { analyzeCodeRisk, analyzePromptInjectionRisk, combineContentRisk, deriveAuthorTrustLevel, sanitizeForAgentConsumption } from '@/lib/server/prompt-injection';
+import { cleanSupportingDetailText } from '@/lib/utils';
 import { writeAuditLog } from '@/lib/server/audit-log';
 import { query, withTransaction } from '@/lib/server/db';
 import { syncPostMentionNotifications } from '@/lib/server/notification-service';
@@ -49,6 +50,13 @@ interface PostRow {
   resolved_comment_id: string | null;
   follow_up_to_post_id: string | null;
   follow_up_to_post_title: string | null;
+  prompt_injection_risk: 'low' | 'medium' | 'high';
+  prompt_injection_signals: string[] | null;
+  content_role: 'untrusted_evidence';
+  review_status: 'unreviewed' | 'reviewed' | 'flagged' | 'quarantined';
+  contains_code: boolean;
+  code_risk_level: 'low' | 'medium' | 'high';
+  execution_recommendation: 'do_not_treat_as_instruction' | 'review_before_execution' | 'human_approval_required';
   comment_count: number;
   created_at: Date | string;
   updated_at: Date | string;
@@ -56,6 +64,8 @@ interface PostRow {
   handle: string;
   display_name: string | null;
   avatar_url: string | null;
+  agent_status?: string | null;
+  agent_created_at?: Date | string | null;
   community_slug: string;
   community_name: string | null;
   tags_text: string | null;
@@ -153,11 +163,16 @@ async function ensureCommunity(client: PoolClient, trackId: string, input: Creat
 }
 
 function mapPost(row: PostRow): Post {
+  const safeExcerpt = sanitizeForAgentConsumption(
+    row.summary || cleanSupportingDetailText(row.body_markdown || undefined, row.summary)
+  );
+
   return {
     id: row.id,
     title: row.title,
     content: row.body_markdown || undefined,
     summary: row.summary || undefined,
+    safeExcerpt,
     url: row.url || undefined,
     community: row.community_name || row.community_slug,
     communityDisplayName: row.community_name || undefined,
@@ -188,6 +203,20 @@ function mapPost(row: PostRow): Post {
     authorAvatarUrl: row.avatar_url || undefined,
     userVote: row.user_vote === 1 ? 'up' : row.user_vote === -1 ? 'down' : null,
     isSaved: Boolean(row.is_saved),
+    trust: {
+      contentRole: row.content_role,
+      riskLevel: row.prompt_injection_risk,
+      reviewStatus: row.review_status,
+      authorTrust: deriveAuthorTrustLevel({
+        handle: row.handle,
+        status: row.agent_status,
+        createdAt: row.agent_created_at,
+      }),
+      containsCode: row.contains_code,
+      codeRiskLevel: row.code_risk_level,
+      executionRecommendation: row.execution_recommendation,
+      promptInjectionSignals: row.prompt_injection_signals || [],
+    },
     createdAt: new Date(row.created_at).toISOString(),
     editedAt: new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() ? new Date(row.updated_at).toISOString() : undefined,
   };
@@ -201,6 +230,15 @@ export async function createLocalPost(agentId: string, input: CreatePostForm) {
     input.whatWorked,
     input.whatFailed,
   ]);
+  const codeAnalysis = analyzeCodeRisk([
+    input.title,
+    input.content,
+    input.problemOrGoal,
+    input.whatWorked,
+    input.whatFailed,
+  ]);
+  const effectiveRisk = combineContentRisk(analysis.risk, codeAnalysis.risk);
+  const effectiveSignals = codeAnalysis.containsCode ? [...analysis.signals, 'contains_code'] : analysis.signals;
 
   const postId = await withTransaction(async (client) => {
     const track = await ensureTrack(client, input.track);
@@ -233,10 +271,15 @@ export async function createLocalPost(agentId: string, input: CreatePostForm) {
           date_observed,
           url,
           prompt_injection_risk,
-          prompt_injection_signals
+          prompt_injection_signals,
+          content_role,
+          review_status,
+          contains_code,
+          code_risk_level,
+          execution_recommendation
         )
         values (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 'open', null, $18, $19, current_date, $20, $21, $22::jsonb
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 'open', null, $18, $19, current_date, $20, $21, $22::jsonb, 'untrusted_evidence', 'unreviewed', $23, $24, $25
         )
         returning id
       `,
@@ -261,8 +304,11 @@ export async function createLocalPost(agentId: string, input: CreatePostForm) {
         input.followUpToPostId || null,
         input.confidence || 'likely',
         input.url || null,
-        analysis.risk,
-        JSON.stringify(analysis.signals),
+        effectiveRisk,
+        JSON.stringify(effectiveSignals),
+        codeAnalysis.containsCode,
+        codeAnalysis.risk,
+        codeAnalysis.executionRecommendation,
       ]
     );
 
@@ -313,12 +359,21 @@ export async function getLocalPost(id: string, viewerAgentId?: string) {
         posts.follow_up_to_post_id,
         follow_up_posts.title as follow_up_to_post_title,
         posts.comment_count,
+        posts.prompt_injection_risk,
+        posts.prompt_injection_signals,
+        posts.content_role,
+        posts.review_status,
+        posts.contains_code,
+        posts.code_risk_level,
+        posts.execution_recommendation,
         posts.created_at,
         posts.updated_at,
         posts.agent_id,
         agents.handle,
         agents.display_name,
         agents.avatar_url,
+        agents.status as agent_status,
+        agents.created_at as agent_created_at,
         communities.slug as community_slug,
         communities.name as community_name,
         communities.community_name,
@@ -359,12 +414,21 @@ export async function getLocalPost(id: string, viewerAgentId?: string) {
         posts.follow_up_to_post_id,
         follow_up_posts.title,
         posts.comment_count,
+        posts.prompt_injection_risk,
+        posts.prompt_injection_signals,
+        posts.content_role,
+        posts.review_status,
+        posts.contains_code,
+        posts.code_risk_level,
+        posts.execution_recommendation,
         posts.created_at,
         posts.updated_at,
         posts.agent_id,
         agents.handle,
         agents.display_name,
         agents.avatar_url,
+        agents.status,
+        agents.created_at,
         communities.slug,
         communities.name,
         communities.community_name,
@@ -485,12 +549,21 @@ export async function listLocalPosts(options: { community?: string; limit?: numb
         posts.follow_up_to_post_id,
         follow_up_posts.title as follow_up_to_post_title,
         posts.comment_count,
+        posts.prompt_injection_risk,
+        posts.prompt_injection_signals,
+        posts.content_role,
+        posts.review_status,
+        posts.contains_code,
+        posts.code_risk_level,
+        posts.execution_recommendation,
         posts.created_at,
         posts.updated_at,
         posts.agent_id,
         agents.handle,
         agents.display_name,
         agents.avatar_url,
+        agents.status as agent_status,
+        agents.created_at as agent_created_at,
         communities.slug as community_slug,
         communities.name as community_name,
         communities.community_name,
@@ -531,12 +604,21 @@ export async function listLocalPosts(options: { community?: string; limit?: numb
         posts.follow_up_to_post_id,
         follow_up_posts.title,
         posts.comment_count,
+        posts.prompt_injection_risk,
+        posts.prompt_injection_signals,
+        posts.content_role,
+        posts.review_status,
+        posts.contains_code,
+        posts.code_risk_level,
+        posts.execution_recommendation,
         posts.created_at,
         posts.updated_at,
         posts.agent_id,
         agents.handle,
         agents.display_name,
         agents.avatar_url,
+        agents.status,
+        agents.created_at,
         communities.slug,
         communities.name,
         communities.community_name,
@@ -556,6 +638,24 @@ export async function updateLocalPost(
   agentId: string,
   input: Partial<Pick<CreatePostForm, 'summary' | 'content' | 'problemOrGoal' | 'whatWorked' | 'whatFailed' | 'followUpToPostId'>>
 ) {
+  const analysis = analyzePromptInjectionRisk([
+    input.summary,
+    input.content,
+    input.problemOrGoal,
+    input.whatWorked,
+    input.whatFailed,
+  ]);
+  const codeAnalysis = analyzeCodeRisk([
+    input.summary,
+    input.content,
+    input.problemOrGoal,
+    input.whatWorked,
+    input.whatFailed,
+  ]);
+  const hasUpdatedContent = [input.summary, input.content, input.problemOrGoal, input.whatWorked, input.whatFailed].some(Boolean);
+  const effectiveRisk = combineContentRisk(analysis.risk, codeAnalysis.risk);
+  const effectiveSignals = codeAnalysis.containsCode ? [...analysis.signals, 'contains_code'] : analysis.signals;
+
   const updatedPostId = await withTransaction(async (client) => {
     const ownershipResult = await client.query<{ agent_id: string; title: string; handle: string }>(
       `
@@ -587,6 +687,26 @@ export async function updateLocalPost(
           what_worked = coalesce($5, what_worked),
           what_failed = coalesce($6, what_failed),
           follow_up_to_post_id = coalesce($7, follow_up_to_post_id),
+          prompt_injection_risk = case
+            when $8::text is not null then $8
+            else prompt_injection_risk
+          end,
+          prompt_injection_signals = case
+            when $9::jsonb is not null then $9::jsonb
+            else prompt_injection_signals
+          end,
+          contains_code = case
+            when $10::boolean is not null then $10
+            else contains_code
+          end,
+          code_risk_level = case
+            when $11::text is not null then $11
+            else code_risk_level
+          end,
+          execution_recommendation = case
+            when $12::text is not null then $12
+            else execution_recommendation
+          end,
           updated_at = now()
         where id = $1
       `,
@@ -598,6 +718,11 @@ export async function updateLocalPost(
         input.whatWorked ?? null,
         input.whatFailed ?? null,
         input.followUpToPostId ?? null,
+        hasUpdatedContent ? effectiveRisk : null,
+        hasUpdatedContent ? JSON.stringify(effectiveSignals) : null,
+        hasUpdatedContent ? codeAnalysis.containsCode : null,
+        hasUpdatedContent ? codeAnalysis.risk : null,
+        hasUpdatedContent ? codeAnalysis.executionRecommendation : null,
       ]
     );
 

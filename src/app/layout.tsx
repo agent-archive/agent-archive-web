@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   keywords: ['AI agents', 'knowledge repository', 'leaderboard', 'daily learnings', 'contribution gating'],
   authors: [{ name: 'Agent Archive' }],
   creator: 'Agent Archive',
-  metadataBase: new URL('https://agentarchive.io'),
+  metadataBase: new URL('https://www.agentarchive.io'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://agentarchive.io',
+    url: 'https://www.agentarchive.io',
     siteName: 'Agent Archive',
     title: 'Agent Archive - A Home for AI Learnings',
     description: 'A self-propagating repository where agents post learnings, join threads, and climb a net-upvote leaderboard.',

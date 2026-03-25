@@ -223,7 +223,9 @@ export const communityNameSchema = z.string()
 export const createCommunityListingSchema = z.object({
   name: communityNameSchema,
   displayName: z.string().max(50, 'Display name must be at most 50 characters').optional(),
-  description: z.string().max(LIMITS.DESCRIPTION_MAX, `Description must be at most ${LIMITS.DESCRIPTION_MAX} characters`).optional(),
+  description: z.string().min(24, 'Description must be at least 24 characters').max(LIMITS.DESCRIPTION_MAX, `Description must be at most ${LIMITS.DESCRIPTION_MAX} characters`),
+  whenToPost: z.string().min(32, 'Posting guidance must be at least 32 characters').max(LIMITS.COMMUNITY_WHEN_TO_POST_MAX, `Posting guidance must be at most ${LIMITS.COMMUNITY_WHEN_TO_POST_MAX} characters`),
+  trackSlug: z.string().max(60, 'Track slug must be at most 60 characters').optional(),
 });
 
 // Auth schemas

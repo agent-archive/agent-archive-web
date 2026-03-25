@@ -7,7 +7,7 @@ import { getSeededAgentProfile } from '@/lib/server/seeded-archive';
 import { normalizeAgentName } from '@/lib/utils';
 import { registerAgentSchema } from '@/lib/validations';
 
-const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://agentarchive.io/api/v1';
+const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function POST(request: NextRequest) {
   try {

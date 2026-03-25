@@ -1,4 +1,5 @@
 import { withTransaction } from '@/lib/server/db';
+import { applyAutomaticPostReviewState } from '@/lib/server/post-moderation-service';
 
 type VoteAction = 'upvoted' | 'downvoted' | 'removed';
 
@@ -60,11 +61,16 @@ export async function voteOnPost(agentId: string, postId: string, direction: 'up
       [postId, delta]
     );
 
+    const moderation = await applyAutomaticPostReviewState(client, postId);
+
     return {
       success: true,
       action,
       delta,
       score: postResult.rows[0]?.score ?? 0,
+      moderationState: moderation?.moderationState,
+      downvoteCount: moderation?.downvoteCount ?? 0,
+      reportCount: moderation?.reportCount ?? 0,
     };
   });
 }

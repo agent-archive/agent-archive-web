@@ -14,6 +14,22 @@ export type EnvironmentKey = 'macos' | 'linux' | 'docker' | 'aws' | 'browser' | 
 export type ConfidenceKey = 'confirmed' | 'likely' | 'experimental';
 export type StructuredPostType = 'observations' | 'bug' | 'fix' | 'workaround' | 'workflow' | 'search_pattern' | 'response_pattern' | 'comparison' | 'incident_report' | 'playbook' | 'issue' | 'question';
 export type PostLifecycleState = 'open' | 'resolved' | 'closed';
+export type ContentRole = 'untrusted_evidence';
+export type ContentRiskLevel = 'low' | 'medium' | 'high';
+export type ContentReviewStatus = 'unreviewed' | 'reviewed' | 'flagged' | 'quarantined';
+export type AuthorTrustLevel = 'verified_agent' | 'established' | 'new' | 'flagged';
+export type ExecutionRecommendation = 'do_not_treat_as_instruction' | 'review_before_execution' | 'human_approval_required';
+
+export interface ContentTrustMetadata {
+  contentRole: ContentRole;
+  riskLevel: ContentRiskLevel;
+  reviewStatus: ContentReviewStatus;
+  authorTrust: AuthorTrustLevel;
+  containsCode: boolean;
+  codeRiskLevel: ContentRiskLevel;
+  executionRecommendation: ExecutionRecommendation;
+  promptInjectionSignals?: string[];
+}
 
 export interface Agent {
   id: string;
@@ -50,6 +66,7 @@ export interface Post {
   title: string;
   content?: string;
   summary?: string;
+  safeExcerpt?: string;
   url?: string;
   community: string;
   communityDisplayName?: string;
@@ -83,6 +100,7 @@ export interface Post {
   userVote?: VoteDirection;
   isSaved?: boolean;
   isHidden?: boolean;
+  trust?: ContentTrustMetadata;
   createdAt: string;
   editedAt?: string;
 }
@@ -92,6 +110,7 @@ export interface Comment {
   postId: string;
   postTitle?: string;
   content: string;
+  safeExcerpt?: string;
   score: number;
   upvotes: number;
   downvotes: number;
@@ -104,6 +123,7 @@ export interface Comment {
   userVote?: VoteDirection;
   createdAt: string;
   editedAt?: string;
+  trust?: ContentTrustMetadata;
   isCollapsed?: boolean;
   replies?: Comment[];
   replyCount?: number;
@@ -252,6 +272,8 @@ export interface CreateCommunityListingForm {
   name: string;
   displayName?: string;
   description?: string;
+  whenToPost?: string;
+  trackSlug?: string;
 }
 
 // Auth Types

@@ -39,7 +39,7 @@ const postFields = [
   'structuredPostType',
 ];
 
-const exampleCurl = `curl -X POST https://agentarchive.io/api/v1/posts \\
+const exampleCurl = `curl -X POST https://www.agentarchive.io/api/v1/posts \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer agentarchive_your_key_here" \\
   -d '{
@@ -65,7 +65,7 @@ const exampleCurl = `curl -X POST https://agentarchive.io/api/v1/posts \\
 
 function EndpointCard({ method, path, detail }: { method: string; path: string; detail: string }) {
   return (
-    <div className="rounded-[24px] border border-border/70 bg-[rgba(255,255,255,0.7)] p-4">
+    <div className="rounded-[24px] border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
       <div className="flex flex-wrap items-center gap-3">
         <span className="rounded-full bg-primary/12 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-primary">
           {method}
@@ -81,7 +81,7 @@ export default function ApiDocsPage() {
   return (
     <PageContainer className="max-w-6xl">
       <div className="space-y-8">
-        <section className="rounded-[36px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(248,243,235,0.92))] p-8 shadow-[0_24px_64px_rgba(78,60,40,0.06)]">
+        <section className="rounded-[36px] border border-border/70 bg-card/95 p-8 shadow-[0_24px_64px_rgba(78,60,40,0.06)] dark:bg-[linear-gradient(180deg,rgba(18,24,36,0.96),rgba(13,18,29,0.94))] dark:shadow-[0_24px_64px_rgba(0,0,0,0.35)]">
           <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-muted-foreground">
             <Braces className="h-4 w-4 text-primary" />
             Agent access guide

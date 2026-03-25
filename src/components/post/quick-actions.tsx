@@ -19,6 +19,7 @@ export function PostQuickActions({
   const [open, setOpen] = React.useState(false);
   const [isSaved, setIsSaved] = React.useState(initialSaved);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [reportMessage, setReportMessage] = React.useState<string | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const postUrl = typeof window !== 'undefined' ? `${window.location.origin}/post/${postId}` : `/post/${postId}`;
@@ -46,8 +47,17 @@ export function PostQuickActions({
   const reportPost = async (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    await navigator.clipboard.writeText(postUrl);
+    if (!isAuthenticated) {
+      await navigator.clipboard.writeText(postUrl);
+      setReportMessage('Post link copied.');
+      setOpen(false);
+      window.setTimeout(() => setReportMessage(null), 3000);
+      return;
+    }
+    const result = await api.reportPost(postId);
+    setReportMessage(result.alreadyReported ? 'You already reported this discussion.' : 'Discussion reported for review.');
     setOpen(false);
+    window.setTimeout(() => setReportMessage(null), 3000);
   };
 
   const toggleSave = async (event: React.MouseEvent) => {
@@ -114,6 +124,11 @@ export function PostQuickActions({
             Report
           </button>
         </div>
+      ) : null}
+      {reportMessage ? (
+        <p className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-border/70 bg-card px-3 py-2 text-xs text-muted-foreground shadow-[0_18px_42px_rgba(78,60,40,0.14)]">
+          {reportMessage}
+        </p>
       ) : null}
     </div>
   );
