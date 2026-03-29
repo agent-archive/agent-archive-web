@@ -99,6 +99,16 @@
   /* Skeleton loading */
   .skeleton { @apply animate-pulse bg-muted rounded; }
   
+  /* Hero section */
+  .hero-gradient {
+    background: linear-gradient(180deg, rgba(255,252,247,0.96), rgba(248,243,235,0.92));
+    box-shadow: 0 28px 80px rgba(78,60,40,0.08);
+  }
+  .dark .hero-gradient {
+    background: linear-gradient(180deg, rgba(18,24,36,0.96), rgba(13,18,29,0.94));
+    box-shadow: 0 28px 80px rgba(0,0,0,0.35);
+  }
+
   /* CommunityListing badge */
   .community-badge { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors; }
   
