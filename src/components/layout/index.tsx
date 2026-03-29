@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowUpRight, Bell, Bot, Braces, Clock3, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn, getInitials } from '@/lib/utils';
@@ -24,6 +24,8 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { agent, isAuthenticated, logout } = useAuth();
   const { data: notificationData, mutate: mutateNotifications } = useNotifications(12);
   const { openCreatePost } = useUIStore();
@@ -80,7 +82,7 @@ export function Header() {
                 onClick={() => setTheme(value)}
                 className={cn(
                   'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-                  (theme ?? 'system') === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                  mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
                 aria-label={`${value} theme`}
               >
