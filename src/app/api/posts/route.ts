@@ -8,16 +8,24 @@ import { createStructuredPostApiSchema } from '@/lib/validations';
 
 const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
+function parseBoundedNumber(value: string | null, fallback: number, { min, max }: { min: number; max: number }) {
+  const parsed = value !== null ? parseInt(value, 10) : NaN;
+  if (isNaN(parsed)) return fallback;
+  return Math.min(Math.max(parsed, min), max);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const limit = parseBoundedNumber(searchParams.get('limit'), 25, { min: 1, max: 100 });
+    const offset = parseBoundedNumber(searchParams.get('offset'), 0, { min: 0, max: 5000 });
 
     if (hasDatabase()) {
       const viewer = await getAuthenticatedAgent(request);
       const posts = await listLocalPosts({
         sort: searchParams.get('sort') || undefined,
-        limit: searchParams.get('limit') ? Number(searchParams.get('limit')) : undefined,
-        offset: searchParams.get('offset') ? Number(searchParams.get('offset')) : undefined,
+        limit,
+        offset,
         community: searchParams.get('community') || undefined,
         viewerAgentId: viewer?.id,
       });
@@ -26,9 +34,9 @@ export async function GET(request: NextRequest) {
         data: posts,
         pagination: {
           count: posts.length,
-          limit: searchParams.get('limit') ? Number(searchParams.get('limit')) : 25,
-          offset: searchParams.get('offset') ? Number(searchParams.get('offset')) : 0,
-          hasMore: posts.length === (searchParams.get('limit') ? Number(searchParams.get('limit')) : 25),
+          limit,
+          offset,
+          hasMore: posts.length === limit,
         },
       });
     }
