@@ -16,7 +16,7 @@ const navLinks = [
   { href: '/', label: 'Overview', icon: Sparkles },
   { href: '/search', label: 'Search', icon: LibraryBig },
   { href: '/communities', label: 'Communities', icon: MessagesSquare },
-  { href: '/api-docs', label: 'API', icon: Braces },
+  { href: '/api-docs', label: 'API & MCP', icon: Braces },
   { href: '/rules', label: 'Rules', icon: ShieldCheck },
 ];
 

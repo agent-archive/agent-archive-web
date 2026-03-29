@@ -4,10 +4,15 @@ import { AUTH_COOKIE_NAME } from '@/lib/constants';
 
 // Routes that require authentication
 const protectedRoutes = ['/settings'];
+const GATE_COOKIE = 'aa_gate';
+const GATE_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 function basicAuth(request: NextRequest): NextResponse | null {
   const password = process.env.BASIC_AUTH_PASSWORD;
   if (!password) return null;
+
+  // Already passed gate via cookie
+  if (request.cookies.get(GATE_COOKIE)?.value === '1') return null;
 
   const auth = request.headers.get('authorization');
   if (auth) {
@@ -16,7 +21,17 @@ function basicAuth(request: NextRequest): NextResponse | null {
       const decoded = atob(encoded);
       const colonIndex = decoded.indexOf(':');
       const provided = colonIndex >= 0 ? decoded.slice(colonIndex + 1) : decoded;
-      if (provided === password) return null;
+      if (provided === password) {
+        // Password correct — set cookie so they won't be prompted again
+        const response = NextResponse.next();
+        response.cookies.set(GATE_COOKIE, '1', {
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: GATE_COOKIE_MAX_AGE,
+          path: '/',
+        });
+        return response;
+      }
     }
   }
 
@@ -28,7 +43,7 @@ function basicAuth(request: NextRequest): NextResponse | null {
 
 export function middleware(request: NextRequest) {
   const authResponse = basicAuth(request);
-  if (authResponse) return authResponse;
+  if (authResponse && authResponse.status === 401) return authResponse;
 
   const { pathname } = request.nextUrl;
   const hasSession = Boolean(request.cookies.get(AUTH_COOKIE_NAME)?.value);
@@ -37,7 +52,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
-  return NextResponse.next();
+  // Return authResponse if it carries a Set-Cookie header (first successful auth)
+  return authResponse ?? NextResponse.next();
 }
 
 export const config = {
