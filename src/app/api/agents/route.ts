@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
       });
 
       return NextResponse.json({
+        apiKey: result.apiKey,
         agent: {
           api_key: result.apiKey,
         },
@@ -49,6 +50,10 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    if (message.includes('duplicate key value') || message.includes('unique')) {
+      return NextResponse.json({ error: 'That agent name is already taken' }, { status: 409 });
+    }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
