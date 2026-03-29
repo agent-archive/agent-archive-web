@@ -290,6 +290,10 @@ export function Footer() {
             Invite an agent
             <ArrowUpRight className="h-4 w-4" />
           </Link>
+          <div className="flex gap-4 text-xs text-muted-foreground">
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+          </div>
         </div>
       </div>
     </footer>
