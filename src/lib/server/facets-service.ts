@@ -36,14 +36,14 @@ export async function getArchiveFacets(): Promise<ArchiveFacets> {
   }
 
   const [providers, models, agentFrameworks, runtimes, taskTypes, environments, tags, communities] = await Promise.all([
-    query<{ value: string }>(`select distinct provider as value from posts where provider is not null and provider <> '' order by provider asc`),
-    query<{ value: string }>(`select distinct model as value from posts where model is not null and model <> '' order by model asc`),
-    query<{ value: string }>(`select distinct agent_framework as value from posts where agent_framework is not null and agent_framework <> '' order by agent_framework asc`),
-    query<{ value: string }>(`select distinct runtime as value from posts where runtime is not null and runtime <> '' order by runtime asc`),
-    query<{ value: string }>(`select distinct task_type as value from posts where task_type is not null and task_type <> '' order by task_type asc`),
-    query<{ value: string }>(`select distinct environment as value from posts where environment is not null and environment <> '' order by environment asc`),
-    query<{ value: string }>(`select name as value from tag_definitions order by name asc`),
-    query<{ slug: string; name: string }>(`select slug, name from communities where is_archived = false order by name asc`),
+    query<{ value: string }>(`select provider as value from posts where provider is not null and provider <> '' group by provider order by count(*) desc, provider asc limit 100`),
+    query<{ value: string }>(`select model as value from posts where model is not null and model <> '' group by model order by count(*) desc, model asc limit 100`),
+    query<{ value: string }>(`select agent_framework as value from posts where agent_framework is not null and agent_framework <> '' group by agent_framework order by count(*) desc, agent_framework asc limit 100`),
+    query<{ value: string }>(`select runtime as value from posts where runtime is not null and runtime <> '' group by runtime order by count(*) desc, runtime asc limit 100`),
+    query<{ value: string }>(`select task_type as value from posts where task_type is not null and task_type <> '' group by task_type order by count(*) desc, task_type asc limit 100`),
+    query<{ value: string }>(`select environment as value from posts where environment is not null and environment <> '' group by environment order by count(*) desc, environment asc limit 100`),
+    query<{ value: string }>(`select td.name as value from tag_definitions td join post_tags pt on pt.tag_id = td.id group by td.name order by count(*) desc, td.name asc limit 200`),
+    query<{ slug: string; name: string }>(`select slug, name from communities where is_archived = false order by subscriber_count desc, name asc limit 200`),
   ]);
 
   return {
@@ -113,33 +113,59 @@ export async function getFacetSuggestions(facet: FacetKey, rawQuery: string, lim
     return result.rows;
   }
 
-  const facetConfig: Record<Exclude<FacetKey, 'communities'>, { table: string; column: string }> = {
-    providers: { table: 'posts', column: 'provider' },
-    models: { table: 'posts', column: 'model' },
-    agentFrameworks: { table: 'posts', column: 'agent_framework' },
-    runtimes: { table: 'posts', column: 'runtime' },
-    taskTypes: { table: 'posts', column: 'task_type' },
-    environments: { table: 'posts', column: 'environment' },
-    tags: { table: 'tag_definitions', column: 'name' },
+  if (facet === 'tags') {
+    const result = await query<{ value: string }>(
+      `
+        select td.name as value
+        from tag_definitions td
+        join post_tags pt on pt.tag_id = td.id
+        where (
+          $1 = ''
+          or lower(td.name) like $2
+          or lower(td.name) like $3
+        )
+        group by td.name
+        order by
+          case when lower(td.name) = $1 then 3 else 0 end +
+          case when lower(td.name) like $2 then 2 else 0 end +
+          case when lower(td.name) like $3 then 1 else 0 end desc,
+          count(*) desc,
+          td.name asc
+        limit $4
+      `,
+      [queryText, likeValue, containsValue, cappedLimit]
+    );
+    return result.rows.map((row) => row.value);
+  }
+
+  const facetConfig: Record<Exclude<FacetKey, 'communities' | 'tags'>, string> = {
+    providers: 'provider',
+    models: 'model',
+    agentFrameworks: 'agent_framework',
+    runtimes: 'runtime',
+    taskTypes: 'task_type',
+    environments: 'environment',
   };
 
-  const config = facetConfig[facet as Exclude<FacetKey, 'communities'>];
+  const column = facetConfig[facet as Exclude<FacetKey, 'communities' | 'tags'>];
   const result = await query<{ value: string }>(
     `
-      select distinct ${config.column} as value
-      from ${config.table}
-      where ${config.column} is not null
-        and ${config.column} <> ''
+      select ${column} as value
+      from posts
+      where ${column} is not null
+        and ${column} <> ''
         and (
           $1 = ''
-          or lower(${config.column}) like $2
-          or lower(${config.column}) like $3
+          or lower(${column}) like $2
+          or lower(${column}) like $3
         )
+      group by ${column}
       order by
-        case when lower(${config.column}) = $1 then 3 else 0 end +
-        case when lower(${config.column}) like $2 then 2 else 0 end +
-        case when lower(${config.column}) like $3 then 1 else 0 end desc,
-        ${config.column} asc
+        case when lower(${column}) = $1 then 3 else 0 end +
+        case when lower(${column}) like $2 then 2 else 0 end +
+        case when lower(${column}) like $3 then 1 else 0 end desc,
+        count(*) desc,
+        ${column} asc
       limit $4
     `,
     [queryText, likeValue, containsValue, cappedLimit]
