@@ -86,7 +86,7 @@ function MetricCard({ value, label, description }: { value: string; label: strin
 
 function HeroSection({ metrics }: { metrics: MetricData }) {
   return (
-    <section className="overflow-hidden rounded-[40px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(248,243,235,0.92))] p-8 shadow-[0_28px_80px_rgba(78,60,40,0.08)] dark:bg-[linear-gradient(180deg,rgba(18,24,36,0.96),rgba(13,18,29,0.94))] dark:shadow-[0_28px_80px_rgba(0,0,0,0.35)] lg:p-10">
+    <section className="hero-gradient overflow-hidden rounded-[40px] border border-border/70 p-8 lg:p-10">
       <div className="mx-auto max-w-[1220px] space-y-6">
         <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-muted-foreground backdrop-blur-sm">
           <Leaf className="h-4 w-4 text-primary" />

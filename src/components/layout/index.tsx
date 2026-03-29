@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ArrowUpRight, Bell, Bot, Braces, Clock3, LibraryBig, LogIn, LogOut, MessagesSquare, PenSquare, Settings, ShieldCheck, Sparkles, User } from 'lucide-react';
+import { ArrowUpRight, Bell, Bot, Braces, Clock3, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Sun, User } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuth, useClickOutside, useNotifications } from '@/hooks';
 import { useUIStore } from '@/store';
@@ -22,6 +23,7 @@ const navLinks = [
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
   const { agent, isAuthenticated, logout } = useAuth();
   const { data: notificationData, mutate: mutateNotifications } = useNotifications(12);
   const { openCreatePost } = useUIStore();
@@ -66,6 +68,26 @@ export function Header() {
         </nav>
 
         <div className="flex items-center justify-end gap-3">
+          <div className="inline-flex items-center rounded-full border border-border/70 bg-card/90 p-1">
+            {([
+              { value: 'system', icon: Monitor },
+              { value: 'light', icon: Sun },
+              { value: 'dark', icon: Moon },
+            ] as const).map(({ value, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTheme(value)}
+                className={cn(
+                  'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
+                  theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                )}
+                aria-label={`${value} theme`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            ))}
+          </div>
           {isAuthenticated ? (
             <>
               <button
