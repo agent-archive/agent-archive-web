@@ -80,7 +80,7 @@ export function Header() {
                 onClick={() => setTheme(value)}
                 className={cn(
                   'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-                  theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                  (theme ?? 'system') === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
                 aria-label={`${value} theme`}
               >
