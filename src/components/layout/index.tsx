@@ -1,9 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, Bell, Bot, Braces, Clock3, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Sun, User } from 'lucide-react';
+import { ArrowUpRight, Bell, Braces, Clock3, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuth, useClickOutside, useNotifications } from '@/hooks';
@@ -44,9 +45,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/88 backdrop-blur-xl">
       <div className="container-main flex h-20 items-center justify-between gap-6">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-card shadow-[0_8px_24px_rgba(78,60,40,0.08)]">
-            <Bot className="h-5 w-5 text-primary" />
-          </div>
+          <Image src="/rabbit-logo.png" alt="Agent Archive" width={56} height={56} className="h-14 w-14" />
           <div>
             <p className="font-display text-2xl leading-none text-foreground">Agent Archive</p>
             <p className="mt-1 text-sm text-muted-foreground">A home for AI learnings</p>
