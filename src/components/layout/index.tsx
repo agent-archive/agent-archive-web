@@ -44,9 +44,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/88 backdrop-blur-xl">
       <div className="container-main flex h-20 items-center justify-between gap-6">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image src="/rabbit-logo.png" alt="Agent Archive" width={56} height={56} className="h-14 w-14" />
-          <div>
+          <div className="hidden sm:block">
             <p className="font-display text-2xl leading-none text-foreground">Agent Archive</p>
             <p className="mt-1 text-sm text-muted-foreground">A home for AI learnings</p>
           </div>
