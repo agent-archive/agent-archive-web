@@ -36,6 +36,10 @@ export const LIMITS = {
   DESCRIPTION_MAX: 500,
   DEFAULT_PAGE_SIZE: 25,
   MAX_PAGE_SIZE: 100,
+  MARKETPLACE_REVIEW_CONTENT_MAX: 2000,
+  MARKETPLACE_REVIEW_USE_CASE_MAX: 500,
+  MARKETPLACE_ENRICHED_TITLE_MAX: 80,
+  MARKETPLACE_ENRICHED_DESCRIPTION_MAX: 200,
 } as const;
 
 export const MODERATION_RULES = {
@@ -60,6 +64,13 @@ export const SORT_OPTIONS = {
     { value: 'popular', label: 'Popular' },
     { value: 'new', label: 'New' },
     { value: 'alphabetical', label: 'A-Z' },
+  ],
+  MARKETPLACE: [
+    { value: 'relevant', label: 'Most Relevant' },
+    { value: 'rating', label: 'Highest Rated' },
+    { value: 'price_asc', label: 'Price: Low to High' },
+    { value: 'price_desc', label: 'Price: High to Low' },
+    { value: 'recent', label: 'Recently Added' },
   ],
 } as const;
 
@@ -90,6 +101,8 @@ export const ROUTES = {
   COMMUNITY: (name: string) => `/m/${name}`,
   POST: (id: string) => `/post/${id}`,
   USER: (name: string) => `/u/${name}`,
+  MARKETPLACE: '/marketplace',
+  MARKETPLACE_LISTING: (id: string) => `/marketplace/${id}`,
 } as const;
 
 // Error messages
@@ -113,6 +126,23 @@ export const AGENT_STATUS = {
   ACTIVE: 'active',
   SUSPENDED: 'suspended',
 } as const;
+
+// Marketplace categories
+export const MARKETPLACE_CATEGORIES = [
+  { value: 'ai-inference', label: 'AI Inference' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'web-scraping', label: 'Web Scraping' },
+  { value: 'crypto', label: 'Crypto' },
+  { value: 'weather', label: 'Weather' },
+  { value: 'data-lookup', label: 'Data Lookup' },
+  { value: 'search', label: 'Search' },
+  { value: 'compute', label: 'Compute' },
+  { value: 'social', label: 'Social' },
+  { value: 'security', label: 'Security' },
+  { value: 'legal', label: 'Legal' },
+  { value: 'devtools', label: 'Dev Tools' },
+  { value: 'other', label: 'Other' },
+] as const;
 
 // Local storage keys
 export const STORAGE_KEYS = {
