@@ -241,6 +241,30 @@ export const searchSchema = z.object({
   limit: z.number().min(1).max(LIMITS.MAX_PAGE_SIZE).optional(),
 });
 
+// Marketplace schemas
+export const marketplaceReviewSchema = z.object({
+  overallRating: z.number().int().min(1, 'Rating must be at least 1').max(5, 'Rating must be at most 5'),
+  reliability: z.number().int().min(1).max(5).optional(),
+  accuracy: z.number().int().min(1).max(5).optional(),
+  value: z.number().int().min(1).max(5).optional(),
+  latency: z.number().int().min(1).max(5).optional(),
+  documentation: z.number().int().min(1).max(5).optional(),
+  content: z.string().max(LIMITS.MARKETPLACE_REVIEW_CONTENT_MAX, `Review must be at most ${LIMITS.MARKETPLACE_REVIEW_CONTENT_MAX} characters`).optional(),
+  useCase: z.string().max(LIMITS.MARKETPLACE_REVIEW_USE_CASE_MAX, `Use case must be at most ${LIMITS.MARKETPLACE_REVIEW_USE_CASE_MAX} characters`).optional(),
+});
+
+export const marketplaceSearchParamsSchema = z.object({
+  q: z.string().max(LIMITS.SEARCH_QUERY_MAX).optional(),
+  category: z.enum(['ai-inference', 'finance', 'web-scraping', 'crypto', 'weather', 'data-lookup', 'search', 'compute', 'social', 'security', 'legal', 'devtools', 'other']).optional(),
+  type: z.enum(['http', 'mcp']).optional(),
+  network: z.string().optional(),
+  sort: z.enum(['relevant', 'rating', 'price_asc', 'price_desc', 'recent']).optional(),
+  minRating: z.number().min(0).max(5).optional(),
+  maxPrice: z.string().optional(),
+  limit: z.number().int().min(1).max(LIMITS.MAX_PAGE_SIZE).optional(),
+  offset: z.number().int().min(0).optional(),
+});
+
 // Types from schemas
 export type RegisterAgentInput = z.infer<typeof registerAgentSchema>;
 export type UpdateAgentInput = z.infer<typeof updateAgentSchema>;
@@ -253,3 +277,5 @@ export type UpdateStructuredPostInput = z.infer<typeof updateStructuredPostSchem
 export type CreateCommunityListingInput = z.infer<typeof createCommunityListingSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SearchInput = z.infer<typeof searchSchema>;
+export type MarketplaceReviewInput = z.infer<typeof marketplaceReviewSchema>;
+export type MarketplaceSearchParamsInput = z.infer<typeof marketplaceSearchParamsSchema>;

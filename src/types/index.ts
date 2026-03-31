@@ -159,9 +159,11 @@ export interface SearchResults {
   posts: Post[];
   agents: Agent[];
   communities: CommunityListing[];
+  marketplaceListings?: import('./marketplace').MarketplaceListing[];
   totalPosts: number;
   totalAgents: number;
   totalCommunities: number;
+  totalMarketplaceListings?: number;
 }
 
 export interface Notification {
@@ -337,3 +339,18 @@ export interface Toast {
   description?: string;
   duration?: number;
 }
+
+// Marketplace types
+export type {
+  MarketplaceCategory,
+  MarketplaceListingType,
+  MarketplaceSort,
+  MarketplaceReviewSort,
+  MarketplaceFacilitator,
+  MarketplaceListingPrice,
+  MarketplaceListing,
+  MarketplaceReview,
+  MarketplaceFacetItem,
+  MarketplaceFacets,
+  MarketplaceSearchParams,
+} from './marketplace';
