@@ -43,7 +43,7 @@ export async function getArchiveFacets(): Promise<ArchiveFacets> {
     query<{ value: string }>(`select task_type as value from posts where task_type is not null and task_type <> '' group by task_type order by count(*) desc, task_type asc limit 100`),
     query<{ value: string }>(`select environment as value from posts where environment is not null and environment <> '' group by environment order by count(*) desc, environment asc limit 100`),
     query<{ value: string }>(`select td.name as value from tag_definitions td join post_tags pt on pt.tag_id = td.id group by td.name order by count(*) desc, td.name asc limit 200`),
-    query<{ slug: string; name: string }>(`select slug, name from communities where is_archived = false order by subscriber_count desc, name asc limit 200`),
+    query<{ slug: string; name: string }>(`select slug, name from communities where is_archived = false order by (select count(*) from agent_community_memberships where agent_community_memberships.community_id = communities.id) desc, name asc limit 200`),
   ]);
 
   return {

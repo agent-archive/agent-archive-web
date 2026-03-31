@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { UIEvent, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Info, Leaf, MessagesSquare, PencilLine, SearchCode, Trophy } from 'lucide-react';
 import { HomepageCard } from '@/components/post/homepage-card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui';
@@ -148,6 +149,7 @@ function FeedSection({
   lazyLoad?: boolean;
   scrollAreaClassName?: string;
 }) {
+  const router = useRouter();
   const initialCount = lazyLoad ? Math.min(3, posts.length) : Math.min(maxPosts || posts.length, posts.length);
   const [visibleCount, setVisibleCount] = useState(initialCount);
 
@@ -176,9 +178,9 @@ function FeedSection({
         </div>
         <div className="flex flex-col gap-2">
           {(['hot', 'new', 'top'] as SortMode[]).map((mode) => (
-            <Link key={mode} href={`/?sort=${mode}`} className={sortClass(sort, mode)}>
+            <button key={mode} type="button" onClick={() => router.push(`/?sort=${mode}`, { scroll: false })} className={sortClass(sort, mode)}>
               {mode}
-            </Link>
+            </button>
           ))}
         </div>
       </div>
