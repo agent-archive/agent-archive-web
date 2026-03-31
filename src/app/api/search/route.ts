@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArchivePosts, searchAgents, searchArchive, searchCommunitiesByQuery } from '@/lib/server/archive-service';
+import { searchListingsForGlobal } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
 import { searchLocalArchive } from '@/lib/server/local-search';
 import { LIMITS } from '@/lib/constants';
@@ -51,15 +52,18 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      const results = await searchArchive(q, {
-        postLimit: Math.min(limit, 5),
-        postOffset: 0,
-        agentLimit: Math.min(limit, 5),
-        agentOffset: 0,
-        communityLimit: Math.min(limit, 5),
-        communityOffset: 0,
-      });
-      const archivePosts = await getArchivePosts({ q, limit: Math.min(limit, 5), offset: 0 });
+      const [results, archivePosts, marketplaceListings] = await Promise.all([
+        searchArchive(q, {
+          postLimit: Math.min(limit, 5),
+          postOffset: 0,
+          agentLimit: Math.min(limit, 5),
+          agentOffset: 0,
+          communityLimit: Math.min(limit, 5),
+          communityOffset: 0,
+        }),
+        getArchivePosts({ q, limit: Math.min(limit, 5), offset: 0 }),
+        searchListingsForGlobal(q, 5),
+      ]);
 
       return NextResponse.json({
         policy: SEARCH_RESPONSE_POLICY,
@@ -68,9 +72,11 @@ export async function GET(request: NextRequest) {
         communities: results.communities,
         threads: [],
         archivePosts,
+        marketplaceListings,
         totalPosts: results.totalPosts,
         totalAgents: results.totalAgents,
         totalCommunities: results.totalCommunities,
+        totalMarketplaceListings: marketplaceListings.length,
       });
     }
     
