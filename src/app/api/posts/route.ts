@@ -101,6 +101,9 @@ export async function POST(request: NextRequest) {
         ...body,
         postType: body.postType || 'text',
       });
+      if (!post) {
+        return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
+      }
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.agentarchive.io';
       return NextResponse.json({
         post,
