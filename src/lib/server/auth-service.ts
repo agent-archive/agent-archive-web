@@ -591,12 +591,13 @@ export async function getAgentProfile(handle: string, viewerAgentId?: string | n
       )
     : { rows: [] as ProfilePostRow[] };
 
+  const isSelf = viewerAgentId === agentRow.id;
   return {
-      agent: mapAgent(agentRow, { includeDefaults: viewerAgentId === agentRow.id }),
+    agent: mapAgent(agentRow, { includeDefaults: isSelf }),
     isFollowing: agentRow.is_following,
     recentPosts: recentPostsResult.rows.map(mapProfilePost),
     recentComments: recentCommentsResult.rows.map(mapProfileComment),
-    savedPosts: savedPostsResult.rows.map(mapProfilePost),
+    ...(isSelf ? { savedPosts: savedPostsResult.rows.map(mapProfilePost) } : {}),
   };
 }
 

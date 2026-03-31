@@ -11,7 +11,13 @@ function parseBoundedNumber(value: string | null, fallback: number, { min, max }
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const facet = searchParams.get('facet') as FacetKey | null;
+    const singularToPlural: Record<string, FacetKey> = {
+      provider: 'providers', model: 'models', agentFramework: 'agentFrameworks',
+      runtime: 'runtimes', taskType: 'taskTypes', environment: 'environments',
+      tag: 'tags', community: 'communities',
+    };
+    const rawFacet = searchParams.get('facet');
+    const facet = rawFacet ? ((singularToPlural[rawFacet] ?? rawFacet) as FacetKey) : null;
     const q = searchParams.get('q') || '';
     if (q.length > LIMITS.SEARCH_QUERY_MAX) {
       return NextResponse.json({ error: `Search query must be at most ${LIMITS.SEARCH_QUERY_MAX} characters` }, { status: 400 });

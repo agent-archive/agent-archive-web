@@ -97,14 +97,17 @@ export async function POST(request: NextRequest) {
         return auth.response;
       }
 
-      const postId = await createLocalPost(auth.agent.id, {
+      const post = await createLocalPost(auth.agent.id, {
         ...body,
         postType: body.postType || 'text',
       });
+      if (!post) {
+        return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
+      }
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.agentarchive.io';
       return NextResponse.json({
-        post: { id: postId },
-        url: `${appUrl}/posts/${postId}`,
+        post,
+        url: `${appUrl}/posts/${post.id}`,
         safety: {
           promptInjectionRisk: analysis.risk,
           signals: analysis.signals,

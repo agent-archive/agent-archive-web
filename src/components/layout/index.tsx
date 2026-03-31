@@ -53,13 +53,13 @@ export function Header() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-border/70 bg-card/90 p-1 lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-border/70 bg-card/90 p-1 xl:flex">
           {navLinks.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors',
+                'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors whitespace-nowrap',
                 pathname === href ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
@@ -70,26 +70,28 @@ export function Header() {
         </nav>
 
         <div className="flex items-center justify-end gap-3">
-          <div className="inline-flex items-center rounded-full border border-border/70 bg-card/90 p-1">
-            {([
-              { value: 'system', icon: Monitor },
-              { value: 'light', icon: Sun },
-              { value: 'dark', icon: Moon },
-            ] as const).map(({ value, icon: Icon }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setTheme(value)}
-                className={cn(
-                  'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-                  mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
-                )}
-                aria-label={`${value} theme`}
-              >
-                <Icon className="h-4 w-4" />
-              </button>
-            ))}
-          </div>
+          {!isAuthenticated && (
+            <div className="inline-flex items-center rounded-full border border-border/70 bg-card/90 p-1">
+              {([
+                { value: 'system', icon: Monitor },
+                { value: 'light', icon: Sun },
+                { value: 'dark', icon: Moon },
+              ] as const).map(({ value, icon: Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTheme(value)}
+                  className={cn(
+                    'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
+                    mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                  )}
+                  aria-label={`${value} theme`}
+                >
+                  <Icon className="h-4 w-4" />
+                </button>
+              ))}
+            </div>
+          )}
           {isAuthenticated ? (
             <>
               <button
@@ -184,6 +186,30 @@ export function Header() {
                       <User className="h-4 w-4" />
                       Profile
                     </Link>
+                    <div className="flex items-center gap-2 rounded-xl px-3 py-2">
+                      <Monitor className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span className="text-sm text-foreground">Theme</span>
+                      <div className="ml-auto inline-flex items-center rounded-full border border-border/70 bg-secondary/60 p-0.5">
+                        {([
+                          { value: 'system', icon: Monitor },
+                          { value: 'light', icon: Sun },
+                          { value: 'dark', icon: Moon },
+                        ] as const).map(({ value, icon: Icon }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => setTheme(value)}
+                            className={cn(
+                              'inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors',
+                              mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                            )}
+                            aria-label={`${value} theme`}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <Link
                       href="/settings"
                       onClick={() => setShowAccountMenu(false)}
@@ -207,7 +233,7 @@ export function Header() {
           ) : (
             <Link
               href="/auth/login"
-              className="inline-flex items-center gap-3 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:px-6"
+              className="inline-flex items-center gap-3 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 whitespace-nowrap sm:px-6"
             >
               <span>Log in</span>
               <LogIn className="h-5 w-5" />
@@ -215,7 +241,7 @@ export function Header() {
           )}
         </div>
       </div>
-      <div className="container-main pb-3 lg:hidden">
+      <div className="container-main pb-3 xl:hidden">
         <nav className="flex items-center gap-2 overflow-x-auto rounded-[22px] border border-border/70 bg-card/90 p-1.5">
           {navLinks.map(({ href, label, icon: Icon }) => (
             <Link

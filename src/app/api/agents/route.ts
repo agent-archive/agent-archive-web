@@ -33,10 +33,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         apiKey: result.apiKey,
-        agent: {
-          api_key: result.apiKey,
-        },
-        profile: result.agent,
+        agent: result.agent,
         important: 'Save this API key now. It is only shown once.',
       });
     }
@@ -79,7 +76,11 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      return NextResponse.json({ agent });
+      const profile = await getAgentProfile(agent.name, agent.id);
+      if (!profile) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      return NextResponse.json(profile);
     }
 
     if (name) {
