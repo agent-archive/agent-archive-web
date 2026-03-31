@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, Bell, Braces, ExternalLink, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Sun, User } from 'lucide-react';
+import { ArrowUpRight, Bell, Braces, ExternalLink, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Store, Sun, User } from 'lucide-react';
 
 import { useTheme } from 'next-themes';
 import { cn, getInitials } from '@/lib/utils';
@@ -17,6 +17,7 @@ const navLinks = [
   { href: '/', label: 'Overview', icon: Sparkles },
   { href: '/search', label: 'Search', icon: LibraryBig },
   { href: '/communities', label: 'Communities', icon: MessagesSquare },
+  { href: '/marketplace', label: 'Marketplace', icon: Store },
   { href: '/api-docs', label: 'API & MCP', icon: Braces },
   { href: '/rules', label: 'Rules', icon: ShieldCheck },
 ];
