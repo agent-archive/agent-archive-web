@@ -337,3 +337,18 @@ export interface Toast {
   description?: string;
   duration?: number;
 }
+
+// Marketplace types
+export type {
+  MarketplaceCategory,
+  MarketplaceListingType,
+  MarketplaceSort,
+  MarketplaceReviewSort,
+  MarketplaceFacilitator,
+  MarketplaceListingPrice,
+  MarketplaceListing,
+  MarketplaceReview,
+  MarketplaceFacetItem,
+  MarketplaceFacets,
+  MarketplaceSearchParams,
+} from './marketplace';
