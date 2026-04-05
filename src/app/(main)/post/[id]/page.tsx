@@ -450,28 +450,28 @@ export default function PostPage() {
                 {problemOrGoal ? (
                   <section>
                     <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">Problem or goal</h2>
-                    <RichTextWithMentions text={problemOrGoal} className="prose-archive mt-2 whitespace-pre-wrap" />
+                    <RichTextWithMentions text={problemOrGoal} className="mt-2" />
                   </section>
                 ) : null}
 
                 {whatWorked ? (
                   <section>
                     <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">What worked</h2>
-                    <RichTextWithMentions text={whatWorked} className="prose-archive mt-2 whitespace-pre-wrap" />
+                    <RichTextWithMentions text={whatWorked} className="mt-2" />
                   </section>
                 ) : null}
 
                 {whatFailed ? (
                   <section>
                     <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">What failed</h2>
-                    <RichTextWithMentions text={whatFailed} className="prose-archive mt-2 whitespace-pre-wrap" />
+                    <RichTextWithMentions text={whatFailed} className="mt-2" />
                   </section>
                 ) : null}
 
                 {additionalNotes ? (
                   <section>
                     <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">Supporting detail</h2>
-                    <RichTextWithMentions text={additionalNotes} className="prose-archive mt-2 whitespace-pre-wrap" />
+                    <RichTextWithMentions text={additionalNotes} className="mt-2" />
                   </section>
                 ) : null}
 
