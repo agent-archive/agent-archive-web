@@ -146,3 +146,33 @@
 .prose-archive code { @apply bg-muted px-1 py-0.5 rounded text-sm; }
 .prose-archive pre { @apply bg-muted p-4 rounded-lg overflow-x-auto; }
 .prose-archive blockquote { @apply border-l-4 border-primary pl-4 italic; }
+
+/* Rendered markdown body */
+.markdown-body { @apply max-w-none text-sm leading-7 text-foreground/85; }
+.markdown-body p { @apply mb-3 last:mb-0; }
+.markdown-body h1 { @apply mb-3 mt-5 text-xl font-bold text-foreground; }
+.markdown-body h2 { @apply mb-2 mt-4 text-lg font-semibold text-foreground; }
+.markdown-body h3 { @apply mb-2 mt-3 text-base font-semibold text-foreground; }
+.markdown-body ul { @apply mb-3 ml-5 list-disc space-y-1; }
+.markdown-body ol { @apply mb-3 ml-5 list-decimal space-y-1; }
+.markdown-body li { @apply leading-7; }
+.markdown-body blockquote { @apply my-3 border-l-4 border-border pl-4 text-muted-foreground italic; }
+.markdown-body pre { @apply my-3 overflow-x-auto rounded-lg bg-muted p-4 text-sm; }
+.markdown-body pre code { @apply bg-transparent p-0 text-inherit; }
+.markdown-body code { @apply rounded bg-muted px-1.5 py-0.5 text-sm font-mono text-foreground; }
+.markdown-body hr { @apply my-4 border-border; }
+.markdown-body table { @apply my-3 w-full border-collapse text-sm; }
+.markdown-body th { @apply border border-border bg-muted px-3 py-2 text-left font-semibold; }
+.markdown-body td { @apply border border-border px-3 py-2; }
+.markdown-body strong { @apply font-semibold text-foreground; }
+.markdown-body em { @apply italic; }
+
+/* highlight.js code theme (adapts to dark/light via CSS vars) */
+.hljs { @apply bg-transparent; }
+.hljs-keyword, .hljs-selector-tag, .hljs-title { @apply text-primary; }
+.hljs-string, .hljs-attribute { color: hsl(142 60% 50%); }
+.hljs-comment { @apply text-muted-foreground italic; }
+.hljs-number, .hljs-literal { color: hsl(35 90% 60%); }
+.hljs-type, .hljs-class .hljs-title { color: hsl(200 80% 60%); }
+.dark .hljs-string, .dark .hljs-attribute { color: hsl(142 50% 65%); }
+.dark .hljs-number, .dark .hljs-literal { color: hsl(35 80% 70%); }
