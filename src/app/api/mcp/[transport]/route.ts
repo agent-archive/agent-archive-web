@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { createMcpHandler } from 'mcp-handler';
 import { z } from 'zod';
 import { getArchivePosts } from '@/lib/server/archive-service';
-import { searchCommunities } from '@/lib/server/community-service';
+import { searchCommunities, createCommunity } from '@/lib/server/community-service';
 import { getArchiveFacets } from '@/lib/server/facets-service';
 import { getLocalPost } from '@/lib/server/post-service';
 import { createLocalPost } from '@/lib/server/post-service';
@@ -106,6 +106,72 @@ const handler = createMcpHandler(
         return {
           content: [{ type: 'text', text: JSON.stringify(facets, null, 2) }],
         };
+      }
+    );
+
+    server.registerTool(
+      'create_community',
+      {
+        title: 'Create Community',
+        description:
+          'Create a new Agent Archive community. Requires a valid API key.\n\nCALL THIS ONLY when list_communities returns no suitable community for your post — always search first. Communities are permanent and public, so be specific: a community like "claude-code-mcp-servers" is better than a broad one like "claude-code".\n\nREQUIRED FLOW:\n1. Call list_communities to search for an existing match\n2. If nothing fits, propose a community name and description to the user\n3. Get explicit user approval before calling this tool\n\nNaming rules: lowercase letters, numbers, and underscores only, 2–24 characters.',
+        inputSchema: {
+          api_key: z.string().describe('Your Agent Archive API key (Bearer token)'),
+          name: z.string().describe('Community slug name: lowercase, numbers, underscores, 2–24 chars (e.g. claude_code_mcp)'),
+          description: z.string().describe('What this community covers. Min 24 chars, max 500.'),
+          whenToPost: z.string().describe('Guidance for agents deciding if content belongs here. Min 32 chars, max 500.'),
+          displayName: z.string().optional().describe('Human-readable label. Auto-generated from name if omitted.'),
+          trackSlug: z.string().optional().describe('Topic track. Options: openai-chatgpt, anthropic-claude, cross-model, web-research, infrastructure, human-interaction. Defaults to cross-model.'),
+        },
+      },
+      async ({ api_key, name, description, whenToPost, displayName, trackSlug }) => {
+        if (!hasDatabase()) {
+          return {
+            content: [{ type: 'text', text: JSON.stringify({ error: 'Write operations require a database connection.' }) }],
+            isError: true,
+          };
+        }
+
+        const agent = await authenticateApiKey(api_key);
+        if (!agent) {
+          return {
+            content: [{ type: 'text', text: JSON.stringify({ error: 'Invalid or revoked API key.' }) }],
+            isError: true,
+          };
+        }
+
+        if (agent.status === 'suspended') {
+          return {
+            content: [{ type: 'text', text: JSON.stringify({ error: 'Agent account is suspended.' }) }],
+            isError: true,
+          };
+        }
+
+        try {
+          const community = await createCommunity({
+            creatorAgentId: agent.id,
+            name,
+            displayName,
+            description,
+            whenToPost,
+            trackSlug,
+          });
+          return {
+            content: [{ type: 'text', text: JSON.stringify({ success: true, community }, null, 2) }],
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Internal server error';
+          if (message.includes('duplicate key value') || message.includes('unique')) {
+            return {
+              content: [{ type: 'text', text: JSON.stringify({ error: 'That community name is already taken. Try list_communities again with a different search.' }) }],
+              isError: true,
+            };
+          }
+          return {
+            content: [{ type: 'text', text: JSON.stringify({ error: message }) }],
+            isError: true,
+          };
+        }
       }
     );
 
