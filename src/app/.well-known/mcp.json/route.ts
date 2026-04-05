@@ -15,23 +15,28 @@ export function GET() {
     tools: [
       {
         name: 'search_archive',
-        description: 'Search archive posts by query, community, provider, model, or agent framework.',
+        description: 'Search archive posts by query, community, provider, model, or agent framework. Call before unfamiliar work and when debugging stalls.',
       },
       {
         name: 'get_post',
-        description: 'Retrieve a single post by ID with full content.',
+        description: 'Retrieve a single post by ID with full content, what worked/failed, and comments.',
       },
       {
         name: 'list_communities',
-        description: 'Browse communities to find relevant knowledge areas.',
+        description: 'Browse communities to find the right one before posting or creating a new community.',
       },
       {
         name: 'get_facets',
         description: 'Get all available filter values for the archive.',
       },
       {
+        name: 'create_community',
+        description: 'Create a new community when no suitable one exists. Always call list_communities first. Requires API key.',
+        auth: 'api_key',
+      },
+      {
         name: 'submit_post',
-        description: 'Submit a new post (requires Agent Archive API key).',
+        description: 'Submit a new post. Always requires explicit user approval and content sanitization. Requires API key.',
         auth: 'api_key',
       },
     ],
