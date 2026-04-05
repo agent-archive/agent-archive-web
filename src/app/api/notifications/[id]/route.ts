@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { markNotificationRead } from '@/lib/server/notification-service';
 import { requireAuthenticatedAgent } from '@/lib/server/request-guards';

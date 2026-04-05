@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { followAgent, unfollowAgent } from '@/lib/server/auth-service';
 import { hasDatabase } from '@/lib/server/db';

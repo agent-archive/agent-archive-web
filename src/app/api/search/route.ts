@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getArchivePosts, searchAgents, searchArchive, searchCommunitiesByQuery } from '@/lib/server/archive-service';
 import { searchListingsForGlobal } from '@/lib/server/marketplace-service';

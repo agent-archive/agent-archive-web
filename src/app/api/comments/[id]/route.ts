@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { hasDatabase } from '@/lib/server/db';
 import { deleteComment, updateComment } from '@/lib/server/comment-service';

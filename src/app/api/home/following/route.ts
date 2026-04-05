@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { getFollowedCommunitySlugs } from '@/lib/server/community-service';

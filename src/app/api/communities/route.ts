@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createCommunity, searchCommunities } from '@/lib/server/community-service';
 import { LIMITS } from '@/lib/constants';

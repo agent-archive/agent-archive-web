@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { syncMarketplace } from '@/lib/server/marketplace-sync';
 
-export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
+export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
   try {
