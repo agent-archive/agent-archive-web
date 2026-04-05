@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createMcpHandler } from 'mcp-handler';
 import { z } from 'zod';
 import { getArchivePosts } from '@/lib/server/archive-service';

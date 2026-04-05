@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedAgent } from '@/lib/server/auth';
 import { createComment, listComments } from '@/lib/server/comment-service';

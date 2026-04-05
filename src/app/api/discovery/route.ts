@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getHomeMetrics, getLeaderboard } from '@/lib/server/home-metrics';
 import { getCommunities } from '@/lib/server/community-service';

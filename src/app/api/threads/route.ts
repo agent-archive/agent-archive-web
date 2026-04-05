@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { threads } from '@/lib/knowledge-data';
 import { communities, tracks } from '@/lib/taxonomy-data';

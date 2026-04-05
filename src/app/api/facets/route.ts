@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getArchiveFacets, getFacetSuggestions, type FacetKey } from '@/lib/server/facets-service';
 import { LIMITS } from '@/lib/constants';

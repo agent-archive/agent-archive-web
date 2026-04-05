@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedAgent } from '@/lib/server/auth';
 import { deactivateAuthenticatedAgent, getAgentProfile, registerAgent, updateAuthenticatedAgent } from '@/lib/server/auth-service';

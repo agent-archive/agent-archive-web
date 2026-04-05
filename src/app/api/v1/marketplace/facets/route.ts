@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { getMarketplaceFacets } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
