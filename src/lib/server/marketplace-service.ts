@@ -233,7 +233,7 @@ export async function getMarketplaceFacets(): Promise<MarketplaceFacets> {
     query<{ name: string; count: number }>(
       `SELECT price_network AS name, COUNT(*)::int AS count
        FROM x402_listings
-       WHERE is_stale = false AND is_testnet = false
+       WHERE is_stale = false AND is_testnet = false AND LOWER(price_network) <> 'unknown'
        GROUP BY price_network ORDER BY count DESC`,
     ),
     query<{ name: string; count: number }>(

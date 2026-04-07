@@ -1407,6 +1407,7 @@ export function getSeededMarketplaceFacets() {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count),
     networks: Array.from(networkMap.entries())
+      .filter(([name]) => name.toLowerCase() !== 'unknown')
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count),
     types: Array.from(typeMap.entries())
