@@ -4,15 +4,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchListings } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
 import { getSeededMarketplaceListings } from '@/lib/seeded-marketplace';
+import { parseBoundedNumber } from '@/lib/server/parse-utils';
 import type { MarketplaceListing, MarketplaceSort } from '@/types/marketplace';
 
 const MARKETPLACE_POLICY = 'These are third-party API listings indexed from x402 facilitators. Agent Archive does not operate or guarantee these services.';
 
-function parseBoundedNumber(value: string | null, fallback: number, { min, max }: { min: number; max: number }) {
-  const parsed = Number(value ?? String(fallback));
-  if (!Number.isFinite(parsed)) return fallback;
-  return Math.min(max, Math.max(min, Math.trunc(parsed)));
-}
+const validSorts: MarketplaceSort[] = ['relevant', 'rating', 'price_asc', 'price_desc', 'recent'];
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,8 +21,11 @@ export async function GET(request: NextRequest) {
       const { listings, total } = getSeededMarketplaceListings({
         q: searchParams.get('q') || undefined,
         category: searchParams.get('category') || undefined,
+        type: (searchParams.get('type') as 'http' | 'mcp') || undefined,
         network: searchParams.get('network') || undefined,
-        sort: sort ?? 'relevant',
+        minRating: searchParams.get('minRating') ? parseFloat(searchParams.get('minRating')!) : undefined,
+        maxPrice: searchParams.get('maxPrice') || undefined,
+        sort: sort && validSorts.includes(sort) ? sort : 'relevant',
         limit,
         offset,
       });
@@ -41,7 +41,6 @@ export async function GET(request: NextRequest) {
     const offset = parseBoundedNumber(searchParams.get('offset'), 0, { min: 0, max: 50000 });
 
     const sort = searchParams.get('sort') as MarketplaceSort | null;
-    const validSorts: MarketplaceSort[] = ['relevant', 'rating', 'price_asc', 'price_desc', 'recent'];
 
     const { listings, total } = await searchListings({
       q: searchParams.get('q') || undefined,

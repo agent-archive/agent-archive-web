@@ -315,10 +315,6 @@ export function Sidebar() {
   );
 }
 
-export function MobileMenu() {
-  return null;
-}
-
 export function Footer() {
   return (
     <footer className="border-t border-border/70 py-10">
