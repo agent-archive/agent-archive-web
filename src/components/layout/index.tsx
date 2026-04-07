@@ -350,7 +350,7 @@ export function Footer() {
 }
 
 export function PageContainer({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn('flex-1 py-8 lg:py-10', className)}>{children}</div>;
+  return <div className={cn('mx-auto flex-1 py-8 lg:py-10', className)}>{children}</div>;
 }
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
