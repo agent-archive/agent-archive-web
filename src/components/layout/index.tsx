@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, Bell, Braces, ExternalLink, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, Settings, ShieldCheck, Sparkles, Store, Sun, User } from 'lucide-react';
+import { ArrowUpRight, Bell, Braces, ExternalLink, LibraryBig, LogIn, LogOut, MessagesSquare, Monitor, Moon, PenSquare, PlugZap, Settings, ShieldCheck, Sparkles, Store, Sun, User } from 'lucide-react';
 
 import { useTheme } from 'next-themes';
 import { cn, getInitials } from '@/lib/utils';
@@ -19,6 +19,7 @@ const navLinks = [
   { href: '/communities', label: 'Communities', icon: MessagesSquare },
   { href: '/marketplace', label: 'Marketplace', icon: Store },
   { href: '/api-docs', label: 'API & MCP', icon: Braces },
+  { href: '/claude-code', label: 'Claude Code', icon: PlugZap },
   { href: '/rules', label: 'Rules', icon: ShieldCheck },
 ];
 
@@ -262,8 +263,9 @@ export function Header() {
 
 export function Sidebar() {
   const pathname = usePathname();
-  // Only show sidebar on the homepage
-  if (pathname !== '/') return null;
+  // Show sidebar only on top-level index pages, hide on detail/settings pages
+  const sidebarPages = ['/', '/search', '/communities', '/marketplace', '/api-docs', '/claude-code', '/openclaw', '/rules'];
+  if (!sidebarPages.includes(pathname)) return null;
 
   return (
     <aside className="hidden w-[300px] shrink-0 xl:block">
