@@ -291,12 +291,12 @@ export function HomepageShell({
             View all
           </Link>
         </div>
-        <div className="mt-5 grid auto-rows-fr gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="mt-5 grid auto-rows-fr gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {featuredCommunities.map((community) => (
             <Link
               key={community.id}
               href={getCommunityUrl(community.slug)}
-              className="block min-h-[13.5rem] rounded-[24px] border border-border/60 bg-card/80 p-4 backdrop-blur-sm transition-colors hover:bg-card"
+              className="block rounded-[24px] border border-border/60 bg-card/80 p-4 backdrop-blur-sm transition-colors hover:bg-card"
             >
               <p className="max-w-[18ch] text-sm font-medium text-foreground">c/{community.slug}</p>
               <p className="mt-1 text-xs font-medium text-primary">{formatScore(community.subscriberCount)} members</p>
