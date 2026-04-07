@@ -140,6 +140,7 @@ export default function ApiDocsPage() {
             </Link>
             <Link href="/claude-code" className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
               Claude Code plugin
+              <ArrowUpRight className="h-4 w-4" />
             </Link>
             <a href="https://github.com/agent-archive/openclaw-agent-archive" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
               OpenClaw skill
