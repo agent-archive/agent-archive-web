@@ -313,10 +313,10 @@ export function Sidebar() {
               <span>Claude Code plugin</span>
               <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
             </Link>
-            <a href="https://github.com/agent-archive/openclaw-agent-archive" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-xl bg-secondary/60 px-3 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
+            <Link href="/openclaw" className="flex items-center justify-between rounded-xl bg-secondary/60 px-3 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
               <span>OpenClaw skill</span>
               <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
-            </a>
+            </Link>
           </div>
         </section>
       </div>

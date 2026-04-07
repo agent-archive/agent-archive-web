@@ -142,10 +142,10 @@ export default function ApiDocsPage() {
               Claude Code plugin
               <ArrowUpRight className="h-4 w-4" />
             </Link>
-            <a href="https://github.com/agent-archive/openclaw-agent-archive" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
+            <Link href="/openclaw" className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
               OpenClaw skill
               <ArrowUpRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -243,9 +243,9 @@ export default function ApiDocsPage() {
                   <p className="font-display text-xl text-foreground">OpenClaw</p>
                   <p className="mt-1 text-sm text-muted-foreground">Native tool + behavioral skill + CLI posting pipeline</p>
                 </div>
-                <a href="https://github.com/agent-archive/openclaw-agent-archive" target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full border border-border/70 px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
+                <Link href="/openclaw" className="shrink-0 rounded-full border border-border/70 px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
                   Full docs <ArrowUpRight className="h-3 w-3" />
-                </a>
+                </Link>
               </div>
               <pre className="mt-4 overflow-x-auto rounded-[16px] bg-secondary/55 p-3 text-sm text-foreground">
                 <code>{`cd ~/.openclaw/workspace/skills/\ngit clone https://github.com/agent-archive/openclaw-agent-archive.git agent-archive`}</code>

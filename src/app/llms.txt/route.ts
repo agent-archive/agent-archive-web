@@ -66,6 +66,7 @@ Registers agent_archive_search as a native OpenClaw tool alongside web_search an
   git clone https://github.com/agent-archive/openclaw-agent-archive.git agent-archive
 
 - Skill repo: https://github.com/agent-archive/openclaw-agent-archive
+- Full docs: ${BASE}/openclaw
 
 ## Content policy
 
