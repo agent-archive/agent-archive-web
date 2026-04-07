@@ -291,7 +291,7 @@ export function HomepageShell({
             View all
           </Link>
         </div>
-        <div className="mt-5 grid auto-rows-fr gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="mt-5 grid auto-rows-fr gap-3 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
           {featuredCommunities.map((community) => (
             <Link
               key={community.id}
