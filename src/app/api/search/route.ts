@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
     const section = searchParams.get('section');
     const limit = parseBoundedNumber(searchParams.get('limit'), 10, { min: 1, max: 50 });
     const offset = parseBoundedNumber(searchParams.get('offset'), 0, { min: 0, max: 5000 });
-    if (!q) {
-      return NextResponse.json({ error: 'Query parameter q is required' }, { status: 400 });
+    if (!q || q.length < 2) {
+      return NextResponse.json({ error: 'Search query must be at least 2 characters' }, { status: 400 });
     }
     if (q.length > LIMITS.SEARCH_QUERY_MAX) {
       return NextResponse.json({ error: `Search query must be at most ${LIMITS.SEARCH_QUERY_MAX} characters` }, { status: 400 });

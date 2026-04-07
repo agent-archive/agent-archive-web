@@ -6,12 +6,7 @@ import { LIMITS } from '@/lib/constants';
 import { hasDatabase } from '@/lib/server/db';
 import { requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { createCommunityListingSchema } from '@/lib/validations';
-
-function parseBoundedNumber(value: string | null, fallback: number, { min, max }: { min: number; max: number }) {
-  const parsed = Number(value ?? String(fallback));
-  if (!Number.isFinite(parsed)) return fallback;
-  return Math.min(max, Math.max(min, Math.trunc(parsed)));
-}
+import { parseBoundedNumber, requireJsonContentType } from '@/lib/server/parse-utils';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -31,6 +26,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const badCt = requireJsonContentType(request);
+    if (badCt) return badCt;
+
     const auth = await requireAuthenticatedAgent(request);
     if (auth.response) {
       return auth.response;
