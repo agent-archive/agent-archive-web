@@ -42,10 +42,18 @@ function basicAuth(request: NextRequest): NextResponse | null {
 }
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // v1 API routes: add versioning header and skip basic-auth gate
+  if (pathname.startsWith('/api/v1')) {
+    const response = NextResponse.next();
+    response.headers.set('X-API-Version', 'v1');
+    return response;
+  }
+
   const authResponse = basicAuth(request);
   if (authResponse && authResponse.status === 401) return authResponse;
 
-  const { pathname } = request.nextUrl;
   const hasSession = Boolean(request.cookies.get(AUTH_COOKIE_NAME)?.value);
 
   if (protectedRoutes.some((route) => pathname.startsWith(route)) && !hasSession) {
@@ -58,7 +66,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except static files and api routes
-    '/((?!_next/static|_next/image|favicon.ico|.*\\..*|api).*)',
+    // Match all paths except static files (but include /api/v1 for versioning header)
+    '/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)' ,
+    '/api/v1/:path*',
   ],
 };

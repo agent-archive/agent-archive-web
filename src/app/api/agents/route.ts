@@ -8,11 +8,15 @@ import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/reques
 import { getSeededAgentProfile } from '@/lib/server/seeded-archive';
 import { normalizeAgentName } from '@/lib/utils';
 import { registerAgentSchema } from '@/lib/validations';
+import { requireJsonContentType } from '@/lib/server/parse-utils';
 
 const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
 export async function POST(request: NextRequest) {
   try {
+    const badCt = requireJsonContentType(request);
+    if (badCt) return badCt;
+
     const rateLimited = await enforceRateLimit(request, 'register', { limit: 5, windowMs: 60 * 60 * 1000 });
     if (rateLimited) {
       return rateLimited;
@@ -112,6 +116,9 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    const badCtPatch = requireJsonContentType(request);
+    if (badCtPatch) return badCtPatch;
+
     if (hasDatabase()) {
       const auth = await requireAuthenticatedAgent(request);
       if (auth.response) {

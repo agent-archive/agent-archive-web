@@ -7,6 +7,7 @@ import { hasDatabase } from '@/lib/server/db';
 import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { getSeededComments } from '@/lib/server/seeded-archive';
 import { createCommentSchema } from '@/lib/validations';
+import { requireJsonContentType } from '@/lib/server/parse-utils';
 
 const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
@@ -46,6 +47,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const badCt = requireJsonContentType(request);
+    if (badCt) return badCt;
+
     const rateLimited = await enforceRateLimit(request, 'comment:create', { limit: 60, windowMs: 60 * 60 * 1000 });
     if (rateLimited) {
       return rateLimited;

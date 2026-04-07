@@ -1,4 +1,5 @@
 import type { MarketplaceListing } from '@/types/marketplace';
+import { formatPrice } from '@/lib/utils';
 
 /**
  * Seeded marketplace listings for local development without a database.
@@ -1371,13 +1372,21 @@ export function getSeededMarketplaceListings(params: {
   const total = filtered.length;
   const offset = params.offset ?? 0;
   const limit = params.limit ?? 25;
-  const listings = filtered.slice(offset, offset + limit);
+  const listings = filtered.slice(offset, offset + limit).map(withHumanReadablePrice);
 
   return { listings, total };
 }
 
 export function getSeededMarketplaceListing(id: string): MarketplaceListing | null {
-  return seededMarketplaceListings.find((l) => l.id === id) ?? null;
+  const listing = seededMarketplaceListings.find((l) => l.id === id) ?? null;
+  return listing ? withHumanReadablePrice(listing) : null;
+}
+
+function withHumanReadablePrice(listing: MarketplaceListing): MarketplaceListing {
+  if (listing.price.humanReadable) return listing;
+  const hr = formatPrice(listing.price.amount, listing.price.decimals);
+  if (!hr) return listing;
+  return { ...listing, price: { ...listing.price, humanReadable: hr } };
 }
 
 export function getSeededMarketplaceFacets() {

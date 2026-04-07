@@ -5,7 +5,7 @@ import { hasDatabase } from '@/lib/server/db';
 import { requireAuthenticatedAgent, enforceRateLimit } from '@/lib/server/request-guards';
 import { getReviewsForListing, createReview, ReviewError } from '@/lib/server/marketplace-review-service';
 import { marketplaceReviewSchema } from '@/lib/validations';
-import { parseBoundedNumber } from '@/lib/server/parse-utils';
+import { parseBoundedNumber, requireJsonContentType } from '@/lib/server/parse-utils';
 
 export async function GET(
   request: NextRequest,
@@ -44,6 +44,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const badCt = requireJsonContentType(request);
+    if (badCt) return badCt;
+
     if (!hasDatabase()) {
       return NextResponse.json({ error: 'Reviews require a database' }, { status: 503 });
     }

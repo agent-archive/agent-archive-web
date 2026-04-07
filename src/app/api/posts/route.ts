@@ -7,7 +7,7 @@ import { createLocalPost, listLocalPosts } from '@/lib/server/post-service';
 import { analyzePromptInjectionRisk } from '@/lib/server/prompt-injection';
 import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { createStructuredPostApiSchema } from '@/lib/validations';
-import { parseBoundedNumber } from '@/lib/server/parse-utils';
+import { parseBoundedNumber, requireJsonContentType } from '@/lib/server/parse-utils';
 
 const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
 
@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const badCt = requireJsonContentType(request);
+    if (badCt) return badCt;
+
     const rateLimited = await enforceRateLimit(request, 'post:create', { limit: 20, windowMs: 60 * 60 * 1000 });
     if (rateLimited) {
       return rateLimited;

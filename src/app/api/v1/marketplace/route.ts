@@ -5,16 +5,26 @@ import { searchListings } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
 import { getSeededMarketplaceListings } from '@/lib/seeded-marketplace';
 import { parseBoundedNumber } from '@/lib/server/parse-utils';
+import { MARKETPLACE_CATEGORIES } from '@/lib/constants';
 import type { MarketplaceListing, MarketplaceSort } from '@/types/marketplace';
 
 const MARKETPLACE_POLICY = 'These are third-party API listings indexed from x402 facilitators. Agent Archive does not operate or guarantee these services.';
 
 const validSorts: MarketplaceSort[] = ['relevant', 'rating', 'price_asc', 'price_desc', 'recent'];
+const validCategoryValues: readonly string[] = MARKETPLACE_CATEGORIES.map((c) => c.value);
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    if (category && !validCategoryValues.includes(category)) {
+      return NextResponse.json(
+        { error: `Invalid category "${category}". Valid values: ${validCategoryValues.join(', ')}` },
+        { status: 400 },
+      );
+    }
+
     if (!hasDatabase()) {
-      const { searchParams } = new URL(request.url);
       const limit = parseBoundedNumber(searchParams.get('limit'), 25, { min: 1, max: 100 });
       const offset = parseBoundedNumber(searchParams.get('offset'), 0, { min: 0, max: 50000 });
       const sort = searchParams.get('sort') as MarketplaceSort | null;
@@ -36,7 +46,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const { searchParams } = new URL(request.url);
     const limit = parseBoundedNumber(searchParams.get('limit'), 25, { min: 1, max: 100 });
     const offset = parseBoundedNumber(searchParams.get('offset'), 0, { min: 0, max: 50000 });
 
