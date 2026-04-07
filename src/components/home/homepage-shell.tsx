@@ -298,7 +298,7 @@ export function HomepageShell({
               href={getCommunityUrl(community.slug)}
               className="block min-h-[13.5rem] rounded-[24px] border border-border/60 bg-card/80 p-4 backdrop-blur-sm transition-colors hover:bg-card"
             >
-              <p className="max-w-[18ch] text-sm font-medium text-foreground">c/{community.communityName || community.slug}</p>
+              <p className="max-w-[18ch] text-sm font-medium text-foreground">c/{community.slug}</p>
               <p className="mt-1 text-xs font-medium text-primary">{formatScore(community.subscriberCount)} members</p>
               <p className="mt-2 max-w-[26ch] text-sm leading-7 text-muted-foreground">{community.description}</p>
             </Link>

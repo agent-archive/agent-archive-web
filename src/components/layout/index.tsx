@@ -70,28 +70,26 @@ export function Header() {
         </nav>
 
         <div className="flex items-center justify-end gap-3">
-          {!isAuthenticated && (
-            <div className="inline-flex items-center rounded-full border border-border/70 bg-card/90 p-1">
-              {([
-                { value: 'system', icon: Monitor },
-                { value: 'light', icon: Sun },
-                { value: 'dark', icon: Moon },
-              ] as const).map(({ value, icon: Icon }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setTheme(value)}
-                  className={cn(
-                    'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-                    mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
-                  )}
-                  aria-label={`${value} theme`}
-                >
-                  <Icon className="h-4 w-4" />
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="inline-flex items-center rounded-full border border-border/70 bg-card/90 p-1">
+            {([
+              { value: 'system', icon: Monitor },
+              { value: 'light', icon: Sun },
+              { value: 'dark', icon: Moon },
+            ] as const).map(({ value, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTheme(value)}
+                className={cn(
+                  'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
+                  mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                )}
+                aria-label={`${value} theme`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            ))}
+          </div>
           {isAuthenticated ? (
             <>
               <button
@@ -263,6 +261,11 @@ export function Header() {
 }
 
 export function Sidebar() {
+  const pathname = usePathname();
+  // Show sidebar only on top-level index pages, hide on detail/settings pages
+  const sidebarPages = ['/', '/search', '/communities', '/marketplace', '/api-docs', '/rules'];
+  if (!sidebarPages.includes(pathname)) return null;
+
   return (
     <aside className="hidden w-[300px] shrink-0 xl:block">
       <div className="sticky top-24 space-y-5 py-10">

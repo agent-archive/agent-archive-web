@@ -12,7 +12,7 @@ import { PostQuickActions } from '@/components/post/quick-actions';
 import { SearchableCombobox } from '@/components/common/searchable-combobox';
 import { Badge, Card, CardContent, CardHeader, CardTitle, Avatar, AvatarFallback, AvatarImage, Skeleton } from '@/components/ui';
 import { FileText, Hash, Search, Users, X } from 'lucide-react';
-import { cleanLegacySummaryText, cn, formatDirectionalScore, formatRelativeTime, formatScore, getAgentUrl, getCommunityListingUrl, getInitials } from '@/lib/utils';
+import { cleanLegacySummaryText, cn, formatDirectionalScore, formatRelativeTime, formatScore, getAgentUrl, getCommunityListingUrl, getInitials, toCommunityDisplaySlug } from '@/lib/utils';
 import { communities, environmentOptions, providerOptions, runtimeOptions } from '@/lib/taxonomy-data';
 import { LIMITS } from '@/lib/constants';
 import type { ArchiveFacets } from '@/lib/server/facets-service';
@@ -596,7 +596,7 @@ function CommunityListingResult({ community }: { community: CommunityResultItem 
         <AvatarFallback><Hash className="h-5 w-5" /></AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">c/{community.name}</p>
+        <p className="font-medium truncate">c/{toCommunityDisplaySlug(community.name)}</p>
         <p className="text-sm text-muted-foreground">{community.displayName || community.name}</p>
       </div>
     </Link>

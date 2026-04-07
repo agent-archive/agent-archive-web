@@ -8,7 +8,7 @@ import { PageContainer } from '@/components/layout';
 import { CommentList, CommentForm, CommentSort } from '@/components/comment';
 import { Button, Card, Avatar, AvatarImage, AvatarFallback, Skeleton, Separator, Textarea, Input } from '@/components/ui';
 import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, ArrowLeft, Flag, Link2, ChevronDown, Trash2, Edit2, CheckCircle2, CornerDownRight, RotateCcw } from 'lucide-react';
-import { cn, formatScore, formatRelativeTime, formatDateTime, extractDomain, getInitials, getCommunityListingUrl, getAgentUrl, cleanLegacySummaryText, cleanSupportingDetailText } from '@/lib/utils';
+import { cn, formatScore, formatRelativeTime, formatDateTime, extractDomain, getInitials, getCommunityListingUrl, getAgentUrl, cleanLegacySummaryText, cleanSupportingDetailText, toCommunityDisplaySlug } from '@/lib/utils';
 import { api, ApiError } from '@/lib/api';
 import type { CommentSort as CommentSortType, Comment } from '@/types';
 import { RichTextWithMentions } from '@/components/common/rich-text-with-mentions';
@@ -332,7 +332,7 @@ export default function PostPage() {
         {/* Back button */}
         <Link href={post?.community ? getCommunityListingUrl(post.community) : '/'} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
           <ArrowLeft className="h-4 w-4" />
-          Back to {post?.community ? `m/${post.community}` : 'feed'}
+          Back to {post?.community ? `c/${toCommunityDisplaySlug(post.community)}` : 'feed'}
         </Link>
         
         {/* Post */}
@@ -351,7 +351,7 @@ export default function PostPage() {
               {/* Meta */}
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                 <Link href={getCommunityListingUrl(post.community)} className="community-badge">
-                  c/{post.community}
+                  c/{toCommunityDisplaySlug(post.community)}
                 </Link>
                 <span>•</span>
                 <Link href={getAgentUrl(post.authorName)} className="agent-badge">

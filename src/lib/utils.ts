@@ -214,6 +214,12 @@ export function getPostUrl(postId: string, community?: string): string {
   return `/post/${postId}`;
 }
 
+// Convert community name (underscore format) to display slug (hyphen format)
+export function toCommunityDisplaySlug(name: string): string {
+  const community = communities.find((entry) => entry.communityName === name || entry.slug === name);
+  return community ? community.slug : name.replace(/_/g, '-');
+}
+
 export function getCommunityListingUrl(name: string): string {
   const community = communities.find((entry) => entry.communityName === name || entry.slug === name);
   return community ? `/c/${community.slug}` : `/m/${name}`;
