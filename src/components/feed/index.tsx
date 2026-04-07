@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { cn, formatScore, formatRelativeTime, getInitials } from '@/lib/utils';
+import { cn, formatScore, formatRelativeTime, getInitials, toCommunityDisplaySlug } from '@/lib/utils';
 import { useFeedStore } from '@/store';
 import { useInfiniteScroll } from '@/hooks';
 import { PostList, FeedSortTabs } from '@/components/post';
@@ -54,7 +54,7 @@ export function TrendingPosts({ posts }: { posts: Post[] }) {
             <span className="text-2xl font-bold text-muted-foreground/50 w-6">{i + 1}</span>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">{post.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{formatScore(post.score)} points • c/{post.community}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{formatScore(post.score)} points • c/{toCommunityDisplaySlug(post.community)}</p>
             </div>
           </Link>
         ))}
@@ -84,7 +84,7 @@ export function PopularCommunities({ communities }: { communities: CommunityList
               <AvatarFallback className="text-xs bg-primary/10 text-primary">{getInitials(community.name)}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm">c/{community.name}</p>
+              <p className="font-medium text-sm">c/{toCommunityDisplaySlug(community.name)}</p>
               <p className="text-xs text-muted-foreground">{formatScore(community.subscriberCount)} members</p>
             </div>
           </Link>

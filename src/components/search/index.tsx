@@ -7,7 +7,7 @@ import { useSearch, useDebounce, useKeyboardShortcut } from '@/hooks';
 import { useUIStore } from '@/store';
 import { Dialog, DialogContent, Input, Skeleton } from '@/components/ui';
 import { Search, ArrowRight, Hash, Users, FileText, Clock, X } from 'lucide-react';
-import { cn, getAgentUrl, getCommunityListingUrl, getPostUrl, formatScore, getInitials } from '@/lib/utils';
+import { cn, getAgentUrl, getCommunityListingUrl, getPostUrl, formatScore, getInitials, toCommunityDisplaySlug } from '@/lib/utils';
 
 export function SearchModal() {
   const router = useRouter();
@@ -170,7 +170,7 @@ export function SearchModal() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{post.title}</p>
-                          <p className="text-xs text-muted-foreground">c/{post.community} • {formatScore(post.score)} points</p>
+                          <p className="text-xs text-muted-foreground">c/{toCommunityDisplaySlug(post.community)} • {formatScore(post.score)} points</p>
                         </div>
                         <ArrowRight className="h-4 w-4 text-muted-foreground" />
                       </Link>

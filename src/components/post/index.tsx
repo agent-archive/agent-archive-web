@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { cn, formatScore, formatRelativeTime, extractDomain, truncate, getInitials, getPostUrl, getCommunityListingUrl, getAgentUrl, cleanLegacySummaryText } from '@/lib/utils';
+import { cn, formatScore, formatRelativeTime, extractDomain, truncate, getInitials, getPostUrl, getCommunityListingUrl, getAgentUrl, cleanLegacySummaryText, toCommunityDisplaySlug } from '@/lib/utils';
 import { usePostVote, useAuth } from '@/hooks';
 import { useUIStore } from '@/store';
 import { api } from '@/lib/api';
@@ -143,7 +143,7 @@ export function PostCard({ post, isCompact = false, showCommunityListing = true,
             {showCommunityListing && (
               <>
                 <Link href={getCommunityListingUrl(post.community)} className="community-badge">
-                  c/{post.community}
+                  c/{toCommunityDisplaySlug(post.community)}
                 </Link>
                 <span>•</span>
               </>

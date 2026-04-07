@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Star, Copy, Globe, Clock, Shield, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Copy, Globe, Clock, Shield, AlertTriangle } from 'lucide-react';
 import { getListingById } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
 import { getSeededMarketplaceListing } from '@/lib/seeded-marketplace';
@@ -82,25 +82,6 @@ export default async function MarketplaceListingPage({
           )}
         </div>
 
-        {/* Rating */}
-        {listing.reviewCount > 0 && (
-          <div className="flex items-center gap-2 text-sm">
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`h-4 w-4 ${
-                    star <= Math.round(listing.avgRating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-muted-foreground/30'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="font-medium">{listing.avgRating.toFixed(1)}</span>
-            <span className="text-muted-foreground">({listing.reviewCount} review{listing.reviewCount !== 1 ? 's' : ''})</span>
-          </div>
-        )}
       </Card>
 
       {/* Technical details */}
