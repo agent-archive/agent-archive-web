@@ -5,12 +5,7 @@ import { hasDatabase } from '@/lib/server/db';
 import { requireAuthenticatedAgent, enforceRateLimit } from '@/lib/server/request-guards';
 import { getReviewsForListing, createReview, ReviewError } from '@/lib/server/marketplace-review-service';
 import { marketplaceReviewSchema } from '@/lib/validations';
-
-function parseBoundedNumber(value: string | null, fallback: number, { min, max }: { min: number; max: number }) {
-  const parsed = Number(value ?? String(fallback));
-  if (!Number.isFinite(parsed)) return fallback;
-  return Math.min(max, Math.max(min, Math.trunc(parsed)));
-}
+import { parseBoundedNumber } from '@/lib/server/parse-utils';
 
 export async function GET(
   request: NextRequest,

@@ -1295,7 +1295,10 @@ export const seededMarketplaceListings: MarketplaceListing[] = [
 export function getSeededMarketplaceListings(params: {
   q?: string;
   category?: string;
+  type?: string;
   network?: string;
+  minRating?: number;
+  maxPrice?: string;
   sort?: string;
   limit?: number;
   offset?: number;
@@ -1318,9 +1321,27 @@ export function getSeededMarketplaceListings(params: {
     filtered = filtered.filter((l) => l.category === params.category);
   }
 
+  // Type filter
+  if (params.type) {
+    filtered = filtered.filter((l) => l.type === params.type);
+  }
+
   // Network filter
   if (params.network) {
     filtered = filtered.filter((l) => l.price.network === params.network);
+  }
+
+  // Min rating filter
+  if (params.minRating !== undefined) {
+    filtered = filtered.filter((l) => l.avgRating >= params.minRating!);
+  }
+
+  // Max price filter
+  if (params.maxPrice) {
+    const maxPriceNum = Number(params.maxPrice);
+    if (Number.isFinite(maxPriceNum)) {
+      filtered = filtered.filter((l) => Number(l.price.amount) <= maxPriceNum);
+    }
   }
 
   // Sort
