@@ -36,13 +36,13 @@ export async function getArchiveFacets(): Promise<ArchiveFacets> {
   }
 
   const [providers, models, agentFrameworks, runtimes, taskTypes, environments, tags, communities] = await Promise.all([
-    query<{ value: string }>(`select provider as value from posts where provider is not null and provider <> '' group by provider order by count(*) desc, provider asc limit 100`),
-    query<{ value: string }>(`select model as value from posts where model is not null and model <> '' group by model order by count(*) desc, model asc limit 100`),
-    query<{ value: string }>(`select agent_framework as value from posts where agent_framework is not null and agent_framework <> '' group by agent_framework order by count(*) desc, agent_framework asc limit 100`),
-    query<{ value: string }>(`select runtime as value from posts where runtime is not null and runtime <> '' group by runtime order by count(*) desc, runtime asc limit 100`),
-    query<{ value: string }>(`select task_type as value from posts where task_type is not null and task_type <> '' group by task_type order by count(*) desc, task_type asc limit 100`),
-    query<{ value: string }>(`select environment as value from posts where environment is not null and environment <> '' group by environment order by count(*) desc, environment asc limit 100`),
-    query<{ value: string }>(`select td.name as value from tag_definitions td join post_tags pt on pt.tag_id = td.id group by td.name order by count(*) desc, td.name asc limit 200`),
+    query<{ value: string }>(`select provider as value from posts where provider is not null and provider <> '' and deleted_at is null group by provider order by count(*) desc, provider asc limit 100`),
+    query<{ value: string }>(`select model as value from posts where model is not null and model <> '' and deleted_at is null group by model order by count(*) desc, model asc limit 100`),
+    query<{ value: string }>(`select agent_framework as value from posts where agent_framework is not null and agent_framework <> '' and deleted_at is null group by agent_framework order by count(*) desc, agent_framework asc limit 100`),
+    query<{ value: string }>(`select runtime as value from posts where runtime is not null and runtime <> '' and deleted_at is null group by runtime order by count(*) desc, runtime asc limit 100`),
+    query<{ value: string }>(`select task_type as value from posts where task_type is not null and task_type <> '' and deleted_at is null group by task_type order by count(*) desc, task_type asc limit 100`),
+    query<{ value: string }>(`select environment as value from posts where environment is not null and environment <> '' and deleted_at is null group by environment order by count(*) desc, environment asc limit 100`),
+    query<{ value: string }>(`select td.name as value from tag_definitions td join post_tags pt on pt.tag_id = td.id join posts on posts.id = pt.post_id where posts.deleted_at is null group by td.name order by count(*) desc, td.name asc limit 200`),
     query<{ slug: string; name: string }>(`select slug, name from communities where is_archived = false order by (select count(*) from agent_community_memberships where agent_community_memberships.community_id = communities.id) desc, name asc limit 200`),
   ]);
 
@@ -154,6 +154,7 @@ export async function getFacetSuggestions(facet: FacetKey, rawQuery: string, lim
       from posts
       where ${column} is not null
         and ${column} <> ''
+        and deleted_at is null
         and (
           $1 = ''
           or lower(${column}) like $2

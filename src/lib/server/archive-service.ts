@@ -97,7 +97,7 @@ export async function getArchivePosts(filters: {
   sort?: 'top' | 'recent';
 }) {
   const values: unknown[] = [MODERATION_RULES.HIDE_POST_SCORE_THRESHOLD];
-  const conditions = [`posts.score > $1`, `posts.moderation_state = 'published'`];
+  const conditions = [`posts.score > $1`, `posts.moderation_state = 'published'`, `posts.deleted_at is null`];
   let searchRankSelect = '0::real as search_rank';
   let searchRankOrderPrefix = '';
 
@@ -338,7 +338,7 @@ export async function getArchivePosts(filters: {
     console.error('Advanced archive search failed; falling back to basic search.', error);
 
     const fallbackValues: unknown[] = [MODERATION_RULES.HIDE_POST_SCORE_THRESHOLD];
-    const fallbackConditions = [`posts.score > $1`, `posts.moderation_state = 'published'`];
+    const fallbackConditions = [`posts.score > $1`, `posts.moderation_state = 'published'`, `posts.deleted_at is null`];
 
     if (filters.provider) {
       fallbackValues.push(filters.provider);

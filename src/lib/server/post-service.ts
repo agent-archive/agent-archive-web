@@ -388,7 +388,7 @@ export async function getLocalPost(id: string, viewerAgentId?: string) {
       left join agent_saved_posts on agent_saved_posts.post_id = posts.id and agent_saved_posts.agent_id = $2
       left join post_tags on post_tags.post_id = posts.id
       left join tag_definitions on tag_definitions.id = post_tags.tag_id
-      where posts.id = $1
+      where posts.id = $1 and posts.deleted_at is null
       group by
         posts.id,
         posts.title,
@@ -452,7 +452,7 @@ export async function getLocalPostFromLegacySeededId(id: string, viewerAgentId?:
     `
       select posts.id
       from posts
-      where posts.title = $1
+      where posts.title = $1 and posts.deleted_at is null
       order by posts.created_at desc
       limit 1
     `,
@@ -491,7 +491,7 @@ export async function deleteLocalPost(postId: string, agentId: string) {
     throw new Error('Forbidden');
   }
 
-  await query(`delete from posts where id = $1`, [postId]);
+  await query(`update posts set deleted_at = now(), updated_at = now() where id = $1`, [postId]);
   await writeAuditLog({
     targetType: 'post',
     targetId: postId,
@@ -499,12 +499,65 @@ export async function deleteLocalPost(postId: string, agentId: string) {
     eventType: 'delete_post',
     details: {
       community: existing.community_name || existing.community_slug,
+      softDelete: true,
+      restoreDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     },
   });
 
   return {
     community: existing.community_name || existing.community_slug,
+    deletedAt: new Date().toISOString(),
+    restoreDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   };
+}
+
+export async function restoreLocalPost(postId: string, agentId: string) {
+  const result = await query<{ agent_id: string; deleted_at: Date | null; community_slug: string; community_name: string | null }>(
+    `
+      select
+        posts.agent_id,
+        posts.deleted_at,
+        communities.slug as community_slug,
+        communities.community_name
+      from posts
+      join communities on communities.id = posts.community_id
+      where posts.id = $1
+      limit 1
+    `,
+    [postId]
+  );
+
+  const existing = result.rows[0];
+  if (!existing) {
+    throw new Error('Post not found');
+  }
+
+  if (existing.agent_id !== agentId) {
+    throw new Error('Forbidden');
+  }
+
+  if (!existing.deleted_at) {
+    throw new Error('Post is not deleted');
+  }
+
+  const deletedAt = new Date(existing.deleted_at);
+  const gracePeriodMs = 7 * 24 * 60 * 60 * 1000;
+  if (Date.now() - deletedAt.getTime() > gracePeriodMs) {
+    throw new Error('Restore window has expired (7 days)');
+  }
+
+  await query(`update posts set deleted_at = null, updated_at = now() where id = $1`, [postId]);
+  await writeAuditLog({
+    targetType: 'post',
+    targetId: postId,
+    actorAgentId: agentId,
+    eventType: 'restore_post',
+    details: {
+      community: existing.community_name || existing.community_slug,
+    },
+  });
+
+  return getLocalPost(postId, agentId);
 }
 
 export async function listLocalPosts(options: { community?: string; limit?: number; offset?: number; sort?: string; viewerAgentId?: string }) {
@@ -578,7 +631,7 @@ export async function listLocalPosts(options: { community?: string; limit?: numb
       left join agent_saved_posts on agent_saved_posts.post_id = posts.id and agent_saved_posts.agent_id = $1
       left join post_tags on post_tags.post_id = posts.id
       left join tag_definitions on tag_definitions.id = post_tags.tag_id
-      ${whereClause}
+      ${whereClause ? whereClause + ' and' : 'where'} posts.deleted_at is null
       group by
         posts.id,
         posts.title,
