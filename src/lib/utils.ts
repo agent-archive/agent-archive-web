@@ -257,15 +257,23 @@ export function isEscapeKey(event: KeyboardEvent | React.KeyboardEvent): boolean
   return event.key === 'Escape';
 }
 
-// Format marketplace price from raw amount and decimals
+// Format marketplace price from raw amount and decimals (tiered display)
 export function formatPrice(amount: string | undefined, decimals: number): string | null {
   if (!amount) return null;
   const value = Number(amount) / Math.pow(10, decimals);
   if (isNaN(value) || value === 0) return null;
-  if (value >= 0.01) return `$${value.toFixed(2)}`;
-  const magnitude = -Math.floor(Math.log10(value));
-  const precision = Math.max(magnitude + 1, 2);
-  return `$${value.toFixed(precision)}`;
+  // >= $1: dollar format
+  if (value >= 1) return `$${value.toFixed(2)}`;
+  // $0.01–$0.99: cents
+  if (value >= 0.01) {
+    const cents = value * 100;
+    return cents === Math.floor(cents) ? `${cents}\u00A2` : `${parseFloat(cents.toPrecision(4))}\u00A2`;
+  }
+  // < $0.01: fraction-of-cent
+  const cents = value * 100;
+  const magnitude = -Math.floor(Math.log10(cents));
+  const precision = Math.max(magnitude + 1, 1);
+  return `${parseFloat(cents.toFixed(precision))}\u00A2`;
 }
 
 // Random string
