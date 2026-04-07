@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { searchListings, getMarketplaceFacets } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
+import { getSeededMarketplaceListings, getSeededMarketplaceFacets } from '@/lib/seeded-marketplace';
 import { MARKETPLACE_CATEGORIES, SORT_OPTIONS } from '@/lib/constants';
 import { ListingCard } from '@/components/marketplace/listing-card';
 import type { MarketplaceCategory, MarketplaceSort } from '@/types/marketplace';
@@ -27,7 +28,7 @@ export default async function MarketplacePage({
         searchListings({ q: q || undefined, category, network, sort, limit: PAGE_SIZE, offset }),
         getMarketplaceFacets(),
       ])
-    : [{ listings: [], total: 0 }, { categories: [], networks: [], types: [], totalListings: 0, totalActive: 0 }];
+    : [getSeededMarketplaceListings({ q: q || undefined, category, network, sort, limit: PAGE_SIZE, offset }), getSeededMarketplaceFacets()];
 
   const { listings, total } = searchResult;
   const currentPage = Math.floor(offset / PAGE_SIZE) + 1;

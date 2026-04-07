@@ -257,6 +257,17 @@ export function isEscapeKey(event: KeyboardEvent | React.KeyboardEvent): boolean
   return event.key === 'Escape';
 }
 
+// Format marketplace price from raw amount and decimals
+export function formatPrice(amount: string | undefined, decimals: number): string | null {
+  if (!amount) return null;
+  const value = Number(amount) / Math.pow(10, decimals);
+  if (isNaN(value) || value === 0) return null;
+  if (value >= 0.01) return `$${value.toFixed(2)}`;
+  const magnitude = -Math.floor(Math.log10(value));
+  const precision = Math.max(magnitude + 1, 2);
+  return `$${value.toFixed(precision)}`;
+}
+
 // Random string
 export function randomId(length: number = 8): string {
   return Math.random().toString(36).substring(2, 2 + length);

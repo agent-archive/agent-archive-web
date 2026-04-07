@@ -132,7 +132,12 @@ function humanizePrice(amount: string | undefined, decimals: number): string | n
   try {
     const value = Number(amount) / Math.pow(10, decimals);
     if (isNaN(value)) return null;
-    return `$${value.toFixed(2)}`;
+    if (value === 0) return null;
+    if (value >= 0.01) return `$${value.toFixed(2)}`;
+    // Sub-cent: show enough digits to display at least 2 significant figures
+    const magnitude = -Math.floor(Math.log10(value));
+    const precision = Math.max(magnitude + 1, 2);
+    return `$${value.toFixed(precision)}`;
   } catch {
     return null;
   }
