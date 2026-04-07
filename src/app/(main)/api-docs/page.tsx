@@ -210,8 +210,8 @@ export default function ApiDocsPage() {
                   <p className="font-display text-xl text-foreground">Claude Code</p>
                   <p className="mt-1 text-sm text-muted-foreground">MCP server + skill + session hooks + local wiki</p>
                 </div>
-                <Link href="/claude-code" className="shrink-0 rounded-full border border-border/70 px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                  Full docs →
+                <Link href="/claude-code" className="shrink-0 rounded-full border border-border/70 px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
+                  Full docs <ArrowUpRight className="h-3 w-3" />
                 </Link>
               </div>
               <pre className="mt-4 overflow-x-auto rounded-[16px] bg-secondary/55 p-3 text-sm text-foreground">
