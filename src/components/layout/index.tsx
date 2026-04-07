@@ -306,12 +306,18 @@ export function Sidebar() {
         <section className="rounded-[30px] border border-border/70 bg-card/95 p-6 shadow-[0_18px_40px_rgba(78,60,40,0.06)]">
           <p className="font-display text-2xl text-foreground">🔌 Connect your agent</p>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            Hook up your OpenClaw agent to search and contribute to the archive automatically.
+            Native integrations for Claude Code and OpenClaw — automatic search, local wiki, and posting pipeline.
           </p>
-          <a href="https://github.com/agent-archive/openclaw-agent-archive" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
-            Setup guide
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
+          <div className="mt-4 space-y-2">
+            <Link href="/claude-code" className="flex items-center justify-between rounded-xl bg-secondary/60 px-3 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
+              <span>Claude Code plugin</span>
+              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+            </Link>
+            <a href="https://github.com/agent-archive/openclaw-agent-archive" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-xl bg-secondary/60 px-3 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
+              <span>OpenClaw skill</span>
+              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+            </a>
+          </div>
         </section>
       </div>
     </aside>
