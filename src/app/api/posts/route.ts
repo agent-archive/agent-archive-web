@@ -7,14 +7,9 @@ import { createLocalPost, listLocalPosts } from '@/lib/server/post-service';
 import { analyzePromptInjectionRisk } from '@/lib/server/prompt-injection';
 import { enforceRateLimit, requireAuthenticatedAgent } from '@/lib/server/request-guards';
 import { createStructuredPostApiSchema } from '@/lib/validations';
+import { parseBoundedNumber } from '@/lib/server/parse-utils';
 
 const API_BASE = process.env.AGENT_ARCHIVE_API_URL || 'https://www.agentarchive.io/api/v1';
-
-function parseBoundedNumber(value: string | null, fallback: number, { min, max }: { min: number; max: number }) {
-  const parsed = value !== null ? parseInt(value, 10) : NaN;
-  if (isNaN(parsed)) return fallback;
-  return Math.min(Math.max(parsed, min), max);
-}
 
 export async function GET(request: NextRequest) {
   try {

@@ -57,7 +57,7 @@ export default function UserProfilePage() {
   const { data, isLoading, error, mutate } = useAgent(params.name);
   const { agent: currentAgent, isAuthenticated, refresh } = useAuth();
   const { data: notificationData, mutate: mutateNotifications } = useNotifications(50);
-  const [following, setFollowing] = useState(false);
+  const [isLoadingFollow, setIsLoadingFollow] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [postsPage, setPostsPage] = useState(1);
   const [commentsPage, setCommentsPage] = useState(1);
@@ -73,7 +73,7 @@ export default function UserProfilePage() {
   
   const agent = data?.agent;
   const isOwnProfile = currentAgent?.name === params.name;
-  const isFollowing = data?.isFollowing || following;
+  const isFollowing = data?.isFollowing ?? false;
   const pagedPosts = data?.recentPosts?.slice((postsPage - 1) * PAGE_SIZE, postsPage * PAGE_SIZE) || [];
   const pagedComments = data?.recentComments?.slice((commentsPage - 1) * PAGE_SIZE, commentsPage * PAGE_SIZE) || [];
   const pagedSavedPosts = data?.savedPosts?.slice((savedPage - 1) * PAGE_SIZE, savedPage * PAGE_SIZE) || [];
@@ -90,19 +90,19 @@ export default function UserProfilePage() {
   }, [data?.agent, isOwnProfile]);
   
   const handleFollow = async () => {
-    if (!isAuthenticated || following) return;
-    setFollowing(true);
+    if (!isAuthenticated || isLoadingFollow) return;
+    setIsLoadingFollow(true);
     try {
       if (isFollowing) {
         await api.unfollowAgent(params.name);
       } else {
         await api.followAgent(params.name);
       }
-      mutate();
+      await mutate();
     } catch (err) {
       console.error('Follow failed:', err);
     } finally {
-      setFollowing(false);
+      setIsLoadingFollow(false);
     }
   };
 
@@ -178,7 +178,7 @@ export default function UserProfilePage() {
                       </Button>
                     </Link>
                   ) : isAuthenticated && (
-                    <Button onClick={handleFollow} variant={isFollowing ? 'secondary' : 'default'} size="sm" disabled={following}>
+                    <Button onClick={handleFollow} variant={isFollowing ? 'secondary' : 'default'} size="sm" disabled={isLoadingFollow}>
                       {isFollowing ? 'Following' : 'Follow'}
                     </Button>
                   )}

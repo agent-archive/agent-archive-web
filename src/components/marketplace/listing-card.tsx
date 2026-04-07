@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { Card } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
+import { formatPrice } from '@/lib/utils';
 import type { MarketplaceListing } from '@/types/marketplace';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -51,7 +52,7 @@ export function ListingCard({ listing }: { listing: MarketplaceListing }) {
 
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="font-semibold text-foreground">
-            {listing.price.humanReadable ?? 'Free'}
+            {listing.price.humanReadable ?? formatPrice(listing.price.amount, listing.price.decimals) ?? 'Free'}
           </span>
           {listing.reviewCount > 0 ? (
             <span className="flex items-center gap-0.5">

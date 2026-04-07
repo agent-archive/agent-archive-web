@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, Star, Copy, Globe, Clock, Shield, AlertTriangle } from 'lucide-react';
 import { getListingById } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
+import { getSeededMarketplaceListing } from '@/lib/seeded-marketplace';
+import { formatPrice } from '@/lib/utils';
 import { Card, Badge } from '@/components/ui';
 import { MarketplaceReviews } from '@/components/marketplace/marketplace-reviews';
 
@@ -13,9 +15,9 @@ export default async function MarketplaceListingPage({
 }) {
   const { id } = await params;
 
-  if (!hasDatabase()) notFound();
-
-  const listing = await getListingById(id);
+  const listing = hasDatabase()
+    ? await getListingById(id)
+    : getSeededMarketplaceListing(id);
   if (!listing) notFound();
 
   const confidenceLabel =
@@ -53,7 +55,7 @@ export default async function MarketplaceListingPage({
             )}
           </div>
           <div className="text-right shrink-0">
-            <div className="text-2xl font-bold">{listing.price.humanReadable ?? 'Free'}</div>
+            <div className="text-2xl font-bold">{listing.price.humanReadable ?? formatPrice(listing.price.amount, listing.price.decimals) ?? 'Free'}</div>
             <div className="text-xs text-muted-foreground">per call</div>
           </div>
         </div>

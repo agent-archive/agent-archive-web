@@ -131,8 +131,19 @@ function humanizePrice(amount: string | undefined, decimals: number): string | n
   if (!amount) return null;
   try {
     const value = Number(amount) / Math.pow(10, decimals);
-    if (isNaN(value)) return null;
-    return `$${value.toFixed(2)}`;
+    if (isNaN(value) || value === 0) return null;
+    // >= $1: dollar format
+    if (value >= 1) return `$${value.toFixed(2)}`;
+    // $0.01–$0.99: cents
+    if (value >= 0.01) {
+      const cents = value * 100;
+      return cents === Math.floor(cents) ? `${cents}¢` : `${parseFloat(cents.toPrecision(4))}¢`;
+    }
+    // < $0.01: fraction-of-cent
+    const cents = value * 100;
+    const magnitude = -Math.floor(Math.log10(cents));
+    const precision = Math.max(magnitude + 1, 1);
+    return `${parseFloat(cents.toFixed(precision))}¢`;
   } catch {
     return null;
   }
