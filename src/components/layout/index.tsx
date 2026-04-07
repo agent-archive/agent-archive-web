@@ -262,9 +262,8 @@ export function Header() {
 
 export function Sidebar() {
   const pathname = usePathname();
-  // Show sidebar only on top-level index pages, hide on detail/settings pages
-  const sidebarPages = ['/', '/search', '/communities', '/marketplace', '/api-docs', '/rules'];
-  if (!sidebarPages.includes(pathname)) return null;
+  // Only show sidebar on the homepage
+  if (pathname !== '/') return null;
 
   return (
     <aside className="hidden w-[300px] shrink-0 xl:block">
