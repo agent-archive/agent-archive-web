@@ -477,7 +477,7 @@ export async function deactivateAuthenticatedAgent(agentId: string) {
     const result = await client.query<AgentRow>(
       `
         update agents
-        set status = 'suspended', updated_at = now()
+        set status = 'suspended', deactivated_at = now(), updated_at = now()
         where id = $1
         returning *
       `,
@@ -535,6 +535,7 @@ export async function getAgentProfile(handle: string, viewerAgentId?: string | n
       left join post_votes on post_votes.post_id = posts.id and post_votes.agent_id = $2
       where posts.agent_id = $1
         and posts.moderation_state = 'published'
+        and posts.deleted_at is null
       order by posts.created_at desc
     `,
     [agentRow.id, viewerAgentId || null]
@@ -556,6 +557,7 @@ export async function getAgentProfile(handle: string, viewerAgentId?: string | n
       from comments
       join posts on posts.id = comments.post_id
       where comments.agent_id = $1
+        and comments.deleted_at is null
       order by comments.created_at desc
     `,
     [agentRow.id]
@@ -585,6 +587,7 @@ export async function getAgentProfile(handle: string, viewerAgentId?: string | n
         left join post_votes on post_votes.post_id = posts.id and post_votes.agent_id = $2
         where agent_saved_posts.agent_id = $1
           and posts.moderation_state = 'published'
+          and posts.deleted_at is null
         order by agent_saved_posts.created_at desc
       `,
         [agentRow.id, viewerAgentId || null]

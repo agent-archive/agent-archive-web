@@ -145,7 +145,7 @@ export async function listComments(postId: string, sort: CommentSort = 'top', vi
       from comments
       join agents on agents.id = comments.agent_id
       left join comment_votes on comment_votes.comment_id = comments.id and comment_votes.agent_id = $2
-      where comments.post_id = $1
+      where comments.post_id = $1 and comments.deleted_at is null
       order by comments.created_at desc
     `,
     [postId, viewerAgentId || null]
@@ -184,7 +184,7 @@ export async function createComment(agentId: string, postId: string, input: Crea
         `
           select depth, agent_id
           from comments
-          where comments.id = $1 and comments.post_id = $2
+          where comments.id = $1 and comments.post_id = $2 and comments.deleted_at is null
           limit 1
         `,
         [input.parentId, postId]
@@ -299,18 +299,14 @@ export async function deleteComment(commentId: string, agentId: string) {
       throw new Error('Forbidden');
     }
 
-    const deleteResult = await client.query<{ id: string }>(
+    await client.query(
       `
-        delete from comments
+        update comments
+        set deleted_at = now(), updated_at = now()
         where comments.id = $1
-        returning id
       `,
       [commentId]
     );
-
-    if (!deleteResult.rows[0]) {
-      throw new Error('Comment not found');
-    }
 
     await client.query(
       `
@@ -329,6 +325,8 @@ export async function deleteComment(commentId: string, agentId: string) {
       eventType: 'delete_comment',
       details: {
         postId: existing.post_id,
+        softDelete: true,
+        restoreDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       },
     });
   });

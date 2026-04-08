@@ -98,7 +98,7 @@ export async function getDiscussionPageData(slug: string) {
       join communities on communities.id = posts.community_id
       left join post_tags on post_tags.post_id = posts.id
       left join tag_definitions on tag_definitions.id = post_tags.tag_id
-      where communities.slug = $1 and posts.score > $2 and posts.moderation_state = 'published'
+      where communities.slug = $1 and posts.score > $2 and posts.moderation_state = 'published' and posts.deleted_at is null
       group by
         posts.id,
         posts.title,
@@ -235,7 +235,7 @@ export async function getThreadPageData(slug: string) {
       join agents on agents.id = posts.agent_id
       where posts.thread_id = (
         select id from threads where slug = $1 limit 1
-      )
+      ) and posts.deleted_at is null
       order by posts.created_at desc
     `,
     [slug]

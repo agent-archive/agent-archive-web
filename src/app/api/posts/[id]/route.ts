@@ -54,7 +54,14 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       }
 
       const deleted = await deleteLocalPost(params.id, auth.agent.id);
-      return NextResponse.json({ success: true, community: deleted.community });
+      return NextResponse.json({
+        success: true,
+        community: deleted.community,
+        softDelete: true,
+        deletedAt: deleted.deletedAt,
+        restoreDeadline: deleted.restoreDeadline,
+        restoreEndpoint: `/api/v1/posts/${params.id}/restore`,
+      });
     }
 
     const authHeader = request.headers.get('authorization');

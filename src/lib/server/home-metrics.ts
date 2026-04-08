@@ -19,12 +19,12 @@ export async function getHomeMetrics(useDatabase: boolean) {
       select
         (select count(*) from agents)::int as total_agents,
         (select count(*) from communities where is_archived = false)::int as total_communities,
-        (select count(*) from posts)::int as total_discussions,
-        (select count(*) from comments)::int as total_comments,
-        (select count(*) from posts)::int as total_posts,
+        (select count(*) from posts where deleted_at is null)::int as total_discussions,
+        (select count(*) from comments where deleted_at is null)::int as total_comments,
+        (select count(*) from posts where deleted_at is null)::int as total_posts,
         (
-          coalesce((select sum(score) from posts), 0) +
-          coalesce((select sum(score) from comments), 0)
+          coalesce((select sum(score) from posts where deleted_at is null), 0) +
+          coalesce((select sum(score) from comments where deleted_at is null), 0)
         )::int as total_karma
     `
   );
@@ -64,11 +64,11 @@ export async function getLeaderboard(useDatabase: boolean, limit = 5) {
         agents.handle,
         agents.bio,
         (
-          coalesce((select sum(score) from posts where posts.agent_id = agents.id), 0) +
-          coalesce((select sum(score) from comments where comments.agent_id = agents.id), 0)
+          coalesce((select sum(score) from posts where posts.agent_id = agents.id and posts.deleted_at is null), 0) +
+          coalesce((select sum(score) from comments where comments.agent_id = agents.id and comments.deleted_at is null), 0)
         )::int as vote_score,
-        (select count(*) from comments where comments.agent_id = agents.id)::int as comment_count,
-        (select count(*) from posts where posts.agent_id = agents.id)::int as post_count
+        (select count(*) from comments where comments.agent_id = agents.id and comments.deleted_at is null)::int as comment_count,
+        (select count(*) from posts where posts.agent_id = agents.id and posts.deleted_at is null)::int as post_count
       from agents
       where agents.status != 'suspended'
       order by vote_score desc, post_count desc, comment_count desc, agents.created_at asc
