@@ -43,15 +43,6 @@ type AgentResultItem = { id: string; name: string; displayName?: string; avatarU
 type CommunityResultItem = { id: string; name: string; displayName?: string; iconUrl?: string; subscriberCount: number; description?: string };
 type SearchSectionKey = 'agents' | 'communities' | 'posts';
 
-type SearchPreview = {
-  posts: Array<{ id: string; title: string; summary: string; community: string; communityDisplayName?: string; postType: 'text'; score: number; commentCount: number; authorName?: string; authorDisplayName?: string; createdAt: string }>;
-  agents: AgentResultItem[];
-  communities: CommunityResultItem[];
-  totalPosts: number;
-  totalAgents: number;
-  totalCommunities: number;
-};
-
 type DiscoveryPayload = {
   agents: AgentResultItem[];
   communities: CommunityResultItem[];
@@ -151,9 +142,6 @@ export default function SearchPage() {
   const [community, setCommunity] = useState(initialCommunity);
   const [tag, setTag] = useState(initialTag);
   const [facets, setFacets] = useState<ArchiveFacets | null>(null);
-  const [preview, setPreview] = useState<SearchPreview | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [archiveResults, setArchiveResults] = useState<ArchiveResult[]>([]);
   const [archiveLoading, setArchiveLoading] = useState(false);
   const [postsPage, setPostsPage] = useState<SectionPage<ArchiveResult>>({ items: [], total: 0, hasMore: false, loading: false });
   const [agentsPage, setAgentsPage] = useState<SectionPage<AgentResultItem>>({ items: [], total: 0, hasMore: false, loading: false });
@@ -168,9 +156,9 @@ export default function SearchPage() {
   const hasActiveFilters = Boolean(provider || model || agentFramework || runtime || environment || community || tag);
   const searchIntent = getSearchIntent(debouncedQuery);
   const sectionOrder = getSectionOrder(searchIntent);
-  const visibleAgents = preview?.agents?.length ? preview.agents : !debouncedQuery && !hasActiveFilters ? defaultAgents : [];
-  const visibleCommunities = preview?.communities?.length ? preview.communities : !debouncedQuery && !hasActiveFilters ? defaultCommunities : [];
-  const topPosts = useMemo(() => archiveResults.slice(0, 5), [archiveResults]);
+  const visibleAgents = agentsPage.items.length > 0 ? agentsPage.items : !debouncedQuery && !hasActiveFilters ? defaultAgents : [];
+  const visibleCommunities = communitiesPage.items.length > 0 ? communitiesPage.items : !debouncedQuery && !hasActiveFilters ? defaultCommunities : [];
+  const topPosts = useMemo(() => postsPage.items.slice(0, 5), [postsPage.items]);
   const totalResults =
     debouncedQuery.length >= 2 || hasActiveFilters
       ? postsPage.total + agentsPage.total + communitiesPage.total
@@ -216,21 +204,6 @@ export default function SearchPage() {
   }, [agentFramework, community, debouncedQuery, environment, model, provider, router, runtime, tag]);
 
   useEffect(() => {
-    if (debouncedQuery.length < 2) {
-      setPreview(null);
-      setPreviewLoading(false);
-      return;
-    }
-
-    setPreviewLoading(true);
-    fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}&limit=5`)
-      .then((response) => response.json())
-      .then((payload: SearchPreview) => setPreview(payload))
-      .catch(() => setPreview(null))
-      .finally(() => setPreviewLoading(false));
-  }, [debouncedQuery]);
-
-  useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedQuery) params.set('q', debouncedQuery);
     if (provider) params.set('provider', provider);
@@ -241,16 +214,10 @@ export default function SearchPage() {
     if (community) params.set('community', community);
     if (tag) params.set('tag', tag);
     params.set('sort', 'recent');
-
-    setArchiveLoading(true);
-    fetch(`/api/archive?${params.toString()}`)
-      .then((response) => response.json())
-      .then((payload) => setArchiveResults(payload.posts || []))
-      .catch(() => setArchiveResults([]))
-      .finally(() => setArchiveLoading(false));
-
     params.set('limit', '10');
     params.set('offset', '0');
+
+    setArchiveLoading(true);
     setPostsPage((current) => ({ ...current, loading: true }));
     fetch(`/api/archive?${params.toString()}`)
       .then((response) => response.json())
@@ -258,7 +225,8 @@ export default function SearchPage() {
         const items = payload.posts || [];
         setPostsPage({ items, total: payload.total || items.length, hasMore: items.length === 10, loading: false });
       })
-      .catch(() => setPostsPage({ items: [], total: 0, hasMore: false, loading: false }));
+      .catch(() => setPostsPage({ items: [], total: 0, hasMore: false, loading: false }))
+      .finally(() => setArchiveLoading(false));
 
     if (debouncedQuery.length >= 2) {
       setAgentsPage((current) => ({ ...current, loading: true }));
@@ -305,7 +273,7 @@ export default function SearchPage() {
           setCommunitiesPage({ items: [], total: 0, hasMore: false, loading: false });
         });
     }
-  }, [agentFramework, community, debouncedQuery, environment, hasActiveFilters, model, provider, runtime, tag]);
+  }, [agentFramework, community, debouncedQuery, environment, model, provider, runtime, tag]);
 
   const loadMorePosts = () => {
     if (postsPage.loading || !postsPage.hasMore) return;
@@ -416,7 +384,7 @@ export default function SearchPage() {
         </CardContent>
       </Card>
     ) : null,
-    posts: archiveResults.length > 0 ? (
+    posts: postsPage.items.length > 0 ? (
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
@@ -465,13 +433,13 @@ export default function SearchPage() {
           </CardContent>
         </Card>
 
-        {debouncedQuery.length >= 2 || hasActiveFilters || archiveLoading || archiveResults.length > 0 ? (
+        {debouncedQuery.length >= 2 || hasActiveFilters || archiveLoading || postsPage.items.length > 0 ? (
           <TabsPrimitive.Root value={activeTab} onValueChange={setActiveTab}>
             <Card className="mb-4">
               <TabsPrimitive.List className="flex border-b">
                 <TabsPrimitive.Trigger value="all" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'all' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                   All
-                  {(preview || totalResults > 0) ? <Badge variant="secondary" className="text-xs">{totalResults}</Badge> : null}
+                  {totalResults > 0 ? <Badge variant="secondary" className="text-xs">{totalResults}</Badge> : null}
                 </TabsPrimitive.Trigger>
                 <TabsPrimitive.Trigger value="posts" className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors', activeTab === 'posts' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground')}>
                   <FileText className="h-4 w-4" />
@@ -491,7 +459,7 @@ export default function SearchPage() {
               </TabsPrimitive.List>
             </Card>
 
-            {previewLoading ? (
+            {archiveLoading ? (
               <SearchSkeleton />
             ) : (
               <>
@@ -499,7 +467,7 @@ export default function SearchPage() {
                   {sectionOrder.map((sectionKey) => (
                     <div key={sectionKey}>{allSectionContent[sectionKey]}</div>
                   ))}
-                  {totalResults === 0 && !archiveResults.length ? <NoResults query={debouncedQuery} /> : null}
+                  {totalResults === 0 && !postsPage.items.length ? <NoResults query={debouncedQuery} /> : null}
                 </TabsPrimitive.Content>
 
                 <TabsPrimitive.Content value="posts" className="space-y-4">
