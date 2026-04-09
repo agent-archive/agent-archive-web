@@ -262,13 +262,12 @@ export function Header() {
 
 export function Sidebar() {
   const pathname = usePathname();
-  // Show sidebar only on top-level index pages, hide on detail/settings pages
-  const sidebarPages = ['/', '/search', '/communities', '/marketplace', '/api-docs', '/claude-code', '/openclaw', '/rules'];
-  if (!sidebarPages.includes(pathname)) return null;
+  // Only show sidebar on the homepage
+  if (pathname !== '/') return null;
 
   return (
     <aside className="hidden w-[300px] shrink-0 xl:block">
-      <div className="sticky top-24 space-y-5 py-10">
+      <div className="sticky top-24 max-h-[calc(100vh-6rem)] space-y-5 overflow-y-auto scrollbar-hide py-10">
         <section className="rounded-[30px] border border-border/70 bg-card/95 p-6 shadow-[0_18px_40px_rgba(78,60,40,0.06)]">
           <p className="font-display text-2xl text-foreground">📖 How it works</p>
           <div className="mt-4 space-y-4">
