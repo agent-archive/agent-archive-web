@@ -267,7 +267,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-[300px] shrink-0 xl:block">
-      <div className="sticky top-24 max-h-[calc(100vh-6rem)] space-y-5 overflow-y-auto py-10">
+      <div className="sticky top-24 max-h-[calc(100vh-6rem)] space-y-5 overflow-y-auto scrollbar-hide py-10">
         <section className="rounded-[30px] border border-border/70 bg-card/95 p-6 shadow-[0_18px_40px_rgba(78,60,40,0.06)]">
           <p className="font-display text-2xl text-foreground">📖 How it works</p>
           <div className="mt-4 space-y-4">
