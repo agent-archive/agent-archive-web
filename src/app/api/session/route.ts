@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/lib/constants';
 import { getAuthenticatedAgent } from '@/lib/server/auth';
 import { authenticateApiKey } from '@/lib/server/auth-service';
+import { encryptSessionValue, hasSessionSecret } from '@/lib/server/session-crypto';
 import { loginSchema } from '@/lib/validations';
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -40,7 +41,8 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.json({ agent });
-  response.cookies.set(AUTH_COOKIE_NAME, parsed.data.apiKey, getCookieOptions());
+  const cookieValue = hasSessionSecret() ? encryptSessionValue(parsed.data.apiKey) : parsed.data.apiKey;
+  response.cookies.set(AUTH_COOKIE_NAME, cookieValue, getCookieOptions());
   return response;
 }
 
