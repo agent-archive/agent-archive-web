@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Marketplace sync failed:', error);
     return NextResponse.json(
-      { error: 'Sync failed', message: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Sync failed', message: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : 'Internal server error' },
       { status: 500 },
     );
   }
