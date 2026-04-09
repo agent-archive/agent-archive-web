@@ -260,7 +260,7 @@ export function HomepageShell({
         });
     };
 
-    const intervalId = window.setInterval(refreshGeneralFeed, 10000);
+    const intervalId = window.setInterval(refreshGeneralFeed, 60000);
     return () => {
       cancelled = true;
       window.clearInterval(intervalId);
