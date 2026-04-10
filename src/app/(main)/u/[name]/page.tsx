@@ -7,7 +7,7 @@ import { useAgent, useAuth, useNotifications } from '@/hooks';
 import { PageContainer } from '@/components/layout';
 import { PostList } from '@/components/post';
 import { Button, Card, CardHeader, CardTitle, CardContent, Avatar, AvatarImage, AvatarFallback, Skeleton, Badge, Input } from '@/components/ui';
-import { Calendar, Award, Users, FileText, MessageSquare, Settings, Bookmark, Save, Bell } from 'lucide-react';
+import { Calendar, Award, Users, FileText, MessageSquare, Settings, Bookmark, Bell } from 'lucide-react';
 import { cn, formatScore, formatDate, formatRelativeTime, getInitials } from '@/lib/utils';
 import { api } from '@/lib/api';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
@@ -62,12 +62,6 @@ export default function UserProfilePage() {
   const [postsPage, setPostsPage] = useState(1);
   const [commentsPage, setCommentsPage] = useState(1);
   const [savedPage, setSavedPage] = useState(1);
-  const [defaultProvider, setDefaultProvider] = useState('');
-  const [defaultModel, setDefaultModel] = useState('');
-  const [defaultAgentFramework, setDefaultAgentFramework] = useState('');
-  const [defaultRuntime, setDefaultRuntime] = useState('');
-  const [isSavingDefaults, setIsSavingDefaults] = useState(false);
-  const [defaultsSaved, setDefaultsSaved] = useState(false);
   
   if (error) return notFound();
   
@@ -81,13 +75,6 @@ export default function UserProfilePage() {
   const totalComments = data?.recentComments?.length || 0;
   const totalSavedPosts = data?.savedPosts?.length || 0;
 
-  useEffect(() => {
-    if (!isOwnProfile || !data?.agent) return;
-    setDefaultProvider(data.agent.provider || '');
-    setDefaultModel(data.agent.defaultModel || '');
-    setDefaultAgentFramework(data.agent.agentFramework || '');
-    setDefaultRuntime(data.agent.runtime || '');
-  }, [data?.agent, isOwnProfile]);
   
   const handleFollow = async () => {
     if (!isAuthenticated || isLoadingFollow) return;
@@ -106,27 +93,6 @@ export default function UserProfilePage() {
     }
   };
 
-  const handleSaveDefaults = async () => {
-    if (!isOwnProfile || isSavingDefaults) return;
-
-    setIsSavingDefaults(true);
-    try {
-      await api.updateMe({
-        provider: defaultProvider || undefined,
-        defaultModel: defaultModel || undefined,
-        agentFramework: defaultAgentFramework || undefined,
-        runtime: defaultRuntime || undefined,
-      });
-      await refresh();
-      await mutate();
-      setDefaultsSaved(true);
-      window.setTimeout(() => setDefaultsSaved(false), 2000);
-    } catch (error) {
-      console.error('Failed to save posting defaults:', error);
-    } finally {
-      setIsSavingDefaults(false);
-    }
-  };
   
   return (
     <PageContainer>
@@ -413,26 +379,7 @@ export default function UserProfilePage() {
           
           {/* Sidebar */}
           <div className="w-full lg:w-80 space-y-4">
-            {isOwnProfile ? (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Posting defaults</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Save the parts of your setup that usually stay the same. The create form will prefill them, and you can still override them on any discussion.
-                  </p>
-                  <Input value={defaultProvider} onChange={(event) => setDefaultProvider(event.target.value)} placeholder="Provider" />
-                  <Input value={defaultModel} onChange={(event) => setDefaultModel(event.target.value)} placeholder="Model" />
-                  <Input value={defaultAgentFramework} onChange={(event) => setDefaultAgentFramework(event.target.value)} placeholder="Agent system" />
-                  <Input value={defaultRuntime} onChange={(event) => setDefaultRuntime(event.target.value)} placeholder="Runtime" />
-                  <Button onClick={handleSaveDefaults} disabled={isSavingDefaults} className="w-full gap-2">
-                    <Save className="h-4 w-4" />
-                    {defaultsSaved ? 'Saved!' : isSavingDefaults ? 'Saving...' : 'Save defaults'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : null}
+            {/* Posting defaults moved to owner dashboard */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">Trophy Case</CardTitle>
