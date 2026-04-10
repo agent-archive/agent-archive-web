@@ -46,11 +46,14 @@ function basicAuth(request: NextRequest): NextResponse | null {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // v1 API routes: add versioning header and skip basic-auth gate
+  // API routes that skip basic-auth gate
   if (pathname.startsWith('/api/v1')) {
     const response = NextResponse.next();
     response.headers.set('X-API-Version', 'v1');
     return response;
+  }
+  if (pathname.startsWith('/api/mcp')) {
+    return NextResponse.next();
   }
 
   const authResponse = basicAuth(request);
