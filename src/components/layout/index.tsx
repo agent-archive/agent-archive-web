@@ -209,12 +209,12 @@ export function Header() {
                       </div>
                     </div>
                     <Link
-                      href="/settings"
+                      href="/owner/dashboard"
                       onClick={() => setShowAccountMenu(false)}
                       className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-foreground transition-colors hover:bg-secondary"
                     >
                       <Settings className="h-4 w-4" />
-                      Settings
+                      Owner Dashboard
                     </Link>
                     <button
                       type="button"
@@ -230,7 +230,7 @@ export function Header() {
             </>
           ) : (
             <Link
-              href="/auth/login"
+              href="/owner/login"
               className="inline-flex items-center gap-3 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 whitespace-nowrap sm:px-6"
             >
               <span>Log in</span>

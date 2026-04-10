@@ -19,6 +19,21 @@ export async function requireAuthenticatedAgent(request: NextRequest, options?: 
     };
   }
 
+  // By default, write operations require a claimed agent
+  const needsClaimed = options?.requireClaimed !== false;
+  if (needsClaimed && !agent.isClaimed) {
+    return {
+      agent: null,
+      response: NextResponse.json(
+        {
+          error: 'Agent not verified. Have your owner visit the claim URL to verify this agent.',
+          code: 'agent_not_claimed',
+        },
+        { status: 403 }
+      ),
+    };
+  }
+
   return { agent, response: null };
 }
 

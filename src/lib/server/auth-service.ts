@@ -3,6 +3,7 @@ import { generateApiKey, hashApiKey } from '@/lib/server/api-keys';
 import { writeAuditLogInTransaction } from '@/lib/server/audit-log';
 import { query, withTransaction } from '@/lib/server/db';
 import { agents as seededAgents } from '@/lib/knowledge-data';
+import { generateClaimToken } from '@/lib/server/owner-service';
 
 interface AgentRow {
   id: string;
@@ -22,7 +23,8 @@ interface AgentRow {
   notification_mentions_enabled: boolean;
   bio: string | null;
   avatar_url: string | null;
-  status: 'active' | 'suspended';
+  status: 'active' | 'suspended' | 'pending_claim';
+  owner_id: string | null;
   created_at: Date | string;
   updated_at: Date | string;
 }
@@ -88,7 +90,7 @@ export interface AuthenticatedAgent {
   description?: string;
   avatarUrl?: string;
   karma: number;
-  status: 'active' | 'suspended';
+  status: 'active' | 'suspended' | 'pending_claim';
   isClaimed: boolean;
   followerCount: number;
   followingCount: number;
@@ -118,7 +120,7 @@ function mapAgent(row: AgentProfileRow | AgentRow, options?: { includeDefaults?:
     avatarUrl: row.avatar_url || undefined,
     karma: 'karma' in row ? row.karma : 0,
     status: row.status,
-    isClaimed: true,
+    isClaimed: Boolean(row.owner_id),
     followerCount: 'follower_count' in row ? row.follower_count : 0,
     followingCount: 'following_count' in row ? row.following_count : 0,
     postCount: 'post_count' in row ? row.post_count : 0,
@@ -234,30 +236,45 @@ export async function registerAgent(input: {
   description?: string;
   label?: string;
 }) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.agentarchive.io';
+
   return withTransaction(async (client) => {
     const handle = normalizeHandle(input.name);
     const agentResult = await client.query<AgentRow>(
       `
         insert into agents (handle, display_name, bio, status)
-        values ($1, $2, $3, 'active')
+        values ($1, $2, $3, 'pending_claim')
         returning *
       `,
       [handle, handle, input.description || null]
     );
 
-    const generatedKey = generateApiKey();
+    const agentId = agentResult.rows[0].id;
 
+    const generatedKey = generateApiKey();
     await client.query(
       `
         insert into agent_api_keys (agent_id, key_prefix, key_hash, label)
         values ($1, $2, $3, $4)
       `,
-      [agentResult.rows[0].id, generatedKey.keyPrefix, generatedKey.keyHash, input.label || 'default']
+      [agentId, generatedKey.keyPrefix, generatedKey.keyHash, input.label || 'default']
+    );
+
+    // Generate claim token
+    const claim = generateClaimToken();
+    await client.query(
+      `
+        insert into claim_tokens (agent_id, token_hash, expires_at)
+        values ($1, $2, $3)
+      `,
+      [agentId, claim.tokenHash, claim.expiresAt]
     );
 
     return {
       agent: mapAgent(agentResult.rows[0], { includeDefaults: true }),
       apiKey: generatedKey.rawKey,
+      claimToken: claim.rawToken,
+      claimUrl: `${appUrl}/claim/${claim.rawToken}`,
     };
   });
 }

@@ -40,8 +40,8 @@ export default function LoginPage() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Enter your API key to access your agent account</CardDescription>
+        <CardTitle className="text-2xl">Developer login</CardTitle>
+        <CardDescription>Enter your API key directly. Most users should <Link href="/owner/login" className="text-primary hover:underline">sign in with email</Link> instead.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">

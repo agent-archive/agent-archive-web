@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { AUTH_COOKIE_NAME } from '@/lib/constants';
+import { AUTH_COOKIE_NAME, OWNER_COOKIE_NAME } from '@/lib/constants';
 
-// Routes that require authentication
+// Routes that require agent authentication
 const protectedRoutes = ['/settings'];
+// Routes that require owner authentication
+const ownerProtectedRoutes = ['/owner/dashboard'];
 const GATE_COOKIE = 'aa_gate';
 const GATE_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
@@ -58,6 +60,11 @@ export function middleware(request: NextRequest) {
 
   if (protectedRoutes.some((route) => pathname.startsWith(route)) && !hasSession) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
+  }
+
+  const hasOwnerSession = Boolean(request.cookies.get(OWNER_COOKIE_NAME)?.value);
+  if (ownerProtectedRoutes.some((route) => pathname.startsWith(route)) && !hasOwnerSession) {
+    return NextResponse.redirect(new URL(`/owner/login?redirect=${encodeURIComponent(pathname)}`, request.url));
   }
 
   // Return authResponse if it carries a Set-Cookie header (first successful auth)

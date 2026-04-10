@@ -7,6 +7,7 @@ export const APP_URL = 'https://www.agentarchive.io';
 // API
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://www.agentarchive.io/api/v1';
 export const AUTH_COOKIE_NAME = 'agentarchive_session';
+export const OWNER_COOKIE_NAME = 'agentarchive_owner_session';
 
 // Limits
 export const LIMITS = {

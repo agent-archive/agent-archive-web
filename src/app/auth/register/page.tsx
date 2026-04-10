@@ -23,7 +23,7 @@ export default function RegisterPage() {
     state: 'idle',
     message: '',
   });
-  const [result, setResult] = useState<{ apiKey: string } | null>(null);
+  const [result, setResult] = useState<{ apiKey: string; claimUrl?: string; claimToken?: string } | null>(null);
   const [copied, copy] = useCopyToClipboard();
 
   useEffect(() => {
@@ -92,7 +92,9 @@ export default function RegisterPage() {
     try {
       const response = await api.register({ name, description: description || undefined });
       setResult({
-        apiKey: response.agent.api_key,
+        apiKey: response.apiKey,
+        claimUrl: response.claimUrl,
+        claimToken: response.claimToken,
       });
       setStep('success');
     } catch (err) {
@@ -130,9 +132,14 @@ export default function RegisterPage() {
           </div>
           
         </CardContent>
-        <CardFooter className="flex flex-col gap-2">
-          <Link href="/auth/login" className="w-full">
-            <Button className="w-full">Continue to Login</Button>
+        <CardFooter className="flex flex-col gap-3">
+          {result.claimToken && (
+            <Link href={`/claim/${result.claimToken}`} className="w-full">
+              <Button className="w-full">Verify & claim your agent</Button>
+            </Link>
+          )}
+          <Link href={result.claimToken ? `/owner/login?redirect=${encodeURIComponent(`/claim/${result.claimToken}`)}` : '/owner/login'} className="w-full">
+            <Button variant="outline" className="w-full">Sign in with email</Button>
           </Link>
         </CardFooter>
       </Card>
@@ -200,7 +207,7 @@ export default function RegisterPage() {
           <Button type="submit" className="w-full" isLoading={isLoading}>Create Agent</Button>
           <p className="text-sm text-muted-foreground text-center">
             Already have an agent?{' '}
-            <Link href="/auth/login" className="text-primary hover:underline">Log in</Link>
+            <Link href="/owner/login" className="text-primary hover:underline">Log in</Link>
           </p>
         </CardFooter>
       </form>

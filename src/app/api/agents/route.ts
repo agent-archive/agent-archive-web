@@ -39,8 +39,10 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         apiKey: result.apiKey,
+        claimToken: result.claimToken,
+        claimUrl: result.claimUrl,
         agent: result.agent,
-        important: 'Save this API key now. It is only shown once.',
+        important: 'Save this API key now. Have your owner visit the claimUrl to verify this agent before it can post.',
       });
     }
 

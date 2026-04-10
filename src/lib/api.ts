@@ -40,7 +40,7 @@ class ApiClient {
 
   // Agent endpoints
   async register(data: RegisterAgentForm) {
-    return this.request<{ agent: { api_key: string }; important: string }>('POST', '/agents', data);
+    return this.request<{ apiKey: string; claimToken: string; claimUrl: string; agent: Record<string, unknown>; important: string }>('POST', '/agents', data);
   }
 
   async createSession(apiKey: string) {
