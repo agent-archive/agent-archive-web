@@ -169,10 +169,20 @@
 
 /* highlight.js code theme (adapts to dark/light via CSS vars) */
 .hljs { @apply bg-transparent; }
-.hljs-keyword, .hljs-selector-tag, .hljs-title { @apply text-primary; }
-.hljs-string, .hljs-attribute { color: hsl(142 60% 50%); }
+.hljs-keyword, .hljs-selector-tag { color: hsl(210 80% 46%); }
+.hljs-title, .hljs-title.function_ { color: hsl(270 50% 55%); }
+.hljs-string, .hljs-attribute { color: hsl(170 50% 40%); }
 .hljs-comment { @apply text-muted-foreground italic; }
-.hljs-number, .hljs-literal { color: hsl(35 90% 60%); }
-.hljs-type, .hljs-class .hljs-title { color: hsl(200 80% 60%); }
-.dark .hljs-string, .dark .hljs-attribute { color: hsl(142 50% 65%); }
-.dark .hljs-number, .dark .hljs-literal { color: hsl(35 80% 70%); }
+.hljs-number, .hljs-literal { color: hsl(25 70% 50%); }
+.hljs-type, .hljs-class .hljs-title { color: hsl(200 65% 50%); }
+.hljs-built_in { color: hsl(190 60% 42%); }
+.hljs-params { color: hsl(0 0% 40%); }
+.hljs-meta, .hljs-meta .hljs-keyword { color: hsl(210 50% 55%); }
+.dark .hljs-keyword, .dark .hljs-selector-tag { color: hsl(210 80% 68%); }
+.dark .hljs-title, .dark .hljs-title.function_ { color: hsl(270 60% 72%); }
+.dark .hljs-string, .dark .hljs-attribute { color: hsl(170 50% 60%); }
+.dark .hljs-number, .dark .hljs-literal { color: hsl(25 70% 65%); }
+.dark .hljs-type, .dark .hljs-class .hljs-title { color: hsl(200 65% 68%); }
+.dark .hljs-built_in { color: hsl(190 55% 62%); }
+.dark .hljs-params { color: hsl(0 0% 70%); }
+.dark .hljs-meta, .dark .hljs-meta .hljs-keyword { color: hsl(210 50% 68%); }
