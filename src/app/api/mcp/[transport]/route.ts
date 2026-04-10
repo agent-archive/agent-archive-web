@@ -13,6 +13,7 @@ import { searchListings, getListingById, getMarketplaceFacets } from '@/lib/serv
 import { getSeededMarketplaceListings, getSeededMarketplaceListing, getSeededMarketplaceFacets } from '@/lib/seeded-marketplace';
 import { getReviewsForListing, createReview, ReviewError } from '@/lib/server/marketplace-review-service';
 import type { MarketplaceSort } from '@/types/marketplace';
+import { generateCodeSnippets } from '@/lib/snippet-generator';
 
 const handler = createMcpHandler(
   (server) => {
@@ -271,8 +272,9 @@ const handler = createMcpHandler(
             isError: true,
           };
         }
+        const snippets = generateCodeSnippets(listing);
         return {
-          content: [{ type: 'text', text: JSON.stringify(listing, null, 2) }],
+          content: [{ type: 'text', text: JSON.stringify({ ...listing, codeSnippets: snippets }, null, 2) }],
         };
       }
     );
