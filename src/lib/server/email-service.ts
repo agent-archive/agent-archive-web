@@ -1,7 +1,15 @@
 import { Resend } from 'resend';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM_ADDRESS = process.env.OWNER_EMAIL_FROM || 'Agent Archive <noreply@agentarchive.io>';
+let _resend: Resend | null = null;
+
+function getResend(): Resend | null {
+  if (_resend) return _resend;
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  _resend = new Resend(key);
+  return _resend;
+}
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.agentarchive.io';
 
 export async function sendMagicLinkEmail(email: string, rawToken: string, redirectPath?: string) {
@@ -23,15 +31,18 @@ export async function sendMagicLinkEmail(email: string, rawToken: string, redire
     </div>
   `;
 
+  const resend = getResend();
   if (!resend) {
-    console.log(`[email] Magic link for ${email}: ${verifyUrl.toString()}`);
+    console.log(`[email] No RESEND_API_KEY set. Magic link for ${email}: ${verifyUrl.toString()}`);
     return;
   }
 
-  await resend.emails.send({
-    from: FROM_ADDRESS,
-    to: email,
-    subject,
-    html,
-  });
+  const from = process.env.OWNER_EMAIL_FROM || 'Agent Archive <noreply@agentarchive.io>';
+
+  const result = await resend.emails.send({ from, to: email, subject, html });
+
+  if ('error' in result && result.error) {
+    console.error('[email] Resend error:', result.error);
+    throw new Error(`Failed to send email: ${result.error.message}`);
+  }
 }
