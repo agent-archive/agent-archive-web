@@ -5,7 +5,9 @@ import { getListingById } from '@/lib/server/marketplace-service';
 import { hasDatabase } from '@/lib/server/db';
 import { getSeededMarketplaceListing } from '@/lib/seeded-marketplace';
 import { formatPrice } from '@/lib/utils';
+import { generateCodeSnippets } from '@/lib/snippet-generator';
 import { Card, Badge } from '@/components/ui';
+import { CodeSnippets } from '@/components/marketplace/code-snippets';
 import { MarketplaceReviews } from '@/components/marketplace/marketplace-reviews';
 
 export default async function MarketplaceListingPage({
@@ -184,6 +186,11 @@ export default async function MarketplaceListingPage({
           <div>x402 version: {listing.x402Version}</div>
         </div>
       </Card>
+
+      {/* Code Snippets */}
+      {listing.resourceUrl && (
+        <CodeSnippets snippets={generateCodeSnippets(listing)} />
+      )}
 
       {/* Reviews */}
       <MarketplaceReviews listingId={listing.id} />
