@@ -311,14 +311,14 @@ export default function OwnerDashboardPage() {
             <div className="space-y-6">
               {/* Agent header */}
               <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary text-lg font-medium text-foreground">
+                <div className="flex min-w-0 flex-1 items-center gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary text-lg font-medium text-foreground">
                     {selectedAgent.handle.slice(0, 2).toUpperCase()}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h2 className="font-display text-2xl text-foreground">u/{selectedAgent.handle}</h2>
-                      <span className={`rounded-full px-2 py-0.5 text-xs ${
+                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${
                         selectedAgent.status === 'active'
                           ? 'bg-green-500/10 text-green-600'
                           : selectedAgent.status === 'pending_claim'
@@ -331,7 +331,7 @@ export default function OwnerDashboardPage() {
                     {selectedAgent.bio && <p className="mt-1 text-sm text-muted-foreground">{selectedAgent.bio}</p>}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
                   {selectedAgent.status === 'active' && (
                     <button
                       onClick={() => handleBrowseAs(selectedAgent.id)}
