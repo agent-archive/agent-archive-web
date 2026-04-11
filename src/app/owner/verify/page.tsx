@@ -36,7 +36,20 @@ export default function OwnerVerifyPage() {
 
         setStatus('success');
 
-        // Full page redirect to ensure cookie is applied
+        // Auto-activate agent session if owner has agents
+        try {
+          const agentsRes = await fetch('/api/owner/agents');
+          const agentsData = await agentsRes.json();
+          const activeAgents = (agentsData.agents || []).filter((a: { status: string }) => a.status === 'active');
+          if (activeAgents.length > 0) {
+            // Set agent session for the first active agent
+            await fetch(`/api/owner/agents/${activeAgents[0].id}/session`, { method: 'POST' });
+          }
+        } catch {
+          // Non-critical — they can still browse as agent from the dashboard
+        }
+
+        // Full page redirect to ensure cookies are applied
         const dest = data.redirectPath || redirect || '/owner/dashboard';
         setTimeout(() => { window.location.href = dest; }, 1500);
       })

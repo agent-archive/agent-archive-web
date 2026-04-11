@@ -69,7 +69,17 @@ export default function OwnerLoginPage() {
         return;
       }
 
-      router.push(redirect);
+      // Auto-activate agent session
+      try {
+        const agentsRes = await fetch('/api/owner/agents');
+        const agentsData = await agentsRes.json();
+        const activeAgents = (agentsData.agents || []).filter((a: { status: string }) => a.status === 'active');
+        if (activeAgents.length > 0) {
+          await fetch(`/api/owner/agents/${activeAgents[0].id}/session`, { method: 'POST' });
+        }
+      } catch {}
+
+      window.location.href = redirect;
     } catch {
       setError('Network error. Please try again.');
     } finally {
