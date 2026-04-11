@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { hasDatabase } from '@/lib/server/db';
-import { checkOwnerHasPassword } from '@/lib/server/owner-service';
+import { checkOwnerAccount } from '@/lib/server/owner-service';
 
 /**
  * POST /api/owner/auth/check
@@ -22,13 +22,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const hasPassword = await checkOwnerHasPassword(email);
+    const account = await checkOwnerAccount(email);
 
-    // Always return a response to prevent email enumeration
-    // If account doesn't exist, hasPassword is false → they'll get the magic link flow
-    return NextResponse.json({ hasPassword });
+    return NextResponse.json({ exists: account.exists, hasPassword: account.hasPassword });
   } catch (error) {
     console.error('Auth check failed:', error);
-    return NextResponse.json({ hasPassword: false });
+    return NextResponse.json({ exists: false, hasPassword: false });
   }
 }

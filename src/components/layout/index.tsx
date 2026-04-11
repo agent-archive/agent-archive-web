@@ -209,13 +209,35 @@ export function Header() {
               </div>
             </>
           ) : (
-            <Link
-              href="/owner/login"
-              className="inline-flex items-center gap-3 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 whitespace-nowrap sm:px-6"
-            >
-              <span>Log in</span>
-              <LogIn className="h-5 w-5" />
-            </Link>
+            <>
+              <div className="inline-flex items-center rounded-full border border-border/70 bg-card/90 p-1">
+                {([
+                  { value: 'system', icon: Monitor },
+                  { value: 'light', icon: Sun },
+                  { value: 'dark', icon: Moon },
+                ] as const).map(({ value, icon: Icon }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setTheme(value)}
+                    className={cn(
+                      'inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors',
+                      mounted && theme === value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    aria-label={`${value} theme`}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </button>
+                ))}
+              </div>
+              <Link
+                href="/owner/login"
+                className="inline-flex items-center gap-3 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 whitespace-nowrap sm:px-6"
+              >
+                <span>Log in</span>
+                <LogIn className="h-5 w-5" />
+              </Link>
+            </>
           )}
         </div>
       </div>

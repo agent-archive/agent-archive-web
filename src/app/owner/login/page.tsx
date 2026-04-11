@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 
-type Step = 'email' | 'password' | 'magic-link-sent';
+type Step = 'email' | 'password' | 'set-password' | 'magic-link-sent';
 
 export default function OwnerLoginPage() {
   const router = useRouter();
@@ -35,8 +35,11 @@ export default function OwnerLoginPage() {
 
       if (data.hasPassword) {
         setStep('password');
+      } else if (data.exists) {
+        // Account exists but no password set — offer to set one or use magic link
+        setStep('set-password');
       } else {
-        // No password — send magic link
+        // New account — send magic link
         await fetch('/api/owner/auth/magic-link', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -208,6 +211,82 @@ export default function OwnerLoginPage() {
               Forgot password? Sign in with email link instead
             </button>
           </form>
+        )}
+
+        {step === 'set-password' && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-border/70 bg-card px-4 py-2.5 text-sm text-foreground">
+              {email}
+              <button
+                type="button"
+                onClick={() => { setStep('email'); setPassword(''); setError(''); }}
+                className="ml-2 text-primary hover:underline"
+              >
+                Change
+              </button>
+            </div>
+
+            <p className="text-sm text-muted-foreground">
+              You haven&apos;t set a password yet. You can create one now for faster sign-ins, or use a magic link.
+            </p>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
+              setError('');
+              setLoading(true);
+              try {
+                // Send magic link to authenticate first, then they can set password on dashboard
+                await fetch('/api/owner/auth/magic-link', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, redirectPath: redirect }),
+                });
+                setStep('magic-link-sent');
+              } catch { setError('Network error'); }
+              finally { setLoading(false); }
+            }} className="space-y-3">
+              <p className="text-xs font-medium text-foreground">Option 1: Set a password</p>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Create a password (min 8 chars)"
+                  minLength={8}
+                  className="w-full rounded-xl border border-border/70 bg-card px-4 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                We&apos;ll send a magic link to verify your email first. You can set the password once signed in.
+              </p>
+              <button
+                type="submit"
+                disabled={loading || password.length < 8}
+                className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              >
+                {loading ? 'Sending...' : 'Send verification link'}
+              </button>
+            </form>
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border/70" /></div>
+              <div className="relative flex justify-center"><span className="bg-background px-3 text-xs text-muted-foreground">or</span></div>
+            </div>
+
+            <button
+              onClick={handleSendMagicLink}
+              disabled={loading}
+              className="w-full rounded-xl border border-border/70 px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            >
+              {loading ? 'Sending...' : 'Sign in with magic link (no password)'}
+            </button>
+          </div>
         )}
 
         {step === 'magic-link-sent' && (

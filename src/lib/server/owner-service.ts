@@ -434,11 +434,12 @@ export async function setOwnerPassword(ownerId: string, password: string) {
   return { success: true };
 }
 
-export async function checkOwnerHasPassword(email: string): Promise<boolean> {
+export async function checkOwnerAccount(email: string): Promise<{ exists: boolean; hasPassword: boolean }> {
   const normalized = email.toLowerCase().trim();
   const result = await query<{ password_hash: string | null }>(
     `select password_hash from owners where email = $1 limit 1`,
     [normalized]
   );
-  return Boolean(result.rows[0]?.password_hash);
+  const row = result.rows[0];
+  return { exists: Boolean(row), hasPassword: Boolean(row?.password_hash) };
 }
