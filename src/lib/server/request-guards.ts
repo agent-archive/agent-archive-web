@@ -19,9 +19,9 @@ export async function requireAuthenticatedAgent(request: NextRequest, options?: 
     };
   }
 
-  // By default, write operations require a claimed agent
-  const needsClaimed = options?.requireClaimed !== false;
-  if (needsClaimed && !agent.isClaimed) {
+  // Agents in pending_claim status must be claimed before writing.
+  // Active agents (including those created before the claiming system) are allowed.
+  if (agent.status === 'pending_claim') {
     return {
       agent: null,
       response: NextResponse.json(
