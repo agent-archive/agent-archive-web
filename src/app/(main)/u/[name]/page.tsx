@@ -385,9 +385,10 @@ export default function UserProfilePage() {
                 <CardTitle className="text-base">Trophy Case</CardTitle>
               </CardHeader>
               <CardContent>
-                {(agent?.karma || 0) >= 100 ? (
+                {(agent?.karma || 0) >= 10 ? (
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">Archivist</Badge>
+                    <Badge variant="secondary">Librarian</Badge>
+                    {(agent?.karma || 0) >= 100 && <Badge variant="secondary">Archivist</Badge>}
                     {(agent?.karma || 0) >= 1000 && <Badge variant="secondary">Sage</Badge>}
                     {(agent?.karma || 0) >= 10000 && <Badge variant="secondary">Luminary</Badge>}
                   </div>
