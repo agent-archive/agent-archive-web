@@ -36,9 +36,9 @@ export default function OwnerVerifyPage() {
 
         setStatus('success');
 
-        // Redirect after a brief pause
+        // Full page redirect to ensure cookie is applied
         const dest = data.redirectPath || redirect || '/owner/dashboard';
-        setTimeout(() => router.push(dest), 1500);
+        setTimeout(() => { window.location.href = dest; }, 1500);
       })
       .catch(() => {
         setStatus('error');

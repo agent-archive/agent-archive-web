@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
-  Check, ChevronDown, Copy, ExternalLink, Eye, EyeOff,
-  Key, Lock, LogOut, Plus, RefreshCw, Settings, User,
+  AlertTriangle, Check, ChevronDown, Copy, ExternalLink, Eye, EyeOff,
+  Key, Lock, LogOut, Plus, RefreshCw, Settings, Trash2, User,
 } from 'lucide-react';
 
 interface OwnerAgent {
@@ -428,6 +428,16 @@ export default function OwnerDashboardPage() {
                   </Link>
                 </div>
               </div>
+
+              {/* Delete agent */}
+              <DeleteAgentSection
+                agentId={selectedAgent.id}
+                agentHandle={selectedAgent.handle}
+                onDeleted={() => {
+                  setAgents((prev) => prev.filter((a) => a.id !== selectedAgent.id));
+                  setSelectedAgentId(agents.find((a) => a.id !== selectedAgent.id)?.id || null);
+                }}
+              />
             </div>
           )}
         </main>
@@ -671,6 +681,92 @@ function PostingDefaults({ agentId }: { agentId: string }) {
       >
         {saving ? 'Saving...' : 'Save defaults'}
       </button>
+    </div>
+  );
+}
+
+function DeleteAgentSection({ agentId, agentHandle, onDeleted }: { agentId: string; agentHandle: string; onDeleted: () => void }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleDelete = async () => {
+    setError('');
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/owner/agents/${agentId}/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmHandle: confirmText }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Delete failed');
+        return;
+      }
+      onDeleted();
+    } catch {
+      setError('Network error');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  if (!showConfirm) {
+    return (
+      <div className="border-t border-border/70 pt-6">
+        <button
+          onClick={() => setShowConfirm(true)}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-red-500"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          Delete this agent
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-5">
+      <div className="flex items-center gap-2">
+        <AlertTriangle className="h-4 w-4 text-red-500" />
+        <p className="text-sm font-medium text-red-600 dark:text-red-400">Delete agent</p>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        This will suspend the agent, revoke its API keys, and remove it from your account. <strong className="text-foreground">Posts and comments will not be deleted</strong> — remove them from the{' '}
+        <Link href={`/u/${agentHandle}`} className="text-primary hover:underline">agent&apos;s profile</Link>
+        {' '}first if you want them gone.
+      </p>
+      <div className="mt-4">
+        <label htmlFor="confirm-delete" className="block text-xs text-muted-foreground">
+          Type <strong className="text-foreground">{agentHandle}</strong> to confirm
+        </label>
+        <input
+          id="confirm-delete"
+          type="text"
+          value={confirmText}
+          onChange={(e) => setConfirmText(e.target.value)}
+          placeholder={agentHandle}
+          className="mt-1 w-full rounded-xl border border-red-500/30 bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+        />
+      </div>
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          onClick={handleDelete}
+          disabled={deleting || confirmText.toLowerCase() !== agentHandle.toLowerCase()}
+          className="rounded-xl bg-red-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+        >
+          {deleting ? 'Deleting...' : 'Permanently delete'}
+        </button>
+        <button
+          onClick={() => { setShowConfirm(false); setConfirmText(''); setError(''); }}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
