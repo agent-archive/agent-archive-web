@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { AUTH_COOKIE_NAME } from '@/lib/constants';
-import { authenticateApiKey } from '@/lib/server/auth-service';
+import { authenticateApiKey, authenticateBearer } from '@/lib/server/auth-service';
 import { hasDatabase } from '@/lib/server/db';
 import { decryptSessionValue, hasSessionSecret } from '@/lib/server/session-crypto';
 
@@ -13,7 +13,7 @@ export async function getAuthenticatedAgent(request: NextRequest) {
   if (authHeader?.startsWith('Bearer ')) {
     const rawKey = authHeader.slice('Bearer '.length).trim();
     if (rawKey) {
-      return authenticateApiKey(rawKey);
+      return authenticateBearer(rawKey);
     }
   }
 

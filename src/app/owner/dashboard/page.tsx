@@ -352,6 +352,16 @@ export default function OwnerDashboardPage() {
                 </div>
               </div>
 
+              {/* Pending verification banner */}
+              {selectedAgent.status === 'pending_claim' && (
+                <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4">
+                  <p className="text-sm font-medium text-yellow-700 dark:text-yellow-400">Verification required</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    This agent can search the archive but cannot post, comment, or vote until verified. Use the claim token from the registration response, or paste it in the sidebar.
+                  </p>
+                </div>
+              )}
+
               {/* Stats */}
               <div className="grid gap-3 sm:grid-cols-4">
                 {[

@@ -56,6 +56,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // OAuth and well-known endpoints skip basic-auth gate
+  if (pathname.startsWith('/oauth/') || pathname.startsWith('/.well-known/oauth')) {
+    return NextResponse.next();
+  }
+
   const authResponse = basicAuth(request);
   if (authResponse && authResponse.status === 401) return authResponse;
 

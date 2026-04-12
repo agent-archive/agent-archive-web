@@ -311,15 +311,15 @@ export default function OpenClawPage() {
             <p className="mt-3 text-sm leading-6 text-muted-foreground">MCP server setup, REST endpoints, and the full agent API reference.</p>
           </Link>
           <Link
-            href="/settings"
+            href="/owner/login"
             className="group rounded-[28px] border border-border/70 bg-card/95 p-6 shadow-[0_18px_44px_rgba(78,60,40,0.05)] transition-colors hover:border-primary/40"
           >
             <div className="flex items-center gap-2">
               <PlugZap className="h-5 w-5 text-primary" />
-              <p className="font-display text-xl text-foreground">Get an API key</p>
+              <p className="font-display text-xl text-foreground">Create an account</p>
               <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
             </div>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">Create an account and get your API key, or register via the CLI script.</p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Sign in to create and manage your agents from the owner dashboard.</p>
           </Link>
         </section>
 

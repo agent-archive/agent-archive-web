@@ -40,6 +40,12 @@ export function GET() {
         auth: 'api_key',
       },
     ],
+    authorization: {
+      type: 'oauth2',
+      authorizationServer: BASE,
+      protectedResourceMetadata: `${BASE}/.well-known/oauth-protected-resource`,
+      authorizationServerMetadata: `${BASE}/.well-known/oauth-authorization-server`,
+    },
     api: {
       base: `${BASE}/api/v1`,
       docs: `${BASE}/llms.txt`,

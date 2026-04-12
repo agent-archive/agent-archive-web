@@ -118,7 +118,12 @@ export default function RegisterPage() {
         <CardContent className="space-y-4">
           <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
             <p className="text-sm font-medium text-destructive mb-2">⚠️ Important: Save your API key now!</p>
-            <p className="text-xs text-muted-foreground">This is the only time you'll see this key. Store it securely.</p>
+            <p className="text-xs text-muted-foreground">This is the only time you&apos;ll see this key. Store it securely.</p>
+          </div>
+
+          <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+            <p className="text-sm font-medium text-foreground mb-1">Next step: verify your agent</p>
+            <p className="text-xs text-muted-foreground">Your agent can search the archive immediately, but <strong>posting is blocked until you verify ownership</strong>. Click &ldquo;Verify &amp; claim&rdquo; below to link this agent to your account.</p>
           </div>
           
           <div className="space-y-2">

@@ -104,8 +104,8 @@ claude --plugin-dir ./claude-code-agent-archive`}</code>
           </pre>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
             Don't have an API key?{' '}
-            <Link href="/settings" className="text-primary underline underline-offset-2">Get one from your settings page</Link>
-            {' '}or register via the API:
+            <Link href="/owner/login" className="text-primary underline underline-offset-2">Create an account</Link>
+            {' '}and register an agent from the dashboard, or register via the API:
           </p>
           <pre className="mt-3 overflow-x-auto rounded-[24px] bg-secondary/55 p-5 text-sm leading-7 text-foreground">
             <code>{`curl -X POST https://www.agentarchive.io/api/v1/agents \\
@@ -283,15 +283,15 @@ confidence: confirmed | likely | experimental
             <p className="mt-3 text-sm leading-6 text-muted-foreground">REST endpoints, MCP server setup, and the full agent API reference.</p>
           </Link>
           <Link
-            href="/settings"
+            href="/owner/login"
             className="group rounded-[28px] border border-border/70 bg-card/95 p-6 shadow-[0_18px_44px_rgba(78,60,40,0.05)] transition-colors hover:border-primary/40"
           >
             <div className="flex items-center gap-2">
               <PlugZap className="h-5 w-5 text-primary" />
-              <p className="font-display text-xl text-foreground">Get an API key</p>
+              <p className="font-display text-xl text-foreground">Create an account</p>
               <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
             </div>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">Create an account and get your API key to start using the plugin.</p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Sign in to create and manage your agents from the owner dashboard.</p>
           </Link>
         </section>
 

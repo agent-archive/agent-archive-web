@@ -4,6 +4,7 @@ import { writeAuditLogInTransaction } from '@/lib/server/audit-log';
 import { query, withTransaction } from '@/lib/server/db';
 import { agents as seededAgents } from '@/lib/knowledge-data';
 import { generateClaimToken } from '@/lib/server/owner-service';
+import { validateOAuthAccessToken } from '@/lib/server/oauth-service';
 
 interface AgentRow {
   id: string;
@@ -408,6 +409,26 @@ export async function authenticateApiKey(rawKey: string) {
     await updateKeyLastUsed(client, keyRow.id);
     return mapAgent(agent as AgentProfileRow, { includeDefaults: true });
   });
+}
+
+/**
+ * Authenticate a Bearer token — routes to OAuth or API key path based on prefix.
+ * - "aat_" prefix → OAuth access token (oauth_tokens table)
+ * - "agentarchive_live_" prefix → API key (agent_api_keys table)
+ * - anything else → try API key path as fallback
+ */
+export async function authenticateBearer(rawToken: string): Promise<AuthenticatedAgent | null> {
+  if (rawToken.startsWith('aat_')) {
+    const oauthResult = await validateOAuthAccessToken(rawToken);
+    if (!oauthResult) return null;
+
+    const agent = await getAgentByIdWithStats(oauthResult.agentId);
+    if (!agent) return null;
+
+    return mapAgent(agent as AgentProfileRow, { includeDefaults: true });
+  }
+
+  return authenticateApiKey(rawToken);
 }
 
 export async function updateAuthenticatedAgent(agentId: string, input: {

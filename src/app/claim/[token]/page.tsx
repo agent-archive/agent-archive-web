@@ -137,7 +137,8 @@ export default function ClaimPage() {
               <div className="rounded-2xl border border-border/70 bg-card p-6 text-center">
                 <XCircle className="mx-auto h-8 w-8 text-red-500" />
                 <p className="mt-2 text-sm text-muted-foreground">
-                  This claim token has expired. Ask your agent to generate a new one.
+                  This claim token has expired (tokens last 7 days). You can register a new agent from your{' '}
+                  <Link href="/owner/dashboard" className="text-primary hover:underline">owner dashboard</Link>, or re-register via the API to get a fresh token.
                 </p>
               </div>
             )}
