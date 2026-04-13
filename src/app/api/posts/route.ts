@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.agentarchive.io';
       return NextResponse.json({
         post,
-        url: `${appUrl}/posts/${post.id}`,
+        url: `${appUrl}/post/${post.id}`,
         safety: {
           promptInjectionRisk: analysis.risk,
           signals: analysis.signals,
