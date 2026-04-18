@@ -12,11 +12,18 @@
       font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
       font-size: 14px;
       line-height: 1.5;
-      padding: 24px;
-      max-width: 1200px;
-      margin: 0 auto;
+      padding: 0;
+      margin: 0;
     }
     a { color: #e5e5e5; text-decoration: none; }
+    a:hover { color: #fff; }
+
+    /* Status bar */
+    .status-bar { height: 3px; width: 100%; }
+    .status-bar.danger { background: linear-gradient(90deg, #ef4444 0%, #991b1b 100%); }
+    .status-bar.secure { background: linear-gradient(90deg, #22c55e 0%, #16a34a 50%, #22c55e 100%); box-shadow: 0 0 12px rgba(34,197,94,0.4); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
 
     /* Header */
     .header {
@@ -43,22 +50,66 @@
       border: 1px solid #262626;
       border-radius: 6px;
       padding: 16px;
+      transition: border-color 0.6s, box-shadow 0.6s;
+    }
+    .metric-card.lit {
+      border-color: #166534;
+      box-shadow: 0 0 16px rgba(34,197,94,0.15);
     }
     .metric-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
     .metric-card .value { font-size: 28px; font-weight: 700; }
-    .metric-card .sub { font-size: 12px; color: #666; margin-top: 4px; }
 
-    /* Grade colors */
+    /* Coverage progress bar */
+    .coverage-bar-track {
+      width: 100%;
+      height: 4px;
+      background: #262626;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .coverage-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1.5s ease-out;
+    }
+    .coverage-bar-fill.low { background: linear-gradient(90deg, #ef4444, #f97316); }
+    .coverage-bar-fill.mid { background: linear-gradient(90deg, #f97316, #eab308); }
+    .coverage-bar-fill.good { background: linear-gradient(90deg, #22c55e, #4ade80); box-shadow: 0 0 8px rgba(34,197,94,0.4); }
+
+    /* Grade colors + glow */
     .grade-F { color: #ef4444; }
     .grade-D { color: #f97316; }
     .grade-C { color: #eab308; }
     .grade-B { color: #22c55e; }
     .grade-A { color: #4ade80; }
+    .grade-display { position: relative; display: inline-block; }
+    .grade-display .grade-letter { font-size: 28px; }
+    .grade-display.glow-B .grade-letter,
+    .grade-display.glow-A .grade-letter { font-size: 36px; }
+    .grade-display .grade-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 1s;
+      pointer-events: none;
+    }
+    .grade-display.glow-B .grade-glow { background: radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%); opacity: 1; }
+    .grade-display.glow-A .grade-glow { background: radial-gradient(circle, rgba(74,222,128,0.4) 0%, transparent 70%); opacity: 1; }
+    .grade-display.glow-F .grade-glow { background: radial-gradient(circle, rgba(239,68,68,0.15) 0%, transparent 70%); opacity: 1; }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 16px rgba(34,197,94,0.15); }
+      50% { box-shadow: 0 0 24px rgba(34,197,94,0.3); }
+    }
+    .metric-card.lit { animation: pulse-green 3s ease-in-out infinite; }
 
     /* Panels */
-    .panel {
-      margin-bottom: 32px;
-    }
+    .panel { margin-bottom: 32px; }
     .panel-title {
       font-size: 13px;
       text-transform: uppercase;
@@ -67,14 +118,35 @@
       margin-bottom: 12px;
       padding-bottom: 8px;
       border-bottom: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+    .count-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .count-badge.all-clear { background: #14532d; color: #4ade80; }
+    .count-badge.pending { background: #7f1d1d; color: #fca5a5; }
+
+    /* Section dividers */
+    .section-divider {
+      margin: 16px 0 8px;
+      padding-top: 8px;
+    }
+    .section-divider:not(:first-child) { border-top: 1px solid #1a1a1a; }
+    .section-divider span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .label-mitigated { color: #22c55e; }
+    .label-unverified { color: #ef4444; }
 
     /* Emerging threats */
-    .emerging-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .emerging-list { display: flex; flex-direction: column; gap: 12px; }
     .threat-card {
       background: #141414;
       border: 1px solid #262626;
@@ -83,89 +155,77 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      transition: border-color 0.6s, box-shadow 0.6s;
+    }
+    .threat-card.covered-card {
+      border-color: #166534;
+      box-shadow: 0 0 12px rgba(34,197,94,0.15);
     }
     .severity-badge {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 4px 8px;
-      border-radius: 3px;
-      min-width: 72px;
-      text-align: center;
-      flex-shrink: 0;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; padding: 4px 8px; border-radius: 3px;
+      min-width: 72px; text-align: center; flex-shrink: 0; position: relative;
     }
     .severity-critical { background: #7f1d1d; color: #fca5a5; }
     .severity-high { background: #7c2d12; color: #fdba74; }
     .severity-medium { background: #713f12; color: #fde047; }
     .severity-low { background: #14532d; color: #86efac; }
-    .threat-info { flex: 1; }
+    .mitigated-check {
+      position: absolute; top: -6px; right: -6px;
+      width: 16px; height: 16px; background: #166534;
+      border: 2px solid #0a0a0a; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: #4ade80; line-height: 1;
+    }
+    .threat-info { flex: 1; min-width: 0; }
     .threat-info .id { font-weight: 600; font-size: 13px; }
+    .threat-info .id a { color: inherit; border-bottom: 1px dashed #444; }
+    .threat-info .id a:hover { color: #4ade80; border-bottom-color: #4ade80; }
     .threat-info .title { color: #aaa; font-size: 12px; margin-top: 2px; }
     .threat-info .module { color: #666; font-size: 11px; margin-top: 4px; }
+    .test-link { font-size: 10px; color: #4ade80; margin-top: 4px; display: inline-block; opacity: 0.8; }
+    .test-link:hover { opacity: 1; text-decoration: underline; }
     .threat-meta { text-align: right; flex-shrink: 0; }
     .threat-meta .days { font-size: 11px; color: #666; }
-    .status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      margin-top: 6px;
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .status-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 6px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .status-uncovered .status-dot { background: #ef4444; }
     .status-uncovered .status-text { color: #ef4444; }
-    .status-covered .status-dot { background: #22c55e; }
+    .status-covered .status-dot { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
     .status-covered .status-text { color: #22c55e; }
 
     /* Foundational grid */
-    .foundational-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
+    .foundational-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .found-card {
-      background: #141414;
-      border: 1px solid #262626;
-      border-radius: 6px;
-      padding: 12px;
+      background: #141414; border: 1px solid #262626;
+      border-radius: 6px; padding: 12px;
+      transition: border-color 0.6s, box-shadow 0.6s;
     }
+    .found-card.covered-card { border-color: #166534; box-shadow: 0 0 10px rgba(34,197,94,0.12); }
     .found-card .id { font-size: 12px; font-weight: 600; }
+    .found-card .id a { color: inherit; border-bottom: 1px dashed #444; }
+    .found-card .id a:hover { color: #4ade80; border-bottom-color: #4ade80; }
     .found-card .name { font-size: 11px; color: #888; margin-top: 2px; }
     .found-card .status-indicator { margin-top: 8px; }
 
     /* Activity log */
     .activity-log {
-      background: #141414;
-      border: 1px solid #262626;
-      border-radius: 6px;
-      max-height: 260px;
-      overflow-y: auto;
+      background: #141414; border: 1px solid #262626;
+      border-radius: 6px; max-height: 300px; overflow-y: auto;
     }
-    .activity-log .empty {
-      padding: 24px;
-      text-align: center;
-      color: #444;
-      font-size: 12px;
-    }
+    .activity-log .empty { padding: 24px; text-align: center; color: #444; font-size: 12px; }
     .activity-item {
-      padding: 10px 16px;
-      border-bottom: 1px solid #1a1a1a;
-      font-size: 12px;
-      color: #aaa;
+      padding: 10px 16px; border-bottom: 1px solid #1a1a1a;
+      font-size: 12px; color: #aaa;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.3s, transform 0.3s;
     }
+    .activity-item.visible { opacity: 1; transform: translateY(0); }
     .activity-item:last-child { border-bottom: none; }
-    .activity-item::before {
-      content: "$ ";
-      color: #22c55e;
-    }
+    .activity-item .prompt { color: #22c55e; }
+    .activity-item a { color: #aaa; }
+    .activity-item a:hover { color: #4ade80; }
 
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #141414; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -178,106 +238,176 @@
   </style>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="status-bar" class="status-bar"></div>
+  <div class="container"><div id="app"></div></div>
   <script>
     (async function() {
-      const params = new URLSearchParams(window.location.search);
-      const state = params.get('state') || 'before';
-      const file = state === 'after' ? 'state-after.json' : 'state-before.json';
+      var params = new URLSearchParams(window.location.search);
+      var state = params.get('state') || 'before';
+      var file = state === 'after' ? 'state-after.json' : 'state-before.json';
 
-      let data;
+      var data;
       try {
-        const resp = await fetch(file);
+        var resp = await fetch(file);
         data = await resp.json();
       } catch (e) {
         document.getElementById('app').innerHTML =
-          '<p style="color:#ef4444;padding:40px">Failed to load ' + file + '. Ensure the JSON file is in the same directory.</p>';
+          '<p style="color:#ef4444;padding:40px">Failed to load ' + file + '. Serve via HTTP server.</p>';
         return;
       }
 
-      const gradeClass = 'grade-' + data.grade;
+      var isAfter = state === 'after';
+      var repoBase = data.repo_url || 'https://github.com/agent-archive/agent-archive-web';
+      var prUrl = data.pr_url || null;
 
-      function statusHTML(status) {
-        const cls = status === 'covered' ? 'status-covered' : 'status-uncovered';
-        return '<span class="status-indicator ' + cls + '">' +
-          '<span class="status-dot"></span>' +
-          '<span class="status-text">' + status + '</span></span>';
+      document.getElementById('status-bar').className = 'status-bar ' + (isAfter ? 'secure' : 'danger');
+
+      var gradeClass = 'grade-' + data.grade;
+      var glowClass = 'glow-' + data.grade;
+      var barClass = data.coverage_pct < 5 ? 'low' : (data.coverage_pct < 15 ? 'mid' : 'good');
+
+      function statusHTML(st) {
+        var cls = st === 'covered' ? 'status-covered' : 'status-uncovered';
+        return '<span class="status-indicator ' + cls + '"><span class="status-dot"></span><span class="status-text">' + st + '</span></span>';
       }
 
-      const emergingHTML = data.emerging.map(function(t) {
-        return '<div class="threat-card">' +
-          '<span class="severity-badge severity-' + t.severity + '">' + t.severity + '</span>' +
+      var emergingUncovered = data.emerging.filter(function(t) { return t.status !== 'covered'; });
+      var emergingCovered = data.emerging.filter(function(t) { return t.status === 'covered'; });
+
+      function threatCardHTML(t) {
+        var cardClass = t.status === 'covered' ? 'threat-card covered-card' : 'threat-card';
+        var checkmark = t.status === 'covered' ? '<span class="mitigated-check">&#10003;</span>' : '';
+        var idLink = t.source_url ? '<a href="' + t.source_url + '" target="_blank" title="View advisory">' + t.id + '</a>' : t.id;
+        var testLink = t.test_file ? '<a class="test-link" href="' + repoBase + '/blob/demo/baseline/' + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
+        return '<div class="' + cardClass + '">' +
+          '<span class="severity-badge severity-' + t.severity + '">' + t.severity + checkmark + '</span>' +
           '<div class="threat-info">' +
-            '<div class="id">' + t.id + '</div>' +
+            '<div class="id">' + idLink + '</div>' +
             '<div class="title">' + t.title + '</div>' +
             '<div class="module">' + t.module + '</div>' +
+            (testLink ? '<div>' + testLink + '</div>' : '') +
           '</div>' +
           '<div class="threat-meta">' +
             '<div class="days">' + t.days_ago + ' days ago</div>' +
             statusHTML(t.status) +
-          '</div>' +
-        '</div>';
-      }).join('');
+          '</div></div>';
+      }
 
-      const foundationalHTML = data.foundational.map(function(f) {
-        return '<div class="found-card">' +
-          '<div class="id">' + f.id + '</div>' +
+      var emergingHTML = '';
+      if (emergingUncovered.length > 0) {
+        emergingHTML += '<div class="section-divider"><span class="label-unverified">Unverified</span></div>';
+        emergingHTML += emergingUncovered.map(threatCardHTML).join('');
+      }
+      if (emergingCovered.length > 0) {
+        emergingHTML += '<div class="section-divider"><span class="label-mitigated">Mitigated</span></div>';
+        emergingHTML += emergingCovered.map(threatCardHTML).join('');
+      }
+      if (data.emerging.length === 0) emergingHTML = '<div class="empty">No emerging threats</div>';
+
+      var emergingBadgeText = emergingCovered.length + '/' + data.emerging.length + ' covered';
+      var emergingBadgeClass = emergingCovered.length === data.emerging.length ? 'all-clear' : 'pending';
+
+      var foundUncovered = data.foundational.filter(function(f) { return f.status !== 'covered'; });
+      var foundCovered = data.foundational.filter(function(f) { return f.status === 'covered'; });
+
+      function foundCardHTML(f) {
+        var cardClass = f.status === 'covered' ? 'found-card covered-card' : 'found-card';
+        var idLink = f.source_url ? '<a href="' + f.source_url + '" target="_blank" title="View CWE">' + f.id + '</a>' : f.id;
+        var testLink = f.test_file ? '<a class="test-link" href="' + repoBase + '/blob/demo/baseline/' + f.test_file + '" target="_blank">&#128279; ' + f.test_file + '</a>' : '';
+        return '<div class="' + cardClass + '">' +
+          '<div class="id">' + idLink + '</div>' +
           '<div class="name">' + f.name + '</div>' +
-          statusHTML(f.status) +
-        '</div>';
-      }).join('');
+          (testLink ? '<div>' + testLink + '</div>' : '') +
+          statusHTML(f.status) + '</div>';
+      }
 
-      let activityHTML;
+      var foundationalHTML = '';
+      if (foundUncovered.length > 0) {
+        foundationalHTML += '<div class="section-divider"><span class="label-unverified">Unverified</span></div>';
+        foundationalHTML += '<div class="foundational-grid">' + foundUncovered.map(foundCardHTML).join('') + '</div>';
+      }
+      if (foundCovered.length > 0) {
+        foundationalHTML += '<div class="section-divider"><span class="label-mitigated">Mitigated</span></div>';
+        foundationalHTML += '<div class="foundational-grid">' + foundCovered.map(foundCardHTML).join('') + '</div>';
+      }
+
+      var foundBadgeText = foundCovered.length + '/' + data.foundational.length + ' covered';
+      var foundBadgeClass = foundCovered.length === data.foundational.length ? 'all-clear' : 'pending';
+
+      var activityItems = '';
       if (data.activity.length === 0) {
-        activityHTML = '<div class="empty">No activity recorded</div>';
+        activityItems = '<div class="empty">No activity recorded</div>';
       } else {
-        activityHTML = data.activity.map(function(msg) {
-          return '<div class="activity-item">' + msg + '</div>';
+        activityItems = data.activity.map(function(entry) {
+          var msg = typeof entry === 'string' ? entry : entry.message;
+          var commitUrl = (typeof entry === 'object' && entry.commit_url) ? entry.commit_url : null;
+          var content = commitUrl ? '<a href="' + commitUrl + '" target="_blank">' + msg + '</a>' : msg;
+          return '<div class="activity-item"><span class="prompt">$ git commit </span>' + content + '</div>';
         }).join('');
       }
 
+      var prLinkHTML = prUrl ? '<div><a href="' + prUrl + '" target="_blank" style="color:#4ade80;font-size:11px;">View PR &#8594;</a></div>' : '';
+
       document.getElementById('app').innerHTML =
-        '<div class="header">' +
-          '<h1>Security Verification Dashboard</h1>' +
-          '<div class="header-meta">' +
-            '<div>Last scan: ' + data.timestamp + '</div>' +
-            '<div class="label">Legacy Codebase: agent-archive-web</div>' +
-          '</div>' +
-        '</div>' +
+        '<div class="header"><h1>Security Verification Dashboard</h1>' +
+          '<div class="header-meta"><div>Last scan: ' + data.timestamp + '</div>' +
+          '<div class="label">Legacy Codebase: agent-archive-web</div>' + prLinkHTML + '</div></div>' +
 
         '<div class="metrics">' +
-          '<div class="metric-card">' +
-            '<div class="label">Patterns Verified</div>' +
-            '<div class="value">' + data.patterns_verified + '/' + data.patterns_total + '</div>' +
-          '</div>' +
-          '<div class="metric-card">' +
-            '<div class="label">Emerging Threats Covered</div>' +
-            '<div class="value">' + data.emerging_covered + '/' + data.emerging_total + '</div>' +
-          '</div>' +
-          '<div class="metric-card">' +
-            '<div class="label">Test Coverage</div>' +
-            '<div class="value">' + data.coverage_pct + '%</div>' +
-          '</div>' +
-          '<div class="metric-card">' +
-            '<div class="label">Security Grade</div>' +
-            '<div class="value ' + gradeClass + '">' + data.grade + '</div>' +
-          '</div>' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Patterns Verified</div>' +
+            '<div class="value"><span id="counter-patterns">0</span>/' + data.patterns_total + '</div></div>' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Emerging Threats Covered</div>' +
+            '<div class="value"><span id="counter-emerging">0</span>/' + data.emerging_total + '</div></div>' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Test Coverage</div>' +
+            '<div class="value"><span id="counter-coverage">0</span>%</div>' +
+            '<div class="coverage-bar-track"><div id="coverage-bar" class="coverage-bar-fill ' + barClass + '"></div></div></div>' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Security Grade</div>' +
+            '<div class="grade-display ' + glowClass + '"><div class="grade-glow"></div>' +
+            '<div class="grade-letter ' + gradeClass + '" style="position:relative;font-weight:700;">' + data.grade + '</div></div></div>' +
         '</div>' +
 
-        '<div class="panel">' +
-          '<div class="panel-title">Emerging Threats</div>' +
-          '<div class="emerging-list">' + emergingHTML + '</div>' +
-        '</div>' +
+        '<div class="panel"><div class="panel-title">Emerging Threats <span class="count-badge ' + emergingBadgeClass + '">' + emergingBadgeText + '</span></div>' +
+          '<div class="emerging-list">' + emergingHTML + '</div></div>' +
 
-        '<div class="panel">' +
-          '<div class="panel-title">Foundational Patterns</div>' +
-          '<div class="foundational-grid">' + foundationalHTML + '</div>' +
-        '</div>' +
+        '<div class="panel"><div class="panel-title">Foundational Patterns <span class="count-badge ' + foundBadgeClass + '">' + foundBadgeText + '</span></div>' +
+          foundationalHTML + '</div>' +
 
-        '<div class="panel">' +
-          '<div class="panel-title">Activity Log</div>' +
-          '<div class="activity-log">' + activityHTML + '</div>' +
-        '</div>';
+        '<div class="panel"><div class="panel-title">Activity Log</div>' +
+          '<div class="activity-log" id="activity-log">' + activityItems + '</div></div>';
+
+      // Animated counters
+      function animateCounter(id, target, duration, decimal) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var startTime = null;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          var progress = Math.min((ts - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = target * eased;
+          el.textContent = decimal ? current.toFixed(1) : Math.round(current);
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = decimal ? target.toFixed(1) : target;
+        }
+        requestAnimationFrame(step);
+      }
+
+      var dur = isAfter ? 1500 : 600;
+      animateCounter('counter-patterns', data.patterns_verified, dur, false);
+      animateCounter('counter-emerging', data.emerging_covered, dur, false);
+      animateCounter('counter-coverage', data.coverage_pct, dur, true);
+
+      // Coverage bar fill
+      setTimeout(function() {
+        var bar = document.getElementById('coverage-bar');
+        if (bar) bar.style.width = Math.min(data.coverage_pct, 100) + '%';
+      }, 200);
+
+      // Activity log typewriter
+      var items = document.querySelectorAll('.activity-item');
+      items.forEach(function(item, i) {
+        setTimeout(function() { item.classList.add('visible'); }, isAfter ? 300 + i * 180 : 0);
+      });
     })();
   </script>
 </body>

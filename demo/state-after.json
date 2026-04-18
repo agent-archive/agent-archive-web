@@ -1,5 +1,7 @@
 {
   "timestamp": "2026-04-17T09:30:00Z",
+  "repo_url": "https://github.com/agent-archive/agent-archive-web",
+  "pr_url": "https://github.com/agent-archive/agent-archive-web/pull/29",
   "coverage_pct": 20.0,
   "patterns_verified": 12,
   "patterns_total": 12,
@@ -13,7 +15,9 @@
       "days_ago": 11,
       "title": "Next.js middleware authorization bypass",
       "module": "request-guards.ts",
-      "status": "covered"
+      "status": "covered",
+      "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-29927",
+      "test_file": "__tests__/security/CVE-2025-29927.test.ts"
     },
     {
       "id": "CWE-1333",
@@ -21,7 +25,9 @@
       "days_ago": 6,
       "title": "ReDoS in prompt injection regex",
       "module": "prompt-injection.ts",
-      "status": "covered"
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
+      "test_file": "__tests__/security/CWE-1333.test.ts"
     },
     {
       "id": "CVE-2024-46982",
@@ -29,7 +35,9 @@
       "days_ago": 21,
       "title": "Next.js cache poisoning",
       "module": "src/app/",
-      "status": "covered"
+      "status": "covered",
+      "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-46982",
+      "test_file": "__tests__/security/CVE-2024-46982.test.ts"
     },
     {
       "id": "CWE-89",
@@ -37,31 +45,117 @@
       "days_ago": 3,
       "title": "SQL injection via dynamic column interpolation",
       "module": "facets-service.ts",
-      "status": "covered"
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/89.html",
+      "test_file": "__tests__/security/CWE-89.test.ts"
     }
   ],
   "foundational": [
-    { "id": "CWE-79", "name": "XSS", "status": "covered" },
-    { "id": "CWE-94", "name": "Code Injection", "status": "covered" },
-    { "id": "CWE-20", "name": "Input Validation", "status": "covered" },
-    { "id": "CWE-307", "name": "Brute Force", "status": "covered" },
-    { "id": "CWE-327", "name": "Weak Crypto", "status": "covered" },
-    { "id": "CWE-862", "name": "Missing AuthZ", "status": "covered" },
-    { "id": "CWE-754", "name": "Improper Error Handling", "status": "covered" },
-    { "id": "CWE-116", "name": "Improper Output Encoding", "status": "covered" }
+    {
+      "id": "CWE-79",
+      "name": "XSS",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/79.html",
+      "test_file": "__tests__/security/CWE-79.test.ts"
+    },
+    {
+      "id": "CWE-94",
+      "name": "Code Injection",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/94.html",
+      "test_file": "__tests__/security/CWE-94.test.ts"
+    },
+    {
+      "id": "CWE-20",
+      "name": "Input Validation",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/20.html",
+      "test_file": "__tests__/security/CWE-20.test.ts"
+    },
+    {
+      "id": "CWE-307",
+      "name": "Brute Force",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/307.html",
+      "test_file": "__tests__/security/CWE-307.test.ts"
+    },
+    {
+      "id": "CWE-327",
+      "name": "Weak Crypto",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/327.html",
+      "test_file": "__tests__/security/CWE-327.test.ts"
+    },
+    {
+      "id": "CWE-862",
+      "name": "Missing AuthZ",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/862.html",
+      "test_file": "__tests__/security/CWE-862.test.ts"
+    },
+    {
+      "id": "CWE-754",
+      "name": "Improper Error Handling",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/754.html",
+      "test_file": "__tests__/security/CWE-754.test.ts"
+    },
+    {
+      "id": "CWE-116",
+      "name": "Improper Output Encoding",
+      "status": "covered",
+      "source_url": "https://cwe.mitre.org/data/definitions/116.html",
+      "test_file": "__tests__/security/CWE-116.test.ts"
+    }
   ],
   "activity": [
-    "security: [CVE-2025-29927] Verify middleware bypass resistance",
-    "security: [CWE-1333] Verify ReDoS resistance in prompt injection patterns",
-    "security: [CVE-2024-46982] Verify cache poisoning resistance",
-    "security: [CWE-89] Verify SQL injection resistance in facet queries",
-    "security: [CWE-79] Verify XSS sanitization",
-    "security: [CWE-94] Verify code injection detection",
-    "security: [CWE-20] Verify input validation schemas",
-    "security: [CWE-307] Verify rate limiting",
-    "security: [CWE-327] Verify cryptographic roundtrip and tamper detection",
-    "security: [CWE-862] Verify authorization enforcement",
-    "security: [CWE-754] Verify moderation error handling",
-    "security: [CWE-116] Verify output encoding"
+    {
+      "message": "security: [CVE-2025-29927] Verify middleware bypass resistance",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-1333] Verify ReDoS resistance in prompt injection patterns",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CVE-2024-46982] Verify cache poisoning resistance",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-89] Verify SQL injection resistance in facet queries",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-79] Verify XSS sanitization",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-94] Verify code injection detection",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-20] Verify input validation schemas",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-307] Verify rate limiting",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-327] Verify cryptographic roundtrip and tamper detection",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-862] Verify authorization enforcement",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-754] Verify moderation error handling",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    },
+    {
+      "message": "security: [CWE-116] Verify output encoding",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/29"
+    }
   ]
 }
