@@ -19,8 +19,8 @@ emerging:
         functions:
           - requireAuthenticatedAgent
         exposure: "Middleware bypass allows unauthenticated access to protected routes"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-285.test.ts
 
   - id: CWE-1333
     severity: high
@@ -37,8 +37,8 @@ emerging:
           - analyzePromptInjectionRisk
           - analyzeCodeRisk
         exposure: "Crafted input causes catastrophic regex backtracking"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-1333.test.ts
 
   - id: CVE-2024-46982
     severity: high
@@ -56,8 +56,8 @@ emerging:
       - path: src/app/
         functions: []
         exposure: "Malicious cached responses served to other users"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-349.test.ts
 
   - id: CWE-89
     severity: medium
@@ -73,8 +73,8 @@ emerging:
         functions:
           - getFacetSuggestions
         exposure: "Column name interpolated into query string, relying on hardcoded allowlist — no test verifies the allowlist holds"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-89.test.ts
 
 foundational:
   - id: CWE-79
@@ -91,8 +91,8 @@ foundational:
         functions:
           - sanitizeForAgentConsumption
         exposure: "User-controlled content may contain unsanitized script payloads"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-79.test.ts
 
   - id: CWE-94
     severity: high
@@ -108,8 +108,8 @@ foundational:
         functions:
           - analyzeCodeRisk
         exposure: "Malicious code patterns may bypass detection heuristics"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-94.test.ts
 
   - id: CWE-20
     severity: medium
@@ -125,8 +125,8 @@ foundational:
         functions:
           - all exported schemas
         exposure: "Malformed data may bypass Zod schema validation boundaries"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-20.test.ts
 
   - id: CWE-307
     severity: medium
@@ -142,8 +142,8 @@ foundational:
         functions:
           - checkMemoryRateLimit
         exposure: "Rate limiter may not properly restrict repeated authentication attempts"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-307.test.ts
 
   - id: CWE-327
     severity: medium
@@ -160,8 +160,8 @@ foundational:
           - encryptSessionValue
           - decryptSessionValue
         exposure: "Weak cryptographic implementation may allow session data tampering"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-327.test.ts
 
   - id: CWE-862
     severity: high
@@ -177,8 +177,8 @@ foundational:
         functions:
           - requireAuthenticatedAgent
         exposure: "Protected endpoints may be accessible without proper authorization"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-862.test.ts
 
   - id: CWE-754
     severity: medium
@@ -194,8 +194,8 @@ foundational:
         functions:
           - evaluatePostForModeration
         exposure: "Unhandled errors in moderation may expose internal state or bypass checks"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-754.test.ts
 
   - id: CWE-116
     severity: medium
@@ -211,5 +211,5 @@ foundational:
         functions:
           - sanitizeForAgentConsumption
         exposure: "Improperly encoded output may be exploitable by downstream consumers"
-    status: uncovered
-    test_file: null
+    status: covered
+    test_file: __tests__/security/CWE-116.test.ts
