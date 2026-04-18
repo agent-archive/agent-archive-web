@@ -3,12 +3,12 @@
   "repo_url": "https://github.com/agent-archive/agent-archive-web",
   "pr_url": "https://github.com/agent-archive/agent-archive-web/pull/30",
   "coverage_pct": 3.93,
-  "patterns_verified": 12,
-  "patterns_total": 12,
-  "emerging_covered": 4,
-  "emerging_total": 4,
-  "kev_total": 2,
-  "kev_covered": 2,
+  "patterns_verified": 11,
+  "patterns_total": 11,
+  "emerging_covered": 3,
+  "emerging_total": 3,
+  "kev_total": 1,
+  "kev_covered": 1,
   "grade": "A",
   "emerging": [
     {
@@ -33,18 +33,6 @@
       "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
       "test_file": "__tests__/security/CWE-1333.test.ts",
       "kev": false
-    },
-    {
-      "id": "CVE-2024-46982",
-      "severity": "high",
-      "days_ago": 21,
-      "title": "Next.js cache poisoning",
-      "module": "src/app/",
-      "status": "covered",
-      "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-46982",
-      "test_file": "__tests__/security/CWE-349.test.ts",
-      "kev": true,
-      "kev_due": "2026-04-18"
     },
     {
       "id": "CWE-89",
@@ -123,10 +111,6 @@
     },
     {
       "message": "security: [CWE-1333] ReDoS in prompt injection regex",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/30"
-    },
-    {
-      "message": "security: [CVE-2024-46982] Next.js cache poisoning",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/pull/30"
     },
     {

@@ -40,25 +40,6 @@ emerging:
     status: covered
     test_file: __tests__/security/CWE-1333.test.ts
 
-  - id: CVE-2024-46982
-    severity: high
-    published: "2026-03-28"
-    title: "Next.js cache poisoning"
-    description: >
-      Cache poisoning vulnerability in Next.js allows attackers to serve
-      malicious cached responses to other users by manipulating cache keys.
-    cwe: CWE-349
-    owasp: A05
-    kev: true
-    kev_due: "2026-04-18"
-    kev_url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-    modules:
-      - path: src/app/
-        functions: []
-        exposure: "Malicious cached responses served to other users"
-    status: covered
-    test_file: __tests__/security/CWE-349.test.ts
-
   - id: CWE-89
     severity: medium
     published: "2026-04-15"
