@@ -7,6 +7,8 @@
   "patterns_total": 12,
   "emerging_covered": 0,
   "emerging_total": 4,
+  "kev_total": 2,
+  "kev_covered": 0,
   "grade": "F",
   "emerging": [
     {
@@ -17,7 +19,9 @@
       "module": "request-guards.ts",
       "status": "uncovered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-29927",
-      "test_file": null
+      "test_file": null,
+      "kev": true,
+      "kev_due": "2026-04-21"
     },
     {
       "id": "CWE-1333",
@@ -27,7 +31,8 @@
       "module": "prompt-injection.ts",
       "status": "uncovered",
       "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
-      "test_file": null
+      "test_file": null,
+      "kev": false
     },
     {
       "id": "CVE-2024-46982",
@@ -37,7 +42,9 @@
       "module": "src/app/",
       "status": "uncovered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-46982",
-      "test_file": null
+      "test_file": null,
+      "kev": true,
+      "kev_due": "2026-04-18"
     },
     {
       "id": "CWE-89",
@@ -47,7 +54,8 @@
       "module": "facets-service.ts",
       "status": "uncovered",
       "source_url": "https://cwe.mitre.org/data/definitions/89.html",
-      "test_file": null
+      "test_file": null,
+      "kev": false
     }
   ],
   "foundational": [

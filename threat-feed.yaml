@@ -11,6 +11,9 @@ emerging:
       checks by crafting requests that skip the middleware execution layer.
     cwe: CWE-285
     owasp: A01
+    kev: true
+    kev_due: "2026-04-21"
+    kev_url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
     modules:
       - path: src/lib/server/request-guards.ts
         functions:
@@ -46,6 +49,9 @@ emerging:
       malicious cached responses to other users by manipulating cache keys.
     cwe: CWE-349
     owasp: A05
+    kev: true
+    kev_due: "2026-04-18"
+    kev_url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
     modules:
       - path: src/app/
         functions: []

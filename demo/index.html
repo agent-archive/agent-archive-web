@@ -172,6 +172,44 @@
     .severity-high { background: #7c2d12; color: #fdba74; }
     .severity-medium { background: #713f12; color: #fde047; }
     .severity-low { background: #14532d; color: #86efac; }
+    /* CISA KEV badge */
+    .kev-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #92400e, #b45309);
+      color: #fbbf24;
+      border: 1px solid #d97706;
+      box-shadow: 0 0 8px rgba(217,119,6,0.3);
+      margin-left: 8px;
+      vertical-align: middle;
+      animation: pulse-kev 2s ease-in-out infinite;
+    }
+    .kev-badge a { color: #fbbf24; border: none; }
+    .kev-badge a:hover { color: #fef3c7; }
+    @keyframes pulse-kev {
+      0%, 100% { box-shadow: 0 0 8px rgba(217,119,6,0.3); }
+      50% { box-shadow: 0 0 16px rgba(217,119,6,0.5); }
+    }
+    .kev-due {
+      font-size: 10px;
+      color: #d97706;
+      margin-top: 2px;
+    }
+    .kev-due.overdue { color: #ef4444; font-weight: 600; }
+    .metric-card.kev-alert { border-color: #92400e; }
+    .metric-card.kev-alert .value { color: #fbbf24; }
+    .metric-card.kev-alert.lit { border-color: #166534; animation: pulse-green 3s ease-in-out infinite; }
+    .metric-card.kev-alert.lit .value { color: #4ade80; }
+    @keyframes pulse-amber {
+      0%, 100% { box-shadow: 0 0 12px rgba(217,119,6,0.2); }
+      50% { box-shadow: 0 0 20px rgba(217,119,6,0.4); }
+    }
+    .metric-card.kev-alert:not(.lit) { animation: pulse-amber 2.5s ease-in-out infinite; }
     .mitigated-check {
       position: absolute; top: -6px; right: -6px;
       width: 16px; height: 16px; background: #166534;
@@ -280,12 +318,23 @@
         var cardClass = t.status === 'covered' ? 'threat-card covered-card' : 'threat-card';
         var checkmark = t.status === 'covered' ? '<span class="mitigated-check">&#10003;</span>' : '';
         var idLink = t.source_url ? '<a href="' + t.source_url + '" target="_blank" title="View advisory">' + t.id + '</a>' : t.id;
+        var kevBadge = t.kev ? '<span class="kev-badge"><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" title="CISA Known Exploited Vulnerability">CISA KEV</a></span>' : '';
+        var kevDue = '';
+        if (t.kev && t.kev_due) {
+          var dueDate = new Date(t.kev_due);
+          var now = new Date();
+          var isOverdue = now > dueDate;
+          var dueClass = isOverdue ? 'kev-due overdue' : 'kev-due';
+          var dueLabel = isOverdue ? 'OVERDUE — was due ' + t.kev_due : 'BOD remediation due: ' + t.kev_due;
+          kevDue = '<div class="' + dueClass + '">&#9888; ' + dueLabel + '</div>';
+        }
         var testLink = t.test_file ? '<a class="test-link" href="' + repoBase + '/blob/demo/baseline/' + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
         return '<div class="' + cardClass + '">' +
           '<span class="severity-badge severity-' + t.severity + '">' + t.severity + checkmark + '</span>' +
           '<div class="threat-info">' +
-            '<div class="id">' + idLink + '</div>' +
+            '<div class="id">' + idLink + kevBadge + '</div>' +
             '<div class="title">' + t.title + '</div>' +
+            kevDue +
             '<div class="module">' + t.module + '</div>' +
             (testLink ? '<div>' + testLink + '</div>' : '') +
           '</div>' +
@@ -358,8 +407,8 @@
         '<div class="metrics">' +
           '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Patterns Verified</div>' +
             '<div class="value"><span id="counter-patterns">0</span>/' + data.patterns_total + '</div></div>' +
-          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Emerging Threats Covered</div>' +
-            '<div class="value"><span id="counter-emerging">0</span>/' + data.emerging_total + '</div></div>' +
+          '<div class="metric-card kev-alert' + (isAfter ? ' lit' : '') + '"><div class="label">CISA KEV Threats</div>' +
+            '<div class="value"><span id="counter-kev">0</span>/' + (data.kev_total || 0) + '</div></div>' +
           '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Test Coverage</div>' +
             '<div class="value"><span id="counter-coverage">0</span>%</div>' +
             '<div class="coverage-bar-track"><div id="coverage-bar" class="coverage-bar-fill ' + barClass + '"></div></div></div>' +
@@ -396,7 +445,7 @@
 
       var dur = isAfter ? 1500 : 600;
       animateCounter('counter-patterns', data.patterns_verified, dur, false);
-      animateCounter('counter-emerging', data.emerging_covered, dur, false);
+      animateCounter('counter-kev', data.kev_covered || 0, dur, false);
       animateCounter('counter-coverage', data.coverage_pct, dur, true);
 
       // Coverage bar fill
