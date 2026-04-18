@@ -1,5 +1,40 @@
 import '@testing-library/jest-dom';
 
+// Provide web API globals that next/server needs but jest-environment-jsdom omits.
+if (typeof globalThis.Response === 'undefined') {
+  const _Response = class Response {
+    body: any;
+    status: number;
+    statusText: string;
+    headers: Headers;
+    ok: boolean;
+    constructor(body?: any, init?: any) {
+      this.body = body ?? null;
+      this.status = init?.status ?? 200;
+      this.statusText = init?.statusText ?? '';
+      this.headers = new Headers(init?.headers);
+      this.ok = this.status >= 200 && this.status < 300;
+    }
+    async json() { return JSON.parse(typeof this.body === 'string' ? this.body : JSON.stringify(this.body)); }
+    async text() { return typeof this.body === 'string' ? this.body : JSON.stringify(this.body); }
+    static json(data: any, init?: any) { return new _Response(JSON.stringify(data), { ...init, headers: { 'content-type': 'application/json', ...init?.headers } }); }
+    static redirect(url: string, status = 302) { return new _Response(null, { status, headers: { Location: url } }); }
+  };
+  globalThis.Response = _Response as any;
+}
+if (typeof globalThis.Request === 'undefined') {
+  globalThis.Request = class Request {
+    url: string;
+    method: string;
+    headers: Headers;
+    constructor(input: string, init?: any) {
+      this.url = input;
+      this.method = init?.method ?? 'GET';
+      this.headers = new Headers(init?.headers);
+    }
+  } as any;
+}
+
 // Mock Next.js router hooks for client component tests.
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
