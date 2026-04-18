@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-17T08:00:00Z",
+  "coverage_pct": 1.24,
+  "patterns_verified": 0,
+  "patterns_total": 12,
+  "emerging_covered": 0,
+  "emerging_total": 4,
+  "grade": "F",
+  "emerging": [
+    {
+      "id": "CVE-2025-29927",
+      "severity": "critical",
+      "days_ago": 11,
+      "title": "Next.js middleware authorization bypass",
+      "module": "request-guards.ts",
+      "status": "uncovered"
+    },
+    {
+      "id": "CWE-1333",
+      "severity": "high",
+      "days_ago": 6,
+      "title": "ReDoS in prompt injection regex",
+      "module": "prompt-injection.ts",
+      "status": "uncovered"
+    },
+    {
+      "id": "CVE-2024-46982",
+      "severity": "high",
+      "days_ago": 21,
+      "title": "Next.js cache poisoning",
+      "module": "src/app/",
+      "status": "uncovered"
+    },
+    {
+      "id": "CWE-89",
+      "severity": "medium",
+      "days_ago": 3,
+      "title": "SQL injection via dynamic column interpolation",
+      "module": "facets-service.ts",
+      "status": "uncovered"
+    }
+  ],
+  "foundational": [
+    { "id": "CWE-79", "name": "XSS", "status": "uncovered" },
+    { "id": "CWE-94", "name": "Code Injection", "status": "uncovered" },
+    { "id": "CWE-20", "name": "Input Validation", "status": "uncovered" },
+    { "id": "CWE-307", "name": "Brute Force", "status": "uncovered" },
+    { "id": "CWE-327", "name": "Weak Crypto", "status": "uncovered" },
+    { "id": "CWE-862", "name": "Missing AuthZ", "status": "uncovered" },
+    { "id": "CWE-754", "name": "Improper Error Handling", "status": "uncovered" },
+    { "id": "CWE-116", "name": "Improper Output Encoding", "status": "uncovered" }
+  ],
+  "activity": []
+}

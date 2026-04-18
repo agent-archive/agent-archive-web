@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Verification Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0a0a;
+      color: #e5e5e5;
+      font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    a { color: #e5e5e5; text-decoration: none; }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid #333;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+    .header-meta { text-align: right; font-size: 12px; color: #888; }
+    .header-meta .label { color: #666; }
+
+    /* Metric strip */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .metric-card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      padding: 16px;
+    }
+    .metric-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .metric-card .value { font-size: 28px; font-weight: 700; }
+    .metric-card .sub { font-size: 12px; color: #666; margin-top: 4px; }
+
+    /* Grade colors */
+    .grade-F { color: #ef4444; }
+    .grade-D { color: #f97316; }
+    .grade-C { color: #eab308; }
+    .grade-B { color: #22c55e; }
+    .grade-A { color: #4ade80; }
+
+    /* Panels */
+    .panel {
+      margin-bottom: 32px;
+    }
+    .panel-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #888;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    /* Emerging threats */
+    .emerging-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .threat-card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .severity-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      min-width: 72px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .severity-critical { background: #7f1d1d; color: #fca5a5; }
+    .severity-high { background: #7c2d12; color: #fdba74; }
+    .severity-medium { background: #713f12; color: #fde047; }
+    .severity-low { background: #14532d; color: #86efac; }
+    .threat-info { flex: 1; }
+    .threat-info .id { font-weight: 600; font-size: 13px; }
+    .threat-info .title { color: #aaa; font-size: 12px; margin-top: 2px; }
+    .threat-info .module { color: #666; font-size: 11px; margin-top: 4px; }
+    .threat-meta { text-align: right; flex-shrink: 0; }
+    .threat-meta .days { font-size: 11px; color: #666; }
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      margin-top: 6px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-uncovered .status-dot { background: #ef4444; }
+    .status-uncovered .status-text { color: #ef4444; }
+    .status-covered .status-dot { background: #22c55e; }
+    .status-covered .status-text { color: #22c55e; }
+
+    /* Foundational grid */
+    .foundational-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .found-card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .found-card .id { font-size: 12px; font-weight: 600; }
+    .found-card .name { font-size: 11px; color: #888; margin-top: 2px; }
+    .found-card .status-indicator { margin-top: 8px; }
+
+    /* Activity log */
+    .activity-log {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .activity-log .empty {
+      padding: 24px;
+      text-align: center;
+      color: #444;
+      font-size: 12px;
+    }
+    .activity-item {
+      padding: 10px 16px;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 12px;
+      color: #aaa;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item::before {
+      content: "$ ";
+      color: #22c55e;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #141414; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    @media (max-width: 768px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .foundational-grid { grid-template-columns: repeat(2, 1fr); }
+      .threat-card { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const state = params.get('state') || 'before';
+      const file = state === 'after' ? 'state-after.json' : 'state-before.json';
+
+      let data;
+      try {
+        const resp = await fetch(file);
+        data = await resp.json();
+      } catch (e) {
+        document.getElementById('app').innerHTML =
+          '<p style="color:#ef4444;padding:40px">Failed to load ' + file + '. Ensure the JSON file is in the same directory.</p>';
+        return;
+      }
+
+      const gradeClass = 'grade-' + data.grade;
+
+      function statusHTML(status) {
+        const cls = status === 'covered' ? 'status-covered' : 'status-uncovered';
+        return '<span class="status-indicator ' + cls + '">' +
+          '<span class="status-dot"></span>' +
+          '<span class="status-text">' + status + '</span></span>';
+      }
+
+      const emergingHTML = data.emerging.map(function(t) {
+        return '<div class="threat-card">' +
+          '<span class="severity-badge severity-' + t.severity + '">' + t.severity + '</span>' +
+          '<div class="threat-info">' +
+            '<div class="id">' + t.id + '</div>' +
+            '<div class="title">' + t.title + '</div>' +
+            '<div class="module">' + t.module + '</div>' +
+          '</div>' +
+          '<div class="threat-meta">' +
+            '<div class="days">' + t.days_ago + ' days ago</div>' +
+            statusHTML(t.status) +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      const foundationalHTML = data.foundational.map(function(f) {
+        return '<div class="found-card">' +
+          '<div class="id">' + f.id + '</div>' +
+          '<div class="name">' + f.name + '</div>' +
+          statusHTML(f.status) +
+        '</div>';
+      }).join('');
+
+      let activityHTML;
+      if (data.activity.length === 0) {
+        activityHTML = '<div class="empty">No activity recorded</div>';
+      } else {
+        activityHTML = data.activity.map(function(msg) {
+          return '<div class="activity-item">' + msg + '</div>';
+        }).join('');
+      }
+
+      document.getElementById('app').innerHTML =
+        '<div class="header">' +
+          '<h1>Security Verification Dashboard</h1>' +
+          '<div class="header-meta">' +
+            '<div>Last scan: ' + data.timestamp + '</div>' +
+            '<div class="label">Legacy Codebase: agent-archive-web</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="metrics">' +
+          '<div class="metric-card">' +
+            '<div class="label">Patterns Verified</div>' +
+            '<div class="value">' + data.patterns_verified + '/' + data.patterns_total + '</div>' +
+          '</div>' +
+          '<div class="metric-card">' +
+            '<div class="label">Emerging Threats Covered</div>' +
+            '<div class="value">' + data.emerging_covered + '/' + data.emerging_total + '</div>' +
+          '</div>' +
+          '<div class="metric-card">' +
+            '<div class="label">Test Coverage</div>' +
+            '<div class="value">' + data.coverage_pct + '%</div>' +
+          '</div>' +
+          '<div class="metric-card">' +
+            '<div class="label">Security Grade</div>' +
+            '<div class="value ' + gradeClass + '">' + data.grade + '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="panel">' +
+          '<div class="panel-title">Emerging Threats</div>' +
+          '<div class="emerging-list">' + emergingHTML + '</div>' +
+        '</div>' +
+
+        '<div class="panel">' +
+          '<div class="panel-title">Foundational Patterns</div>' +
+          '<div class="foundational-grid">' + foundationalHTML + '</div>' +
+        '</div>' +
+
+        '<div class="panel">' +
+          '<div class="panel-title">Activity Log</div>' +
+          '<div class="activity-log">' + activityHTML + '</div>' +
+        '</div>';
+    })();
+  </script>
+</body>
+</html>

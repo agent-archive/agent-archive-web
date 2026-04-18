@@ -1,0 +1,209 @@
+# Last synced: 2026-04-17T08:00:00Z
+# Sources: NVD, GHSA, CISA KEV
+
+emerging:
+  - id: CVE-2025-29927
+    severity: critical
+    published: "2026-04-07"
+    title: "Next.js middleware authorization bypass"
+    description: >
+      A flaw in Next.js middleware allows attackers to bypass authorization
+      checks by crafting requests that skip the middleware execution layer.
+    cwe: CWE-285
+    owasp: A01
+    modules:
+      - path: src/lib/server/request-guards.ts
+        functions:
+          - requireAuthenticatedAgent
+        exposure: "Middleware bypass allows unauthenticated access to protected routes"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-1333
+    severity: high
+    published: "2026-04-12"
+    title: "ReDoS in prompt injection regex"
+    description: >
+      Regular expressions used for prompt injection detection are vulnerable
+      to catastrophic backtracking, enabling denial of service via crafted input.
+    cwe: CWE-1333
+    owasp: A06
+    modules:
+      - path: src/lib/server/prompt-injection.ts
+        functions:
+          - analyzePromptInjectionRisk
+          - analyzeCodeRisk
+        exposure: "Crafted input causes catastrophic regex backtracking"
+    status: uncovered
+    test_file: null
+
+  - id: CVE-2024-46982
+    severity: high
+    published: "2026-03-28"
+    title: "Next.js cache poisoning"
+    description: >
+      Cache poisoning vulnerability in Next.js allows attackers to serve
+      malicious cached responses to other users by manipulating cache keys.
+    cwe: CWE-349
+    owasp: A05
+    modules:
+      - path: src/app/
+        functions: []
+        exposure: "Malicious cached responses served to other users"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-89
+    severity: medium
+    published: "2026-04-15"
+    title: "SQL injection via dynamic column interpolation"
+    description: >
+      Column name is interpolated into query string in facet suggestion queries,
+      relying on a hardcoded allowlist. No test verifies the allowlist holds.
+    cwe: CWE-89
+    owasp: A03
+    modules:
+      - path: src/lib/server/facets-service.ts
+        functions:
+          - getFacetSuggestions
+        exposure: "Column name interpolated into query string, relying on hardcoded allowlist — no test verifies the allowlist holds"
+    status: uncovered
+    test_file: null
+
+foundational:
+  - id: CWE-79
+    severity: high
+    published: "2026-04-17"
+    title: "Cross-Site Scripting (XSS)"
+    description: >
+      Improper neutralization of input during web page generation may allow
+      injection of malicious scripts via user-controlled content.
+    cwe: CWE-79
+    owasp: A03
+    modules:
+      - path: src/lib/server/prompt-injection.ts
+        functions:
+          - sanitizeForAgentConsumption
+        exposure: "User-controlled content may contain unsanitized script payloads"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-94
+    severity: high
+    published: "2026-04-17"
+    title: "Code Injection"
+    description: >
+      Improper control of code generation allows execution of attacker-supplied
+      code through insufficiently validated inputs.
+    cwe: CWE-94
+    owasp: A03
+    modules:
+      - path: src/lib/server/prompt-injection.ts
+        functions:
+          - analyzeCodeRisk
+        exposure: "Malicious code patterns may bypass detection heuristics"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-20
+    severity: medium
+    published: "2026-04-17"
+    title: "Input Validation"
+    description: >
+      Improper input validation on exported schemas may allow malformed or
+      malicious data to bypass validation boundaries.
+    cwe: CWE-20
+    owasp: A03
+    modules:
+      - path: src/lib/validations.ts
+        functions:
+          - all exported schemas
+        exposure: "Malformed data may bypass Zod schema validation boundaries"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-307
+    severity: medium
+    published: "2026-04-17"
+    title: "Brute Force"
+    description: >
+      Improper restriction of excessive authentication attempts allows
+      brute force attacks against rate-limited endpoints.
+    cwe: CWE-307
+    owasp: A07
+    modules:
+      - path: src/lib/server/rate-limit.ts
+        functions:
+          - checkMemoryRateLimit
+        exposure: "Rate limiter may not properly restrict repeated authentication attempts"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-327
+    severity: medium
+    published: "2026-04-17"
+    title: "Weak Cryptography"
+    description: >
+      Use of a broken or risky cryptographic algorithm may compromise
+      the confidentiality or integrity of session data.
+    cwe: CWE-327
+    owasp: A02
+    modules:
+      - path: src/lib/server/session-crypto.ts
+        functions:
+          - encryptSessionValue
+          - decryptSessionValue
+        exposure: "Weak cryptographic implementation may allow session data tampering"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-862
+    severity: high
+    published: "2026-04-17"
+    title: "Missing Authorization"
+    description: >
+      Missing authorization checks on protected resources may allow
+      unauthorized access to sensitive operations.
+    cwe: CWE-862
+    owasp: A01
+    modules:
+      - path: src/lib/server/request-guards.ts
+        functions:
+          - requireAuthenticatedAgent
+        exposure: "Protected endpoints may be accessible without proper authorization"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-754
+    severity: medium
+    published: "2026-04-17"
+    title: "Improper Error Handling"
+    description: >
+      Improper check or handling of exceptional conditions may expose
+      internal state or cause unexpected behavior in moderation evaluation.
+    cwe: CWE-754
+    owasp: A11
+    modules:
+      - path: src/lib/server/moderation-evaluator.ts
+        functions:
+          - evaluatePostForModeration
+        exposure: "Unhandled errors in moderation may expose internal state or bypass checks"
+    status: uncovered
+    test_file: null
+
+  - id: CWE-116
+    severity: medium
+    published: "2026-04-17"
+    title: "Improper Output Encoding"
+    description: >
+      Improper encoding or escaping of output may allow injection attacks
+      when sanitized content is consumed by downstream agents.
+    cwe: CWE-116
+    owasp: A03
+    modules:
+      - path: src/lib/server/prompt-injection.ts
+        functions:
+          - sanitizeForAgentConsumption
+        exposure: "Improperly encoded output may be exploitable by downstream consumers"
+    status: uncovered
+    test_file: null

@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-04-17T09:30:00Z",
+  "coverage_pct": 20.0,
+  "patterns_verified": 12,
+  "patterns_total": 12,
+  "emerging_covered": 4,
+  "emerging_total": 4,
+  "grade": "B",
+  "emerging": [
+    {
+      "id": "CVE-2025-29927",
+      "severity": "critical",
+      "days_ago": 11,
+      "title": "Next.js middleware authorization bypass",
+      "module": "request-guards.ts",
+      "status": "covered"
+    },
+    {
+      "id": "CWE-1333",
+      "severity": "high",
+      "days_ago": 6,
+      "title": "ReDoS in prompt injection regex",
+      "module": "prompt-injection.ts",
+      "status": "covered"
+    },
+    {
+      "id": "CVE-2024-46982",
+      "severity": "high",
+      "days_ago": 21,
+      "title": "Next.js cache poisoning",
+      "module": "src/app/",
+      "status": "covered"
+    },
+    {
+      "id": "CWE-89",
+      "severity": "medium",
+      "days_ago": 3,
+      "title": "SQL injection via dynamic column interpolation",
+      "module": "facets-service.ts",
+      "status": "covered"
+    }
+  ],
+  "foundational": [
+    { "id": "CWE-79", "name": "XSS", "status": "covered" },
+    { "id": "CWE-94", "name": "Code Injection", "status": "covered" },
+    { "id": "CWE-20", "name": "Input Validation", "status": "covered" },
+    { "id": "CWE-307", "name": "Brute Force", "status": "covered" },
+    { "id": "CWE-327", "name": "Weak Crypto", "status": "covered" },
+    { "id": "CWE-862", "name": "Missing AuthZ", "status": "covered" },
+    { "id": "CWE-754", "name": "Improper Error Handling", "status": "covered" },
+    { "id": "CWE-116", "name": "Improper Output Encoding", "status": "covered" }
+  ],
+  "activity": [
+    "security: [CVE-2025-29927] Verify middleware bypass resistance",
+    "security: [CWE-1333] Verify ReDoS resistance in prompt injection patterns",
+    "security: [CVE-2024-46982] Verify cache poisoning resistance",
+    "security: [CWE-89] Verify SQL injection resistance in facet queries",
+    "security: [CWE-79] Verify XSS sanitization",
+    "security: [CWE-94] Verify code injection detection",
+    "security: [CWE-20] Verify input validation schemas",
+    "security: [CWE-307] Verify rate limiting",
+    "security: [CWE-327] Verify cryptographic roundtrip and tamper detection",
+    "security: [CWE-862] Verify authorization enforcement",
+    "security: [CWE-754] Verify moderation error handling",
+    "security: [CWE-116] Verify output encoding"
+  ]
+}
