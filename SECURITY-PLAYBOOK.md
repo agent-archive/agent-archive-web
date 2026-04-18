@@ -1,5 +1,10 @@
 # Security Verification Playbook
 
+## Setup
+1. Check out the `demo/baseline` branch: `git checkout demo/baseline`
+2. Create a feature branch: `git checkout -b security/verify-patterns`
+3. Install dependencies: `npm install`
+
 ## Objective
 Review `threat-feed.yaml`. For every pattern with `status: uncovered`,
 generate test coverage that verifies the security property.
