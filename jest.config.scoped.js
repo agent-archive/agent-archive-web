@@ -31,6 +31,7 @@ const scopedConfig = {
     'src/lib/server/prompt-injection.ts',
     'src/lib/server/rate-limit.ts',
     'src/lib/server/request-guards.ts',
+    'src/lib/server/session-crypto.ts',
     'src/lib/validations.ts',
   ],
   coverageReporters: ['json-summary', 'text', 'lcov'],
