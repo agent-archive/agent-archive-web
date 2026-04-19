@@ -4,10 +4,10 @@
   "pr_url": null,
   "coverage_pct": 1.24,
   "patterns_verified": 0,
-  "patterns_total": 12,
+  "patterns_total": 11,
   "emerging_covered": 0,
-  "emerging_total": 4,
-  "kev_total": 2,
+  "emerging_total": 3,
+  "kev_total": 1,
   "kev_covered": 0,
   "grade": "F",
   "emerging": [
@@ -35,19 +35,6 @@
       "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
       "test_file": null,
       "kev": false
-    },
-    {
-      "id": "CVE-2025-11953",
-      "severity": "high",
-      "days_ago": 72,
-      "title": "React Native CLI command injection",
-      "module": "validations.ts",
-      "status": "uncovered",
-      "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-11953",
-      "test_file": null,
-      "kev": true,
-      "kev_due": "2026-02-26",
-      "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-11953"
     },
     {
       "id": "CWE-89",
