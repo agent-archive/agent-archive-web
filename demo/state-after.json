@@ -19,8 +19,8 @@
       "module": "prompt-injection.ts",
       "status": "covered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-55182",
-      "test_file": "__tests__/security/CWE-94.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/aa45fcd",
+      "test_file": "__tests__/security/CVE-2025-55182.test.ts",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b72d1a3",
       "kev": true,
       "kev_due": "2025-12-12",
       "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-55182",
@@ -34,8 +34,8 @@
       "module": "validations.ts",
       "status": "covered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-11953",
-      "test_file": "__tests__/security/CWE-20.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/f94e78d",
+      "test_file": "__tests__/security/CVE-2025-11953.test.ts",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/3e8c5f2",
       "kev": true,
       "kev_due": "2026-02-26",
       "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-11953"
@@ -134,11 +134,11 @@
   "activity": [
     {
       "message": "security: [CVE-2025-55182] React Server Components RCE",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/aa45fcd"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b72d1a3"
     },
     {
       "message": "security: [CVE-2025-11953] React Native CLI command injection",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/f94e78d"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/3e8c5f2"
     },
     {
       "message": "security: [CWE-1333] ReDoS in prompt injection regex",
