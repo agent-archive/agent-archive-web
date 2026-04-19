@@ -2,25 +2,48 @@
 # Sources: NVD, GHSA, CISA KEV
 
 emerging:
-  - id: CVE-2025-29927
+  - id: CVE-2025-55182
     severity: critical
-    published: "2026-04-07"
-    title: "Next.js middleware authorization bypass"
+    published: "2025-12-03"
+    title: "React Server Components remote code execution"
     description: >
-      A flaw in Next.js middleware allows attackers to bypass authorization
-      checks by crafting requests that skip the middleware execution layer.
-    cwe: CWE-285
-    owasp: A01
+      Meta React Server Components contains a remote code execution vulnerability
+      that allows unauthenticated RCE by exploiting a flaw in how React decodes
+      payloads sent to React Server Function endpoints.
+    cwe: CWE-94
+    owasp: A03
     kev: true
-    kev_due: "2026-04-21"
-    kev_url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    kev_due: "2025-12-12"
+    kev_url: "https://www.cve.org/CVERecord?id=CVE-2025-55182"
+    ransomware: true
     modules:
-      - path: src/lib/server/request-guards.ts
+      - path: src/lib/server/prompt-injection.ts
         functions:
-          - requireAuthenticatedAgent
-        exposure: "Middleware bypass allows unauthenticated access to protected routes"
+          - analyzeCodeRisk
+        exposure: "Code injection patterns may bypass detection heuristics in server-side evaluation"
     status: covered
-    test_file: __tests__/security/CWE-285.test.ts
+    test_file: __tests__/security/CWE-94.test.ts
+
+  - id: CVE-2025-11953
+    severity: high
+    published: "2026-02-05"
+    title: "React Native CLI command injection"
+    description: >
+      React Native Community CLI contains an OS command injection vulnerability
+      allowing unauthenticated network attackers to run arbitrary executables
+      via a vulnerable endpoint exposed by the Metro Development Server.
+    cwe: CWE-20
+    owasp: A03
+    kev: true
+    kev_due: "2026-02-26"
+    kev_url: "https://www.cve.org/CVERecord?id=CVE-2025-11953"
+    modules:
+      - path: src/lib/validations.ts
+        functions:
+          - all exported schemas
+        exposure: "Insufficient input validation may allow command injection via malformed payloads"
+    status: covered
+    test_file: __tests__/security/CWE-20.test.ts
 
   - id: CWE-1333
     severity: high

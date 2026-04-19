@@ -318,7 +318,8 @@
         var cardClass = t.status === 'covered' ? 'threat-card covered-card' : 'threat-card';
         var checkmark = t.status === 'covered' ? '<span class="mitigated-check">&#10003;</span>' : '';
         var idLink = t.source_url ? '<a href="' + t.source_url + '" target="_blank" title="View advisory">' + t.id + '</a>' : t.id;
-        var kevBadge = t.kev ? '<span class="kev-badge"><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" title="CISA Known Exploited Vulnerability">CISA KEV</a></span>' : '';
+        var kevUrl = t.kev_url || 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog';
+        var kevBadge = t.kev ? '<span class="kev-badge"><a href="' + kevUrl + '" target="_blank" title="CISA Known Exploited Vulnerability">CISA KEV</a></span>' : '';
         var kevDue = '';
         if (t.kev && t.kev_due) {
           var dueDate = new Date(t.kev_due);
@@ -328,17 +329,19 @@
           var dueLabel = isOverdue ? 'OVERDUE — was due ' + t.kev_due : 'BOD remediation due: ' + t.kev_due;
           kevDue = '<div class="' + dueClass + '">&#9888; ' + dueLabel + '</div>';
         }
-        var testLink = t.test_file ? '<a class="test-link" href="' + repoBase + '/blob/demo/baseline/' + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
-        return '<div class="' + cardClass + '">' +
+                var branchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
+                var testLink = t.test_file ? '<a class="test-link" href="' + branchRef + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
+                var commitLink = t.commit_url ? '<a class="test-link" href="' + t.commit_url + '" target="_blank" style="margin-left:12px;">&#128203; View commit</a>' : '';
+                return '<div class="' + cardClass + '">' +
           '<span class="severity-badge severity-' + t.severity + '">' + t.severity + checkmark + '</span>' +
           '<div class="threat-info">' +
             '<div class="id">' + idLink + kevBadge + '</div>' +
             '<div class="title">' + t.title + '</div>' +
             kevDue +
             '<div class="module">' + t.module + '</div>' +
-            (testLink ? '<div>' + testLink + '</div>' : '') +
-          '</div>' +
-          '<div class="threat-meta">' +
+                      (testLink || commitLink ? '<div>' + testLink + commitLink + '</div>' : '') +
+                    '</div>' +
+                    '<div class="threat-meta">' +
             '<div class="days">' + t.days_ago + ' days ago</div>' +
             statusHTML(t.status) +
           '</div></div>';
@@ -364,11 +367,13 @@
       function foundCardHTML(f) {
         var cardClass = f.status === 'covered' ? 'found-card covered-card' : 'found-card';
         var idLink = f.source_url ? '<a href="' + f.source_url + '" target="_blank" title="View CWE">' + f.id + '</a>' : f.id;
-        var testLink = f.test_file ? '<a class="test-link" href="' + repoBase + '/blob/demo/baseline/' + f.test_file + '" target="_blank">&#128279; ' + f.test_file + '</a>' : '';
-        return '<div class="' + cardClass + '">' +
-          '<div class="id">' + idLink + '</div>' +
-          '<div class="name">' + f.name + '</div>' +
-          (testLink ? '<div>' + testLink + '</div>' : '') +
+                var fBranchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
+                var testLink = f.test_file ? '<a class="test-link" href="' + fBranchRef + f.test_file + '" target="_blank">&#128279; ' + f.test_file + '</a>' : '';
+                var fCommitLink = f.commit_url ? '<a class="test-link" href="' + f.commit_url + '" target="_blank" style="margin-left:8px;">&#128203;</a>' : '';
+                return '<div class="' + cardClass + '">' +
+                  '<div class="id">' + idLink + '</div>' +
+                  '<div class="name">' + f.name + '</div>' +
+                  (testLink || fCommitLink ? '<div>' + testLink + fCommitLink + '</div>' : '') +
           statusHTML(f.status) + '</div>';
       }
 
