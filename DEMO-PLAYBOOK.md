@@ -45,8 +45,8 @@ Walk the audience through:
 - **CISA KEV Threats**: 0/2 covered (amber pulsing) — these are on the federal government's
   actively-exploited list; agencies are mandated to patch them
 - **Emerging Threats**: 4 cards, all red "uncovered" — note the CISA KEV badges on
-  CVE-2025-29927 (critical, middleware bypass) and CVE-2024-46982 (high, cache poisoning)
-  with BOD remediation due dates (one may show "OVERDUE" in red)
+  CVE-2025-55182 (critical, React Server Components RCE) and CVE-2025-11953 (high, React Native CLI command injection)
+  with BOD remediation due dates (both show "OVERDUE" in red)
 - **Foundational Patterns**: 8 cards, all uncovered
 - **Activity Log**: Empty — no security work has been done
 
@@ -67,7 +67,7 @@ Once Devin finishes (or if time is tight), switch the browser to:
 
 Walk the audience through the transformation:
 - **Green status bar** — system is secured
-- **Metrics**: 12/12 patterns verified, grade B, coverage jumped from 1.24%
+- **Metrics**: 12/12 patterns verified, grade A, coverage jumped from 1.24%
 - **CISA KEV Threats**: 2/2 covered (green glow) — federal mandate met
 - **Emerging Threats**: All 4 cards now green with checkmarks, linked to test files
 - **Foundational Patterns**: All 8 cards green
