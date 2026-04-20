@@ -20,7 +20,7 @@
       "status": "covered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-55182",
       "test_file": "__tests__/security/CVE-2025-55182.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/914a772",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/6479ce7",
       "kev": true,
       "kev_due": "2025-12-12",
       "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-55182",
@@ -35,7 +35,7 @@
       "status": "covered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-11953",
       "test_file": "__tests__/security/CVE-2025-11953.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/f146259",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/92a37bf",
       "kev": true,
       "kev_due": "2026-02-26",
       "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-11953"
@@ -49,7 +49,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
       "test_file": "__tests__/security/CWE-1333.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/7d25932",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/fcea79f",
       "kev": false
     },
     {
@@ -61,7 +61,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/89.html",
       "test_file": "__tests__/security/CWE-89.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/1f779cc",
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/3aeb9d0",
       "kev": false
     }
   ],
@@ -72,7 +72,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/79.html",
       "test_file": "__tests__/security/CWE-79.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/6479aad"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a65b4bc"
     },
     {
       "id": "CWE-94",
@@ -80,7 +80,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/94.html",
       "test_file": "__tests__/security/CWE-94.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/4215a8d"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a36c3ed"
     },
     {
       "id": "CWE-20",
@@ -88,7 +88,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/20.html",
       "test_file": "__tests__/security/CWE-20.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/30880ee"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/c822f68"
     },
     {
       "id": "CWE-307",
@@ -96,7 +96,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/307.html",
       "test_file": "__tests__/security/CWE-307.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/e2503e5"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/c18c3d2"
     },
     {
       "id": "CWE-327",
@@ -104,7 +104,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/327.html",
       "test_file": "__tests__/security/CWE-327.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a01bac3"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b881efb"
     },
     {
       "id": "CWE-862",
@@ -112,7 +112,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/862.html",
       "test_file": "__tests__/security/CWE-862.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/9e895c7"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b3d7caf"
     },
     {
       "id": "CWE-754",
@@ -120,7 +120,7 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/754.html",
       "test_file": "__tests__/security/CWE-754.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/80f730e"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/9ccfe63"
     },
     {
       "id": "CWE-116",
@@ -128,57 +128,57 @@
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/116.html",
       "test_file": "__tests__/security/CWE-116.test.ts",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b34cbe8"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/bcccc02"
     }
   ],
   "activity": [
     {
       "message": "security: [CVE-2025-55182] React Server Components RCE",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/914a772"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/6479ce7"
     },
     {
       "message": "security: [CVE-2025-11953] React Native CLI command injection",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/f146259"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/92a37bf"
     },
     {
       "message": "security: [CWE-1333] ReDoS in prompt injection regex",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/7d25932"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/fcea79f"
     },
     {
       "message": "security: [CWE-89] SQL injection via dynamic column interpolation",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/1f779cc"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/3aeb9d0"
     },
     {
       "message": "security: [CWE-79] Cross-Site Scripting (XSS)",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/6479aad"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a65b4bc"
     },
     {
       "message": "security: [CWE-94] Code injection detection",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/4215a8d"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a36c3ed"
     },
     {
       "message": "security: [CWE-20] Input validation via Zod schemas",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/30880ee"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/c822f68"
     },
     {
       "message": "security: [CWE-307] Brute force protection via rate limiter",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/e2503e5"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/c18c3d2"
     },
     {
       "message": "security: [CWE-327] Session cryptography strength",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a01bac3"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b881efb"
     },
     {
       "message": "security: [CWE-862] Missing authorization checks",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/9e895c7"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b3d7caf"
     },
     {
       "message": "security: [CWE-754] Improper error handling in moderation",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/80f730e"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/9ccfe63"
     },
     {
       "message": "security: [CWE-116] Improper output encoding",
-      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b34cbe8"
+      "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/bcccc02"
     }
   ]
 }
