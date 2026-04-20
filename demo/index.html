@@ -296,6 +296,25 @@
     ::-webkit-scrollbar-track { background: #141414; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
+    /* Refresh scan button */
+    .refresh-btn {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #888;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 5px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+      letter-spacing: 0.5px;
+    }
+    .refresh-btn:hover {
+      border-color: #4ade80;
+      color: #4ade80;
+      box-shadow: 0 0 12px rgba(34,197,94,0.2);
+    }
+
     @media (max-width: 768px) {
       .metrics { grid-template-columns: repeat(2, 1fr); }
       .foundational-grid { grid-template-columns: repeat(2, 1fr); }
@@ -307,22 +326,8 @@
   <div id="status-bar" class="status-bar"></div>
   <div class="container"><div id="app"></div></div>
   <script>
-    (async function() {
-      var params = new URLSearchParams(window.location.search);
-      var state = params.get('state') || 'before';
-      var file = state === 'after' ? 'state-after.json' : 'state-before.json';
-
-      var data;
-      try {
-        var resp = await fetch(file);
-        data = await resp.json();
-      } catch (e) {
-        document.getElementById('app').innerHTML =
-          '<p style="color:#ef4444;padding:40px">Failed to load ' + file + '. Serve via HTTP server.</p>';
-        return;
-      }
-
-      var isAfter = state === 'after';
+    // Render the dashboard from a JSON data object
+    function renderDashboard(data, isAfter) {
       var repoBase = data.repo_url || 'https://github.com/agent-archive/agent-archive-web';
       var prUrl = data.pr_url || null;
 
@@ -355,19 +360,19 @@
           var dueLabel = isOverdue ? 'OVERDUE — was due ' + t.kev_due : 'BOD remediation due: ' + t.kev_due;
           kevDue = '<div class="' + dueClass + '">&#9888; ' + dueLabel + '</div>';
         }
-                var branchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
-                var testLink = t.test_file ? '<a class="test-link" href="' + branchRef + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
-                var commitLink = t.commit_url ? '<a class="test-link" href="' + t.commit_url + '" target="_blank" style="margin-left:12px;">&#128203; View commit</a>' : '';
-                return '<div class="' + cardClass + '">' +
+        var branchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
+        var testLink = t.test_file ? '<a class="test-link" href="' + branchRef + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
+        var commitLink = t.commit_url ? '<a class="test-link" href="' + t.commit_url + '" target="_blank" style="margin-left:12px;">&#128203; View commit</a>' : '';
+        return '<div class="' + cardClass + '">' +
           '<span class="severity-badge severity-' + t.severity + '">' + t.severity + checkmark + '</span>' +
           '<div class="threat-info">' +
             '<div class="id">' + idLink + kevBadge + '</div>' +
             '<div class="title">' + t.title + '</div>' +
             kevDue +
             '<div class="module">' + t.module + '</div>' +
-                      (testLink || commitLink ? '<div>' + testLink + commitLink + '</div>' : '') +
-                    '</div>' +
-                    '<div class="threat-meta">' +
+            (testLink || commitLink ? '<div>' + testLink + commitLink + '</div>' : '') +
+          '</div>' +
+          '<div class="threat-meta">' +
             '<div class="days">' + t.days_ago + ' days ago</div>' +
             statusHTML(t.status) +
           '</div></div>';
@@ -393,13 +398,13 @@
       function foundCardHTML(f) {
         var cardClass = f.status === 'covered' ? 'found-card covered-card' : 'found-card';
         var idLink = f.source_url ? '<a href="' + f.source_url + '" target="_blank" title="View CWE">' + f.id + '</a>' : f.id;
-                var fBranchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
-                var testLink = f.test_file ? '<a class="test-link" href="' + fBranchRef + f.test_file + '" target="_blank">&#128279; ' + f.test_file + '</a>' : '';
-                var fCommitLink = f.commit_url ? '<a class="test-link" href="' + f.commit_url + '" target="_blank" style="margin-left:8px;">&#128203;</a>' : '';
-                return '<div class="' + cardClass + '">' +
-                  '<div class="id">' + idLink + '</div>' +
-                  '<div class="name">' + f.name + '</div>' +
-                  (testLink || fCommitLink ? '<div>' + testLink + fCommitLink + '</div>' : '') +
+        var fBranchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
+        var testLink = f.test_file ? '<a class="test-link" href="' + fBranchRef + f.test_file + '" target="_blank">&#128279; ' + f.test_file + '</a>' : '';
+        var fCommitLink = f.commit_url ? '<a class="test-link" href="' + f.commit_url + '" target="_blank" style="margin-left:8px;">&#128203;</a>' : '';
+        return '<div class="' + cardClass + '">' +
+          '<div class="id">' + idLink + '</div>' +
+          '<div class="name">' + f.name + '</div>' +
+          (testLink || fCommitLink ? '<div>' + testLink + fCommitLink + '</div>' : '') +
           statusHTML(f.status) + '</div>';
       }
 
@@ -430,6 +435,8 @@
 
       var prLinkHTML = prUrl ? '<div><a href="' + prUrl + '" target="_blank" style="color:#4ade80;font-size:11px;">View PR &#8594;</a></div>' : '';
 
+      var refreshBtnHTML = '<button id="refresh-scan-btn" class="refresh-btn" title="Pull latest scan results">&#8635; Refresh Scan</button>';
+
       document.getElementById('app').innerHTML =
         '<div class="header">' +
           '<div class="header-left">' +
@@ -443,7 +450,11 @@
               '<h1>Security Test Coverage Dashboard</h1>' +
             '</div>' +
           '</div>' +
-          '<div class="header-meta"><div>Last scan: ' + data.timestamp + '</div>' +
+          '<div class="header-meta">' +
+            '<div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;">' +
+              '<span>Last scan: ' + data.timestamp + '</span>' +
+              refreshBtnHTML +
+            '</div>' +
           '<div class="label">Legacy Codebase: agent-archive-web</div>' + prLinkHTML + '</div></div>' +
 
         '<div class="metrics">' +
@@ -467,6 +478,11 @@
 
         '<div class="panel"><div class="panel-title">Activity Log</div>' +
           '<div class="activity-log" id="activity-log">' + activityItems + '</div></div>';
+
+      // Wire up refresh button
+      document.getElementById('refresh-scan-btn').addEventListener('click', function() {
+        loadAndRender('state-after.json', true);
+      });
 
       // Animated counters
       function animateCounter(id, target, duration, decimal) {
@@ -501,6 +517,29 @@
       items.forEach(function(item, i) {
         setTimeout(function() { item.classList.add('visible'); }, isAfter ? 300 + i * 180 : 0);
       });
+    }
+
+    // Load a JSON file and render the dashboard
+    async function loadAndRender(file, isAfter) {
+      try {
+        var resp = await fetch(file, { cache: 'no-store' });
+        var data = await resp.json();
+        renderDashboard(data, isAfter);
+      } catch (e) {
+        document.getElementById('app').innerHTML =
+          '<p style="color:#ef4444;padding:40px">Failed to load ' + file + '. Serve via HTTP server.</p>';
+      }
+    }
+
+    // Initial load: default to before state; ?state=after is a hidden debug override
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var state = params.get('state');
+      if (state === 'after') {
+        loadAndRender('state-after.json', true);
+      } else {
+        loadAndRender('state-before.json', false);
+      }
     })();
   </script>
 </body>
