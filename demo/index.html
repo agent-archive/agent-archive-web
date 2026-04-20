@@ -304,6 +304,14 @@
       justify-content: flex-end;
       margin-top: 6px;
     }
+    .source-label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555;
+      margin-right: 2px;
+    }
     .source-pill {
       font-size: 9px;
       font-weight: 700;
@@ -311,9 +319,9 @@
       letter-spacing: 0.8px;
       padding: 2px 8px;
       border-radius: 3px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      color: #888;
+      background: #1a1a2a;
+      border: 1px solid #444;
+      color: #aaa;
       white-space: nowrap;
     }
 
@@ -478,6 +486,7 @@
             '</div>' +
           '<div class="label">Legacy Codebase: agent-archive-web</div>' + prLinkHTML +
             '<div class="data-sources">' +
+              '<span class="source-label">Sources:</span>' +
               '<span class="source-pill">OWASP</span>' +
               '<span class="source-pill">MITRE CWE</span>' +
               '<span class="source-pill">GHSA</span>' +
