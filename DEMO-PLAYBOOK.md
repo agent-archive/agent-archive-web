@@ -31,13 +31,19 @@ It is NOT part of the Next.js app — it must be served separately.
    ```
 
 4. Open the dashboard in a browser:
-   - **Before state**: `http://localhost:8082/index.html?state=before`
-   - **After state**: `http://localhost:8082/index.html?state=after`
+   ```
+   http://localhost:8082/index.html
+   ```
+   The page loads the **before** state by default (grade F, 0/12 patterns).
+   A "Refresh Scan" button in the top-right header switches to the **after** state in place.
+   Browser refresh (Cmd+R / F5) resets back to the before state.
+
+   Hidden debug overrides (not for demo use): `?state=before` / `?state=after`
 
 ## Demo Flow
 
 ### 1. Show the "Before" state
-Open `http://localhost:8082/index.html?state=before` in the browser.
+Open `http://localhost:8082/index.html` in the browser (no URL params needed — it defaults to before).
 
 Walk the audience through:
 - **Red status bar** at top — system is vulnerable
@@ -62,8 +68,11 @@ Devin will:
 - Open a PR with all security verification tests
 
 ### 3. Show the "After" state
-Once Devin finishes (or if time is tight), switch the browser to:
-`http://localhost:8082/index.html?state=after`
+Once Devin finishes (or if time is tight), switch to the pre-completed Session B and
+say "Refresh the dashboard to show the latest security coverage results."
+
+Devin will click the **Refresh Scan** button in the dashboard header, which loads
+`state-after.json` and re-renders the page in place — no URL change, no navigation.
 
 Walk the audience through the transformation:
 - **Green status bar** — system is secured
@@ -88,11 +97,71 @@ Walk the audience through the transformation:
 - **Speed**: 12 security patterns verified in minutes, not days.
 
 ## Resetting for Another Run
-To reset back to the clean baseline (all patterns uncovered):
+To reset the dashboard back to the "before" state, just refresh the browser (Cmd+R / F5).
+The page always loads `state-before.json` on a fresh page load.
+
+To reset the entire branch back to the clean baseline (all patterns uncovered):
 ```bash
 git checkout demo/baseline
 git reset --hard demo-baseline-v2
 git push --force-with-lease origin demo/baseline
+```
+
+## Dashboard Architecture
+The dashboard (`demo/index.html`) uses client-side JSON loading with no server state:
+- **Page load** → fetches `state-before.json` → renders before state (grade F, 0/12)
+- **"Refresh Scan" button click** → fetches `state-after.json` → re-renders in place (grade A, 12/12)
+- **Browser refresh** → page reloads → back to before state automatically
+
+To trigger the refresh programmatically (e.g. from a Devin session):
+```js
+// Click the Refresh Scan button in the dashboard header
+document.getElementById('refresh-scan-btn').click();
+```
+
+## Session Initialization Prompts
+
+### Session A — "Before" state (live playbook kickoff)
+```
+I'm a Kessel Run security engineer working on agent-archive-web. I need to expand
+our security test coverage based on recently discovered CVEs.
+
+1. Clone agent-archive/agent-archive-web and check out the demo/baseline branch
+2. Install dependencies with npm install
+3. Serve the security dashboard: cd demo && python3 -m http.server 8082
+4. Open the dashboard in the browser at http://localhost:8082/index.html
+
+Then wait — I'll tell you when to start the security playbook.
+```
+
+When ready to kick off the playbook live:
+```
+Run the security playbook in SECURITY-PLAYBOOK.md. Be verbose — show me each test
+as you write and run it.
+```
+
+### Session B — "After" state (pre-completed, show results)
+```
+I'm a Kessel Run security engineer. The security playbook has already been run on
+agent-archive/agent-archive-web and all 12 patterns are verified.
+
+1. Clone agent-archive/agent-archive-web and check out the demo/baseline branch
+2. Install dependencies with npm install
+3. Serve the security dashboard: cd demo && python3 -m http.server 8082
+4. Open the dashboard in the browser at http://localhost:8082/index.html
+
+The dashboard loads the "before" state by default. When I ask you to refresh the
+dashboard, click the "Refresh Scan" button in the top-right corner of the header
+(id="refresh-scan-btn"). This fetches state-after.json and re-renders the dashboard
+in place to show the completed security coverage (grade A, 12/12 patterns verified).
+Do NOT change the URL or navigate — just click the button.
+
+Then wait for me to ask you to refresh the dashboard.
+```
+
+When you switch to Session B during the demo:
+```
+Refresh the dashboard to show the latest security coverage results.
 ```
 
 ## Troubleshooting
