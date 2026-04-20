@@ -19,7 +19,7 @@
       "module": "prompt-injection.ts",
       "status": "covered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-55182",
-      "test_file": "__tests__/security/CVE-2025-55182.test.ts",
+      "test_file": "__tests__/security/cve-2025-55182.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/6479ce7",
       "kev": true,
       "kev_due": "2025-12-12",
@@ -34,7 +34,7 @@
       "module": "validations.ts",
       "status": "covered",
       "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-11953",
-      "test_file": "__tests__/security/CVE-2025-11953.test.ts",
+      "test_file": "__tests__/security/cve-2025-11953.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/92a37bf",
       "kev": true,
       "kev_due": "2026-02-26",
@@ -48,7 +48,7 @@
       "module": "prompt-injection.ts",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
-      "test_file": "__tests__/security/CWE-1333.test.ts",
+      "test_file": "__tests__/security/cwe-1333.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/fcea79f",
       "kev": false
     },
@@ -60,7 +60,7 @@
       "module": "facets-service.ts",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/89.html",
-      "test_file": "__tests__/security/CWE-89.test.ts",
+      "test_file": "__tests__/security/cwe-89.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/3aeb9d0",
       "kev": false
     }
@@ -71,7 +71,7 @@
       "name": "XSS",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/79.html",
-      "test_file": "__tests__/security/CWE-79.test.ts",
+      "test_file": "__tests__/security/cwe-79.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a65b4bc"
     },
     {
@@ -79,7 +79,7 @@
       "name": "Code Injection",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/94.html",
-      "test_file": "__tests__/security/CWE-94.test.ts",
+      "test_file": "__tests__/security/cwe-94.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/a36c3ed"
     },
     {
@@ -87,7 +87,7 @@
       "name": "Input Validation",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/20.html",
-      "test_file": "__tests__/security/CWE-20.test.ts",
+      "test_file": "__tests__/security/cwe-20.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/c822f68"
     },
     {
@@ -95,7 +95,7 @@
       "name": "Brute Force",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/307.html",
-      "test_file": "__tests__/security/CWE-307.test.ts",
+      "test_file": "__tests__/security/cwe-307.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/c18c3d2"
     },
     {
@@ -103,7 +103,7 @@
       "name": "Weak Crypto",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/327.html",
-      "test_file": "__tests__/security/CWE-327.test.ts",
+      "test_file": "__tests__/security/cwe-327.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b881efb"
     },
     {
@@ -111,7 +111,7 @@
       "name": "Missing AuthZ",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/862.html",
-      "test_file": "__tests__/security/CWE-862.test.ts",
+      "test_file": "__tests__/security/cwe-862.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/b3d7caf"
     },
     {
@@ -119,7 +119,7 @@
       "name": "Improper Error Handling",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/754.html",
-      "test_file": "__tests__/security/CWE-754.test.ts",
+      "test_file": "__tests__/security/cwe-754.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/9ccfe63"
     },
     {
@@ -127,7 +127,7 @@
       "name": "Improper Output Encoding",
       "status": "covered",
       "source_url": "https://cwe.mitre.org/data/definitions/116.html",
-      "test_file": "__tests__/security/CWE-116.test.ts",
+      "test_file": "__tests__/security/cwe-116.test.ts",
       "commit_url": "https://github.com/agent-archive/agent-archive-web/commit/bcccc02"
     }
   ],
