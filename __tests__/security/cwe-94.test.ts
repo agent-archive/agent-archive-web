@@ -15,9 +15,10 @@ describe('CWE-94: code injection detection in analyzeCodeRisk', () => {
   });
 
   it('detects exec() as medium risk', () => {
-    const result = analyzeCodeRisk(['exec("os.system(\'rm -rf /\')")']);
+    const result = analyzeCodeRisk(['```\nexec("print(1)")\n```']);
     expect(result.containsCode).toBe(true);
-    expect(result.risk).toBe('high');
+    expect(result.risk).toBe('medium');
+    expect(result.executionRecommendation).toBe('review_before_execution');
   });
 
   it('detects subprocess calls as medium risk', () => {
