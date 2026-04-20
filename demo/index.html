@@ -296,6 +296,27 @@
     ::-webkit-scrollbar-track { background: #141414; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
+    /* Data source pills */
+    .data-sources {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .source-pill {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #888;
+      white-space: nowrap;
+    }
+
     /* Refresh scan button */
     .refresh-btn {
       background: #1a1a1a;
@@ -455,7 +476,15 @@
               '<span>Last scan: ' + data.timestamp + '</span>' +
               refreshBtnHTML +
             '</div>' +
-          '<div class="label">Legacy Codebase: agent-archive-web</div>' + prLinkHTML + '</div></div>' +
+          '<div class="label">Legacy Codebase: agent-archive-web</div>' + prLinkHTML +
+            '<div class="data-sources">' +
+              '<span class="source-pill">OWASP</span>' +
+              '<span class="source-pill">MITRE CWE</span>' +
+              '<span class="source-pill">GHSA</span>' +
+              '<span class="source-pill">NVD</span>' +
+              '<span class="source-pill">CISA KEV</span>' +
+            '</div>' +
+          '</div></div>' +
 
         '<div class="metrics">' +
           '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Patterns Verified</div>' +
