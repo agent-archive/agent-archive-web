@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kessel Run | Security Test Coverage Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0a0a;
+      color: #e5e5e5;
+      font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+    }
+    a { color: #e5e5e5; text-decoration: none; }
+    a:hover { color: #fff; }
+
+    /* Status bar */
+    .status-bar { height: 3px; width: 100%; }
+    .status-bar.danger { background: linear-gradient(90deg, #ef4444 0%, #991b1b 100%); }
+    .status-bar.secure { background: linear-gradient(90deg, #22c55e 0%, #16a34a 50%, #22c55e 100%); box-shadow: 0 0 12px rgba(34,197,94,0.4); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-logo { display: flex; align-items: center; gap: 10px; }
+    .header-logo img { height: 32px; width: auto; }
+    .header-divider { width: 1px; height: 28px; background: #333; }
+    .header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.5px; }
+    .header-meta { text-align: right; font-size: 12px; color: #888; }
+    .header-meta .label { color: #666; }
+    .header-org { font-size: 10px; color: #4FC3F7; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+
+    /* Metric strip */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .metric-card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      padding: 16px;
+      transition: border-color 0.6s, box-shadow 0.6s, transform 0.25s ease;
+    }
+    .metric-card:hover {
+      transform: scale(1.04);
+      box-shadow: 0 4px 24px rgba(239,68,68,0.2), 0 0 12px rgba(239,68,68,0.1);
+    }
+    .metric-card.lit:hover {
+      box-shadow: 0 4px 24px rgba(34,197,94,0.3), 0 0 12px rgba(34,197,94,0.15);
+    }
+    .metric-card.lit {
+      border-color: #166534;
+      box-shadow: 0 0 16px rgba(34,197,94,0.15);
+    }
+    .metric-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .metric-card .value { font-size: 28px; font-weight: 700; }
+
+    /* Coverage progress bar */
+    .coverage-bar-track {
+      width: 100%;
+      height: 4px;
+      background: #262626;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .coverage-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1.5s ease-out;
+    }
+    .coverage-bar-fill.low { background: linear-gradient(90deg, #ef4444, #f97316); }
+    .coverage-bar-fill.mid { background: linear-gradient(90deg, #f97316, #eab308); }
+    .coverage-bar-fill.good { background: linear-gradient(90deg, #22c55e, #4ade80); box-shadow: 0 0 8px rgba(34,197,94,0.4); }
+
+    /* Grade colors + glow */
+    .grade-F { color: #ef4444; }
+    .grade-D { color: #f97316; }
+    .grade-C { color: #eab308; }
+    .grade-B { color: #22c55e; }
+    .grade-A { color: #4ade80; }
+    .grade-display { position: relative; display: inline-block; }
+    .grade-display .grade-letter { font-size: 28px; }
+    .grade-display.glow-B .grade-letter,
+    .grade-display.glow-A .grade-letter { font-size: 36px; }
+    .grade-display .grade-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 1s;
+      pointer-events: none;
+    }
+    .grade-display.glow-B .grade-glow { background: radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%); opacity: 1; }
+    .grade-display.glow-A .grade-glow { background: radial-gradient(circle, rgba(74,222,128,0.4) 0%, transparent 70%); opacity: 1; }
+    .grade-display.glow-F .grade-glow { background: radial-gradient(circle, rgba(239,68,68,0.15) 0%, transparent 70%); opacity: 1; }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 16px rgba(34,197,94,0.15); }
+      50% { box-shadow: 0 0 24px rgba(34,197,94,0.3); }
+    }
+    .metric-card.lit { animation: pulse-green 3s ease-in-out infinite; }
+
+    /* Panels */
+    .panel { margin-bottom: 40px; }
+    .panel-title {
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #e5e5e5;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .count-badge {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .count-badge.all-clear { background: #14532d; color: #4ade80; }
+    .count-badge.pending { background: #7f1d1d; color: #fca5a5; }
+
+    /* Section dividers */
+    .section-divider {
+      margin: 20px 0 12px;
+      padding-top: 10px;
+    }
+    .section-divider:not(:first-child) { border-top: 1px solid #1a1a1a; }
+    .section-divider span {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .label-mitigated { color: #22c55e; }
+    .label-unverified { color: #ef4444; }
+
+    /* Emerging threats */
+    .emerging-list { display: flex; flex-direction: column; gap: 12px; }
+    .threat-card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color 0.6s, box-shadow 0.6s, transform 0.25s ease;
+    }
+    .threat-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 24px rgba(239,68,68,0.2), 0 0 12px rgba(239,68,68,0.1);
+    }
+    .threat-card.covered-card:hover {
+      box-shadow: 0 4px 24px rgba(34,197,94,0.25), 0 0 12px rgba(34,197,94,0.15);
+    }
+    .threat-card.covered-card {
+      border-color: #166534;
+      box-shadow: 0 0 12px rgba(34,197,94,0.15);
+    }
+    .severity-badge {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; padding: 4px 8px; border-radius: 3px;
+      min-width: 72px; text-align: center; flex-shrink: 0; position: relative;
+    }
+    .severity-critical { background: #7f1d1d; color: #fca5a5; }
+    .severity-high { background: #7c2d12; color: #fdba74; }
+    .severity-medium { background: #713f12; color: #fde047; }
+    .severity-low { background: #14532d; color: #86efac; }
+    /* CISA KEV badge */
+    .kev-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #92400e, #b45309);
+      color: #fbbf24;
+      border: 1px solid #d97706;
+      box-shadow: 0 0 8px rgba(217,119,6,0.3);
+      margin-left: 8px;
+      vertical-align: middle;
+      animation: pulse-kev 2s ease-in-out infinite;
+    }
+    .kev-badge a { color: #fbbf24; border: none; }
+    .kev-badge a:hover { color: #fef3c7; }
+    @keyframes pulse-kev {
+      0%, 100% { box-shadow: 0 0 8px rgba(217,119,6,0.3); }
+      50% { box-shadow: 0 0 16px rgba(217,119,6,0.5); }
+    }
+    .kev-due {
+      font-size: 10px;
+      color: #d97706;
+      margin-top: 2px;
+    }
+    .kev-due.overdue { color: #ef4444; font-weight: 600; }
+    .metric-card.kev-alert { border-color: #92400e; }
+    .metric-card.kev-alert .value { color: #fbbf24; }
+    .metric-card.kev-alert.lit { border-color: #166534; animation: pulse-green 3s ease-in-out infinite; }
+    .metric-card.kev-alert.lit .value { color: #4ade80; }
+    @keyframes pulse-amber {
+      0%, 100% { box-shadow: 0 0 12px rgba(217,119,6,0.2); }
+      50% { box-shadow: 0 0 20px rgba(217,119,6,0.4); }
+    }
+    .metric-card.kev-alert:not(.lit) { animation: pulse-amber 2.5s ease-in-out infinite; }
+    .mitigated-check {
+      position: absolute; top: -6px; right: -6px;
+      width: 16px; height: 16px; background: #166534;
+      border: 2px solid #0a0a0a; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: #4ade80; line-height: 1;
+    }
+    .threat-info { flex: 1; min-width: 0; }
+    .threat-info .id { font-weight: 600; font-size: 13px; }
+    .threat-info .id a { color: inherit; border-bottom: 1px dashed #444; }
+    .threat-info .id a:hover { color: #4ade80; border-bottom-color: #4ade80; }
+    .threat-info .title { color: #aaa; font-size: 12px; margin-top: 2px; }
+    .threat-info .module { color: #666; font-size: 11px; margin-top: 4px; }
+    .test-link { font-size: 10px; color: #4ade80; margin-top: 4px; display: inline-block; opacity: 0.8; }
+    .test-link:hover { opacity: 1; text-decoration: underline; }
+    .threat-meta { text-align: right; flex-shrink: 0; }
+    .threat-meta .days { font-size: 11px; color: #666; }
+    .status-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 6px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-uncovered .status-dot { background: #ef4444; }
+    .status-uncovered .status-text { color: #ef4444; }
+    .status-covered .status-dot { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .status-covered .status-text { color: #22c55e; }
+
+    /* Foundational grid */
+    .foundational-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .found-card {
+      background: #141414; border: 1px solid #262626;
+      border-radius: 6px; padding: 12px;
+      transition: border-color 0.6s, box-shadow 0.6s, transform 0.25s ease;
+    }
+    .found-card:hover {
+      transform: scale(1.04);
+      box-shadow: 0 4px 20px rgba(239,68,68,0.2), 0 0 10px rgba(239,68,68,0.1);
+    }
+    .found-card.covered-card:hover {
+      box-shadow: 0 4px 20px rgba(34,197,94,0.25), 0 0 10px rgba(34,197,94,0.15);
+    }
+    .found-card.covered-card { border-color: #166534; box-shadow: 0 0 10px rgba(34,197,94,0.12); }
+    .found-card .id { font-size: 12px; font-weight: 600; }
+    .found-card .id a { color: inherit; border-bottom: 1px dashed #444; }
+    .found-card .id a:hover { color: #4ade80; border-bottom-color: #4ade80; }
+    .found-card .name { font-size: 11px; color: #888; margin-top: 2px; }
+    .found-card .status-indicator { margin-top: 8px; }
+
+    /* Activity log */
+    .activity-log {
+      background: #141414; border: 1px solid #262626;
+      border-radius: 6px; max-height: 300px; overflow-y: auto;
+    }
+    .activity-log .empty { padding: 24px; text-align: center; color: #444; font-size: 12px; }
+    .activity-item {
+      padding: 10px 16px; border-bottom: 1px solid #1a1a1a;
+      font-size: 12px; color: #aaa;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .activity-item.visible { opacity: 1; transform: translateY(0); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item .prompt { color: #22c55e; }
+    .activity-item a { color: #aaa; }
+    .activity-item a:hover { color: #4ade80; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #141414; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* Data source pills */
+    .data-sources {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .source-pill {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    /* Refresh scan button */
+    .refresh-btn {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #888;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 5px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+      letter-spacing: 0.5px;
+    }
+    .refresh-btn:hover {
+      border-color: #4ade80;
+      color: #4ade80;
+      box-shadow: 0 0 12px rgba(34,197,94,0.2);
+    }
+
+    @media (max-width: 768px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .foundational-grid { grid-template-columns: repeat(2, 1fr); }
+      .threat-card { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div id="status-bar" class="status-bar"></div>
+  <div class="container"><div id="app"></div></div>
+  <script>
+    // Render the dashboard from a JSON data object
+    function renderDashboard(data, isAfter) {
+      var repoBase = data.repo_url || 'https://github.com/agent-archive/agent-archive-web';
+      var prUrl = data.pr_url || null;
+
+      document.getElementById('status-bar').className = 'status-bar ' + (isAfter ? 'secure' : 'danger');
+
+      var gradeClass = 'grade-' + data.grade;
+      var glowClass = 'glow-' + data.grade;
+      var barClass = data.coverage_pct < 5 ? 'low' : (data.coverage_pct < 15 ? 'mid' : 'good');
+
+      function statusHTML(st) {
+        var cls = st === 'covered' ? 'status-covered' : 'status-uncovered';
+        return '<span class="status-indicator ' + cls + '"><span class="status-dot"></span><span class="status-text">' + st + '</span></span>';
+      }
+
+      var emergingUncovered = data.emerging.filter(function(t) { return t.status !== 'covered'; });
+      var emergingCovered = data.emerging.filter(function(t) { return t.status === 'covered'; });
+
+      function threatCardHTML(t) {
+        var cardClass = t.status === 'covered' ? 'threat-card covered-card' : 'threat-card';
+        var checkmark = t.status === 'covered' ? '<span class="mitigated-check">&#10003;</span>' : '';
+        var idLink = t.source_url ? '<a href="' + t.source_url + '" target="_blank" title="View advisory">' + t.id + '</a>' : t.id;
+        var kevUrl = t.kev_url || 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog';
+        var kevBadge = t.kev ? '<span class="kev-badge"><a href="' + kevUrl + '" target="_blank" title="CISA Known Exploited Vulnerability">CISA KEV</a></span>' : '';
+        var kevDue = '';
+        if (t.kev && t.kev_due) {
+          var dueDate = new Date(t.kev_due);
+          var now = new Date();
+          var isOverdue = now > dueDate;
+          var dueClass = isOverdue ? 'kev-due overdue' : 'kev-due';
+          var dueLabel = isOverdue ? 'OVERDUE — was due ' + t.kev_due : 'BOD remediation due: ' + t.kev_due;
+          kevDue = '<div class="' + dueClass + '">&#9888; ' + dueLabel + '</div>';
+        }
+        var branchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
+        var testLink = t.test_file ? '<a class="test-link" href="' + branchRef + t.test_file + '" target="_blank">&#128279; ' + t.test_file + '</a>' : '';
+        var commitLink = t.commit_url ? '<a class="test-link" href="' + t.commit_url + '" target="_blank" style="margin-left:12px;">&#128203; View commit</a>' : '';
+        return '<div class="' + cardClass + '">' +
+          '<span class="severity-badge severity-' + t.severity + '">' + t.severity + checkmark + '</span>' +
+          '<div class="threat-info">' +
+            '<div class="id">' + idLink + kevBadge + '</div>' +
+            '<div class="title">' + t.title + '</div>' +
+            kevDue +
+            '<div class="module">' + t.module + '</div>' +
+            (testLink || commitLink ? '<div>' + testLink + commitLink + '</div>' : '') +
+          '</div>' +
+          '<div class="threat-meta">' +
+            '<div class="days">' + t.days_ago + ' days ago</div>' +
+            statusHTML(t.status) +
+          '</div></div>';
+      }
+
+      var emergingHTML = '';
+      if (emergingUncovered.length > 0) {
+        emergingHTML += '<div class="section-divider"><span class="label-unverified">Unverified</span></div>';
+        emergingHTML += emergingUncovered.map(threatCardHTML).join('');
+      }
+      if (emergingCovered.length > 0) {
+        emergingHTML += '<div class="section-divider"><span class="label-mitigated">Mitigated</span></div>';
+        emergingHTML += emergingCovered.map(threatCardHTML).join('');
+      }
+      if (data.emerging.length === 0) emergingHTML = '<div class="empty">No emerging threats</div>';
+
+      var emergingBadgeText = emergingCovered.length + '/' + data.emerging.length + ' covered';
+      var emergingBadgeClass = emergingCovered.length === data.emerging.length ? 'all-clear' : 'pending';
+
+      var foundUncovered = data.foundational.filter(function(f) { return f.status !== 'covered'; });
+      var foundCovered = data.foundational.filter(function(f) { return f.status === 'covered'; });
+
+      function foundCardHTML(f) {
+        var cardClass = f.status === 'covered' ? 'found-card covered-card' : 'found-card';
+        var idLink = f.source_url ? '<a href="' + f.source_url + '" target="_blank" title="View CWE">' + f.id + '</a>' : f.id;
+        var fBranchRef = prUrl ? prUrl.replace(/\/pull\/\d+$/, '/blob/security/verify-patterns/') : repoBase + '/blob/demo/baseline/';
+        var testLink = f.test_file ? '<a class="test-link" href="' + fBranchRef + f.test_file + '" target="_blank">&#128279; ' + f.test_file + '</a>' : '';
+        var fCommitLink = f.commit_url ? '<a class="test-link" href="' + f.commit_url + '" target="_blank" style="margin-left:8px;">&#128203;</a>' : '';
+        return '<div class="' + cardClass + '">' +
+          '<div class="id">' + idLink + '</div>' +
+          '<div class="name">' + f.name + '</div>' +
+          (testLink || fCommitLink ? '<div>' + testLink + fCommitLink + '</div>' : '') +
+          statusHTML(f.status) + '</div>';
+      }
+
+      var foundationalHTML = '';
+      if (foundUncovered.length > 0) {
+        foundationalHTML += '<div class="section-divider"><span class="label-unverified">Unverified</span></div>';
+        foundationalHTML += '<div class="foundational-grid">' + foundUncovered.map(foundCardHTML).join('') + '</div>';
+      }
+      if (foundCovered.length > 0) {
+        foundationalHTML += '<div class="section-divider"><span class="label-mitigated">Mitigated</span></div>';
+        foundationalHTML += '<div class="foundational-grid">' + foundCovered.map(foundCardHTML).join('') + '</div>';
+      }
+
+      var foundBadgeText = foundCovered.length + '/' + data.foundational.length + ' covered';
+      var foundBadgeClass = foundCovered.length === data.foundational.length ? 'all-clear' : 'pending';
+
+      var activityItems = '';
+      if (data.activity.length === 0) {
+        activityItems = '<div class="empty">No activity recorded</div>';
+      } else {
+        activityItems = data.activity.map(function(entry) {
+          var msg = typeof entry === 'string' ? entry : entry.message;
+          var commitUrl = (typeof entry === 'object' && entry.commit_url) ? entry.commit_url : null;
+          var content = commitUrl ? '<a href="' + commitUrl + '" target="_blank">' + msg + '</a>' : msg;
+          return '<div class="activity-item"><span class="prompt">$ git commit </span>' + content + '</div>';
+        }).join('');
+      }
+
+      var prLinkHTML = prUrl ? '<div><a href="' + prUrl + '" target="_blank" style="color:#4ade80;font-size:11px;">View PR &#8594;</a></div>' : '';
+
+      var refreshBtnHTML = '<button id="refresh-scan-btn" class="refresh-btn" title="Pull latest scan results">&#8635; Refresh Scan</button>';
+
+      document.getElementById('app').innerHTML =
+        '<div class="header">' +
+          '<div class="header-left">' +
+            '<div class="header-logo">' +
+              '<img src="usaf-logo.svg" alt="U.S. Air Force">' +
+              '<img src="kessel-run-logo.png" alt="Kessel Run">' +
+            '</div>' +
+            '<div class="header-divider"></div>' +
+            '<div>' +
+              '<div class="header-org">Kessel Run</div>' +
+              '<h1>Security Test Coverage Dashboard</h1>' +
+            '</div>' +
+          '</div>' +
+          '<div class="header-meta">' +
+            '<div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;">' +
+              '<span>Last scan: ' + data.timestamp + '</span>' +
+              refreshBtnHTML +
+            '</div>' +
+          '<div class="label">Legacy Codebase: agent-archive-web</div>' + prLinkHTML +
+            '<div class="data-sources">' +
+              '<span class="source-pill">OWASP</span>' +
+              '<span class="source-pill">MITRE CWE</span>' +
+              '<span class="source-pill">GHSA</span>' +
+              '<span class="source-pill">NVD</span>' +
+              '<span class="source-pill">CISA KEV</span>' +
+            '</div>' +
+          '</div></div>' +
+
+        '<div class="metrics">' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Patterns Verified</div>' +
+            '<div class="value"><span id="counter-patterns">0</span>/' + data.patterns_total + '</div></div>' +
+          '<div class="metric-card kev-alert' + (isAfter ? ' lit' : '') + '"><div class="label">CISA KEV Threats</div>' +
+            '<div class="value"><span id="counter-kev">0</span>/' + (data.kev_total || 0) + '</div></div>' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Test Coverage</div>' +
+            '<div class="value"><span id="counter-coverage">0</span>%</div>' +
+            '<div class="coverage-bar-track"><div id="coverage-bar" class="coverage-bar-fill ' + barClass + '"></div></div></div>' +
+          '<div class="metric-card' + (isAfter ? ' lit' : '') + '"><div class="label">Security Grade</div>' +
+            '<div class="grade-display ' + glowClass + '"><div class="grade-glow"></div>' +
+            '<div class="grade-letter ' + gradeClass + '" style="position:relative;font-weight:700;">' + data.grade + '</div></div></div>' +
+        '</div>' +
+
+        '<div class="panel"><div class="panel-title">Emerging Threats <span class="count-badge ' + emergingBadgeClass + '">' + emergingBadgeText + '</span></div>' +
+          '<div class="emerging-list">' + emergingHTML + '</div></div>' +
+
+        '<div class="panel"><div class="panel-title">Foundational Patterns <span class="count-badge ' + foundBadgeClass + '">' + foundBadgeText + '</span></div>' +
+          foundationalHTML + '</div>' +
+
+        '<div class="panel"><div class="panel-title">Activity Log</div>' +
+          '<div class="activity-log" id="activity-log">' + activityItems + '</div></div>';
+
+      // Wire up refresh button
+      document.getElementById('refresh-scan-btn').addEventListener('click', function() {
+        loadAndRender('state-after.json', true);
+      });
+
+      // Animated counters
+      function animateCounter(id, target, duration, decimal) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var startTime = null;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          var progress = Math.min((ts - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = target * eased;
+          el.textContent = decimal ? current.toFixed(1) : Math.round(current);
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = decimal ? target.toFixed(1) : target;
+        }
+        requestAnimationFrame(step);
+      }
+
+      var dur = isAfter ? 1500 : 600;
+      animateCounter('counter-patterns', data.patterns_verified, dur, false);
+      animateCounter('counter-kev', data.kev_covered || 0, dur, false);
+      animateCounter('counter-coverage', data.coverage_pct, dur, true);
+
+      // Coverage bar fill
+      setTimeout(function() {
+        var bar = document.getElementById('coverage-bar');
+        if (bar) bar.style.width = Math.min(data.coverage_pct, 100) + '%';
+      }, 200);
+
+      // Activity log typewriter
+      var items = document.querySelectorAll('.activity-item');
+      items.forEach(function(item, i) {
+        setTimeout(function() { item.classList.add('visible'); }, isAfter ? 300 + i * 180 : 0);
+      });
+    }
+
+    // Load a JSON file and render the dashboard
+    async function loadAndRender(file, isAfter) {
+      try {
+        var resp = await fetch(file, { cache: 'no-store' });
+        var data = await resp.json();
+        renderDashboard(data, isAfter);
+      } catch (e) {
+        document.getElementById('app').innerHTML =
+          '<p style="color:#ef4444;padding:40px">Failed to load ' + file + '. Serve via HTTP server.</p>';
+      }
+    }
+
+    // Initial load: default to before state; ?state=after is a hidden debug override
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var state = params.get('state');
+      if (state === 'after') {
+        loadAndRender('state-after.json', true);
+      } else {
+        loadAndRender('state-before.json', false);
+      }
+    })();
+  </script>
+</body>
+</html>

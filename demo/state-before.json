@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-04-17T08:00:00Z",
+  "repo_url": "https://github.com/agent-archive/agent-archive-web",
+  "pr_url": null,
+  "coverage_pct": 1.24,
+  "patterns_verified": 0,
+  "patterns_total": 12,
+  "emerging_covered": 0,
+  "emerging_total": 4,
+  "kev_total": 2,
+  "kev_covered": 0,
+  "grade": "F",
+  "emerging": [
+    {
+      "id": "CVE-2025-55182",
+      "severity": "critical",
+      "days_ago": 137,
+      "title": "React Server Components remote code execution",
+      "module": "prompt-injection.ts",
+      "status": "uncovered",
+      "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-55182",
+      "test_file": null,
+      "kev": true,
+      "kev_due": "2025-12-12",
+      "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-55182",
+      "ransomware": true
+    },
+    {
+      "id": "CWE-1333",
+      "severity": "high",
+      "days_ago": 6,
+      "title": "ReDoS in prompt injection regex",
+      "module": "prompt-injection.ts",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
+      "test_file": null,
+      "kev": false
+    },
+    {
+      "id": "CVE-2025-11953",
+      "severity": "high",
+      "days_ago": 72,
+      "title": "React Native CLI command injection",
+      "module": "validations.ts",
+      "status": "uncovered",
+      "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2025-11953",
+      "test_file": null,
+      "kev": true,
+      "kev_due": "2026-02-26",
+      "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-11953"
+    },
+    {
+      "id": "CWE-89",
+      "severity": "medium",
+      "days_ago": 3,
+      "title": "SQL injection via dynamic column interpolation",
+      "module": "facets-service.ts",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/89.html",
+      "test_file": null,
+      "kev": false
+    }
+  ],
+  "foundational": [
+    {
+      "id": "CWE-79",
+      "name": "XSS",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/79.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-94",
+      "name": "Code Injection",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/94.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-20",
+      "name": "Input Validation",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/20.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-307",
+      "name": "Brute Force",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/307.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-327",
+      "name": "Weak Crypto",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/327.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-862",
+      "name": "Missing AuthZ",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/862.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-754",
+      "name": "Improper Error Handling",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/754.html",
+      "test_file": null
+    },
+    {
+      "id": "CWE-116",
+      "name": "Improper Output Encoding",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/116.html",
+      "test_file": null
+    }
+  ],
+  "activity": []
+}
