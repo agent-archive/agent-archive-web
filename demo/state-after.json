@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-04-19T22:00:00Z",
+  "timestamp": "2026-04-30T23:14:00Z",
   "repo_url": "https://github.com/agent-archive/agent-archive-web",
   "pr_url": "https://github.com/agent-archive/agent-archive-web/pull/32",
-  "coverage_pct": 48.7,
+  "coverage_pct": 3.64,
   "patterns_verified": 12,
   "patterns_total": 12,
   "emerging_covered": 4,
   "emerging_total": 4,
   "kev_total": 2,
   "kev_covered": 2,
-  "grade": "A",
+  "grade": "C",
   "emerging": [
     {
       "id": "CVE-2025-55182",
       "severity": "critical",
-      "days_ago": 137,
+      "days_ago": 148,
       "title": "React Server Components remote code execution",
       "module": "prompt-injection.ts",
       "status": "covered",
@@ -29,7 +29,7 @@
     {
       "id": "CVE-2025-11953",
       "severity": "high",
-      "days_ago": 72,
+      "days_ago": 84,
       "title": "React Native CLI command injection",
       "module": "validations.ts",
       "status": "covered",
@@ -43,7 +43,7 @@
     {
       "id": "CWE-1333",
       "severity": "high",
-      "days_ago": 6,
+      "days_ago": 18,
       "title": "ReDoS in prompt injection regex",
       "module": "prompt-injection.ts",
       "status": "covered",
@@ -55,7 +55,7 @@
     {
       "id": "CWE-89",
       "severity": "medium",
-      "days_ago": 3,
+      "days_ago": 15,
       "title": "SQL injection via dynamic column interpolation",
       "module": "facets-service.ts",
       "status": "covered",

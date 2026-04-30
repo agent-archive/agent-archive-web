@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-17T08:00:00Z",
+  "timestamp": "2026-04-30T23:14:00Z",
   "repo_url": "https://github.com/agent-archive/agent-archive-web",
   "pr_url": null,
   "coverage_pct": 1.24,
@@ -14,7 +14,7 @@
     {
       "id": "CVE-2025-55182",
       "severity": "critical",
-      "days_ago": 137,
+      "days_ago": 148,
       "title": "React Server Components remote code execution",
       "module": "prompt-injection.ts",
       "status": "uncovered",
@@ -26,20 +26,9 @@
       "ransomware": true
     },
     {
-      "id": "CWE-1333",
-      "severity": "high",
-      "days_ago": 6,
-      "title": "ReDoS in prompt injection regex",
-      "module": "prompt-injection.ts",
-      "status": "uncovered",
-      "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
-      "test_file": null,
-      "kev": false
-    },
-    {
       "id": "CVE-2025-11953",
       "severity": "high",
-      "days_ago": 72,
+      "days_ago": 84,
       "title": "React Native CLI command injection",
       "module": "validations.ts",
       "status": "uncovered",
@@ -50,9 +39,20 @@
       "kev_url": "https://www.cve.org/CVERecord?id=CVE-2025-11953"
     },
     {
+      "id": "CWE-1333",
+      "severity": "high",
+      "days_ago": 18,
+      "title": "ReDoS in prompt injection regex",
+      "module": "prompt-injection.ts",
+      "status": "uncovered",
+      "source_url": "https://cwe.mitre.org/data/definitions/1333.html",
+      "test_file": null,
+      "kev": false
+    },
+    {
       "id": "CWE-89",
       "severity": "medium",
-      "days_ago": 3,
+      "days_ago": 15,
       "title": "SQL injection via dynamic column interpolation",
       "module": "facets-service.ts",
       "status": "uncovered",

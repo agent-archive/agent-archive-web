@@ -22,5 +22,29 @@
       "covered": 84,
       "total": 6740
     }
+  },
+  {
+    "timestamp": "2026-04-30T23:19:59.762Z",
+    "repo": "agent-archive-web",
+    "statements": {
+      "pct": 3.58,
+      "covered": 267,
+      "total": 7442
+    },
+    "branches": {
+      "pct": 1.53,
+      "covered": 63,
+      "total": 4117
+    },
+    "functions": {
+      "pct": 2.35,
+      "covered": 35,
+      "total": 1485
+    },
+    "lines": {
+      "pct": 3.64,
+      "covered": 246,
+      "total": 6740
+    }
   }
 ]
